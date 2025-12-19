@@ -18,8 +18,9 @@ const message = document.getElementById('message');
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
 
-// Colors for candles
+// Colors
 const candleColors = ['#ff69b4', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+const sprinkleColors = ['#FFC107', '#FF5722', '#E91E63', '#9C27B0', '#2196F3', '#4CAF50', '#8BC34A'];
 
 // Initialize Candles
 function initCandles() {
@@ -38,6 +39,33 @@ function initCandles() {
         candle.appendChild(flame);
         candlesContainer.appendChild(candle);
     }
+}
+
+// Generate Sprinkles
+function initSprinkles() {
+    const sprinkleContainers = document.querySelectorAll('.sprinkles-container');
+    
+    sprinkleContainers.forEach(container => {
+        // Add 20-30 sprinkles per layer
+        const count = Math.floor(Math.random() * 10) + 20; 
+        
+        for (let i = 0; i < count; i++) {
+            const sprinkle = document.createElement('div');
+            sprinkle.className = 'sprinkle';
+            
+            // Random Position
+            sprinkle.style.left = `${Math.random() * 100}%`;
+            sprinkle.style.top = `${Math.random() * 100}%`;
+            
+            // Random Rotation
+            sprinkle.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            // Random Color
+            sprinkle.style.backgroundColor = sprinkleColors[Math.floor(Math.random() * sprinkleColors.length)];
+            
+            container.appendChild(sprinkle);
+        }
+    });
 }
 
 // Audio Handling
@@ -183,3 +211,4 @@ window.addEventListener('resize', () => {
 
 // Run
 initCandles();
+initSprinkles();
