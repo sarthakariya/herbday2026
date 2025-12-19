@@ -16,6 +16,73 @@ body {
     align-items: center;
 }
 
+/* Background Decorations (Balloons) */
+#background-decorations {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.balloon {
+    position: absolute;
+    bottom: -100px;
+    font-size: 3rem;
+    opacity: 0.6;
+    animation: floatUp var(--duration) linear infinite;
+    animation-delay: var(--delay);
+    left: var(--left);
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.6; }
+    100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+}
+
+/* Microphone Feedback */
+#mic-indicator {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px 15px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    transition: opacity 0.5s;
+}
+
+#mic-indicator.hidden {
+    opacity: 0;
+}
+
+.mic-icon {
+    font-size: 1.2rem;
+}
+
+.mic-bar-container {
+    width: 100px;
+    height: 10px;
+    background: #eee;
+    border-radius: 5px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+}
+
+#mic-level-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4ade80, #22c55e);
+    transition: width 0.1s;
+}
+
 /* Typography */
 h1 {
     font-family: 'Titan One', cursive; /* Bubbly font */
@@ -107,14 +174,14 @@ button:hover { transform: scale(1.05); }
 .cake-container {
     position: relative;
     z-index: 10;
-    /* Gentle floating */
-    animation: float 4s ease-in-out infinite;
+    /* Gentle floating animation */
+    animation: float 5s ease-in-out infinite;
     margin-bottom: 60px; /* Lift off table slightly for float effect */
 }
 
 @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-12px); }
 }
 
 .cake {
@@ -126,7 +193,10 @@ button:hover { transform: scale(1.05); }
 
 /* Layers Common Styles */
 .layer {
-    background: #fdf5e6; /* Creamy White */
+    background-color: #fdf5e6; /* Cream Base */
+    /* Subtle Crumb Texture */
+    background-image: radial-gradient(#e6d0b3 1px, transparent 1px);
+    background-size: 10px 10px;
     position: relative;
     border-radius: 10px;
     box-shadow: 
@@ -170,19 +240,42 @@ button:hover { transform: scale(1.05); }
     background: #fffbf0;
     border-radius: 50%;
     border: 1px solid #f0e6d2;
+    overflow: hidden;
 }
 
-/* Chocolate Decorations */
-.chocolate-border-top {
+/* Frosting Drips (Melted Look) */
+.icing-drips-container {
     position: absolute;
-    top: -2px;
-    left: -2px;
-    width: calc(100% + 4px);
-    height: 10px;
-    border-radius: 50%;
-    border: 3px solid #5d4037; /* Dark Chocolate */
-    border-bottom: none; /* Only top arc */
-    opacity: 0.8;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.drip {
+    position: absolute;
+    top: 0;
+    background: rgba(255, 251, 240, 0.9);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.05);
+}
+
+.drip-1 { left: 10%; width: 15px; height: 35px; }
+.drip-2 { left: 35%; width: 20px; height: 25px; }
+.drip-3 { left: 60%; width: 18px; height: 40px; }
+.drip-4 { left: 85%; width: 12px; height: 30px; }
+
+/* Chocolate Swirls (Darker Shade) */
+.chocolate-swirls {
+    position: absolute;
+    top: 30%;
+    width: 100%;
+    height: 20px;
+    background-image: radial-gradient(circle, transparent 30%, #5d4037 35%, #5d4037 40%, transparent 45%);
+    background-size: 30px 20px;
+    background-repeat: repeat-x;
+    opacity: 0.7;
 }
 
 .chocolate-border-bottom {
@@ -197,14 +290,31 @@ button:hover { transform: scale(1.05); }
     background-repeat: repeat-x;
 }
 
-.chocolate-details {
+/* Sprinkles */
+.sprinkle-dec {
     position: absolute;
-    top: 40%;
-    width: 100%;
-    height: 20px;
-    background-image: url("data:image/svg+xml,%3Csvg width='40' height='20' viewBox='0 0 40 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 Q10 0 20 10 T40 10' fill='none' stroke='%235d4037' stroke-width='3'/%3E%3C/svg%3E");
-    background-repeat: repeat-x;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
     opacity: 0.8;
+}
+
+/* Sparkles (Magical Effect) */
+.sparkle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background-color: white;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: sparkleAnim 1.5s linear forwards;
+    box-shadow: 0 0 5px #fff, 0 0 10px #ffdf00;
+}
+
+@keyframes sparkleAnim {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    50% { transform: scale(1) rotate(180deg); opacity: 1; }
+    100% { transform: scale(0) rotate(360deg); opacity: 0; }
 }
 
 /* Candles */
@@ -238,9 +348,14 @@ button:hover { transform: scale(1.05); }
     top: -12px;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 0 5px #ff9f1c, 0 0 10px #ffbf69;
+    /* Luminous Glow */
+    box-shadow: 
+        0 0 5px #ff9f1c, 
+        0 0 15px #ffbf69, 
+        0 0 30px rgba(255, 165, 0, 0.5); 
     animation: flicker 0.1s infinite alternate;
     transition: opacity 0.5s, transform 0.5s;
+    transform-origin: center bottom;
 }
 
 .flame.out {
@@ -249,8 +364,11 @@ button:hover { transform: scale(1.05); }
 }
 
 @keyframes flicker {
-    0% { transform: translateX(-50%) scale(1); opacity: 1; }
-    100% { transform: translateX(-50%) scale(0.9, 1.1); opacity: 0.9; }
+    0% { transform: translateX(-50%) scale(1) skewX(0deg); opacity: 1; }
+    25% { transform: translateX(-50%) scale(1.1, 0.9) skewX(2deg); opacity: 0.9; }
+    50% { transform: translateX(-50%) scale(0.9, 1.1) skewX(-2deg); opacity: 1; }
+    75% { transform: translateX(-50%) scale(1.05, 0.95) skewX(1deg); opacity: 0.95; }
+    100% { transform: translateX(-50%) scale(1) skewX(0deg); opacity: 1; }
 }
 
 /* Smoke */
