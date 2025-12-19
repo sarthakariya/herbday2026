@@ -6,7 +6,9 @@
 }
 
 body {
-    background-color: #fce7f3; /* Soft pink background */
+    /* Gradient background matching the reference image */
+    background: linear-gradient(135deg, #f3e7e9 0%, #e3eeff 50%, #e3e8ff 100%);
+    background: radial-gradient(circle at center, #fce7f3, #e0c3fc);
     font-family: 'Quicksand', sans-serif;
     height: 100vh;
     display: flex;
@@ -18,7 +20,8 @@ body {
 
 h1, h2 {
     font-family: 'Pacifico', cursive;
-    color: #db2777;
+    color: #9d4edd; /* Purple tone like the image text */
+    text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(0,0,0,0.1);
 }
 
 /* Start Overlay */
@@ -28,7 +31,7 @@ h1, h2 {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     z-index: 1000;
     display: flex;
     justify-content: center;
@@ -49,7 +52,7 @@ button {
     margin-top: 20px;
     padding: 15px 30px;
     font-size: 1.2rem;
-    background: linear-gradient(45deg, #ec4899, #8b5cf6);
+    background: linear-gradient(45deg, #9d4edd, #ff99c8);
     color: white;
     border: none;
     border-radius: 50px;
@@ -67,8 +70,8 @@ button:hover {
 .retry-btn {
     margin-top: 10px;
     background: white;
-    color: #db2777;
-    border: 2px solid #db2777;
+    color: #9d4edd;
+    border: 2px solid #9d4edd;
 }
 
 /* Main Container */
@@ -76,13 +79,17 @@ button:hover {
     text-align: center;
     position: relative;
     z-index: 10;
+    width: 100%;
+    max-width: 600px;
 }
 
 #header-text {
-    font-size: 3rem;
-    margin-bottom: 2rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    font-size: 3.5rem;
+    margin-bottom: 3rem;
     transition: opacity 0.5s;
+    /* Purple color from image */
+    color: #a855f7; 
+    -webkit-text-stroke: 1px #7e22ce;
 }
 
 #header-text.hidden {
@@ -92,12 +99,19 @@ button:hover {
 /* The Cake */
 .cake-container {
     position: relative;
-    height: 300px;
+    height: 350px;
     width: 300px;
     margin: 0 auto;
     display: flex;
     justify-content: center;
     align-items: flex-end;
+    /* Subtle float animation for the whole cake */
+    animation: floatCake 3s ease-in-out infinite;
+}
+
+@keyframes floatCake {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
 }
 
 .cake {
@@ -109,91 +123,122 @@ button:hover {
 }
 
 .plate {
-    width: 320px;
-    height: 15px;
-    background-color: #e5e7eb;
+    width: 340px;
+    height: 20px;
+    background-color: #f3f4f6;
     border-radius: 50%;
     position: absolute;
-    bottom: -5px;
+    bottom: -10px;
     z-index: 0;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
 }
 
 .layer {
     width: 100%;
-    background: #f472b6;
-    border-radius: 10px;
+    /* Cream color like the reference image */
+    background: #fdf4e3; 
+    border-radius: 20px 20px 10px 10px;
     position: relative;
-    box-shadow: inset -5px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 
+        inset -10px 0 20px rgba(0,0,0,0.05),
+        2px 5px 10px rgba(0,0,0,0.05);
+    /* Border for the "3D" edge effect */
+    border-bottom: 4px solid #e6d5b8;
 }
 
-.layer::after {
+/* Chocolate Decorations */
+.decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.decoration::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    bottom: 10px;
+    left: -5%;
+    width: 110%;
     height: 10px;
-    background: rgba(255,255,255,0.2);
-    border-radius: 10px 10px 0 0;
+    /* Chocolate piping */
+    background: transparent;
+    border-bottom: 5px dotted #5d4037; 
+    filter: drop-shadow(0 2px 1px rgba(0,0,0,0.2));
 }
 
 .layer-bottom {
-    width: 280px;
-    height: 80px;
-    background-color: #ec4899; /* Darker pink */
+    width: 300px;
+    height: 100px;
     z-index: 1;
 }
 
 .layer-middle {
-    width: 230px;
-    height: 70px;
-    background-color: #f472b6; /* Medium pink */
+    width: 240px;
+    height: 90px;
     z-index: 2;
-    margin-bottom: -10px; /* Overlap */
+    margin-bottom: -15px; /* Overlap */
 }
 
 .layer-top {
-    width: 180px;
-    height: 60px;
-    background-color: #fbcfe8; /* Light pink */
+    width: 170px;
+    height: 80px;
     z-index: 3;
-    margin-bottom: -10px;
+    margin-bottom: -15px;
     display: flex;
     justify-content: center;
+}
+
+/* Add a "top" surface to each layer for 3D look */
+.layer::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    left: 0;
+    width: 100%;
+    height: 30px;
+    background-color: #fff9ed; /* Lighter cream for top */
+    border-radius: 50%;
+    border: 1px solid #f0e6d2;
+    box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
 }
 
 /* Candles */
 .candles-container {
     position: absolute;
     top: -45px; /* Sits on top layer */
-    width: 180px;
+    width: 170px;
     display: flex;
     justify-content: center;
+    align-items: flex-end;
     flex-wrap: wrap;
     z-index: 4;
     padding: 0 10px;
 }
 
 .candle {
-    width: 6px;
-    height: 35px;
-    background: repeating-linear-gradient(45deg, #fff, #fff 2px, #3b82f6 2px, #3b82f6 4px);
-    margin: 0 3px 5px 3px;
+    width: 8px;
+    height: 40px;
+    /* Var color set by JS */
+    background: repeating-linear-gradient(45deg, var(--c-color), var(--c-color) 4px, white 4px, white 6px);
+    margin: 0 2px 2px 2px;
     position: relative;
     border-radius: 2px;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
 .flame {
-    width: 8px;
-    height: 12px;
-    background-color: #fbbf24;
+    width: 10px;
+    height: 14px;
+    background-color: #ff9f1c;
     border-radius: 50% 50% 20% 20%;
     position: absolute;
-    top: -12px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24;
+    box-shadow: 0 0 10px #ff9f1c, 0 0 20px #ffbf69;
     animation: flicker 0.1s infinite alternate;
     transition: opacity 0.3s, transform 0.3s;
 }
@@ -222,9 +267,10 @@ button:hover {
 }
 
 #message h2 {
-    font-size: 3.5rem;
+    font-size: 3rem;
     margin-bottom: 10px;
-    color: #9333ea;
+    color: #7209b7;
+    line-height: 1.2;
 }
 
 #message p {

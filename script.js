@@ -18,11 +18,18 @@ const message = document.getElementById('message');
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
 
+// Colors for candles
+const candleColors = ['#ff69b4', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
+
 // Initialize Candles
 function initCandles() {
     for (let i = 0; i < TOTAL_CANDLES; i++) {
         const candle = document.createElement('div');
         candle.className = 'candle';
+        
+        // Random color
+        const randomColor = candleColors[Math.floor(Math.random() * candleColors.length)];
+        candle.style.setProperty('--c-color', randomColor);
         
         const flame = document.createElement('div');
         flame.className = 'flame';
