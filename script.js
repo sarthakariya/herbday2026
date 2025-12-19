@@ -1,6 +1,6 @@
 // Configuration
 const TOTAL_CANDLES = 17;
-const BLOW_THRESHOLD = 30; // Lowered for better sensitivity
+const BLOW_THRESHOLD = 30; 
 
 // State
 let candlesExtinguished = 0;
@@ -14,79 +14,78 @@ let gameWon = false;
 const startBtn = document.getElementById('start-btn');
 const overlay = document.getElementById('start-overlay');
 const candlesContainer = document.getElementById('candles-container');
-const cakeContainer = document.getElementById('cake-container');
 const headerText = document.getElementById('header-text');
 const message = document.getElementById('message');
 const canvas = document.getElementById('confetti-canvas');
 const ctx = canvas.getContext('2d');
 
-// Expanded Colors
-const candleColors = [
-    '#ff69b4', '#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', 
-    '#ec4899', '#6366f1', '#14b8a6', '#84cc16', '#eab308', '#f97316'
-];
-const sprinkleColors = ['#FFC107', '#FF5722', '#E91E63', '#9C27B0', '#2196F3', '#4CAF50', '#8BC34A', '#FFFFFF'];
+// Colors
+const candleColors = ['#ff69b4', '#3b82f6', '#8b5cf6', '#ef4444', '#f59e0b'];
 
-// --- Audio Synthesizer (No external files) ---
+// --- Sound Synthesizer ---
 const playSound = {
+    setup: () => {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    },
     blow: () => {
         if(!audioContext) return;
-        // White noise for wind
-        const bufferSize = audioContext.sampleRate * 0.5; // 0.5 seconds
+        const t = audioContext.currentTime;
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        // White noiseish effect using random buffer
+        const bufferSize = audioContext.sampleRate * 0.2;
         const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
         
         const noise = audioContext.createBufferSource();
         noise.buffer = buffer;
-        const gain = audioContext.createGain();
-        
-        // Filter to make it sound more like wind/breath
         const filter = audioContext.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 400;
-
+        filter.frequency.value = 500;
+        
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(audioContext.destination);
         
-        gain.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.05, t);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
         
         noise.start();
     },
     win: () => {
         if(!audioContext) return;
-        const now = audioContext.currentTime;
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C Major Arpeggio
+        const t = audioContext.currentTime;
+        // Simple "Ta-da" major chord
+        const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51]; 
         
         notes.forEach((freq, i) => {
             const osc = audioContext.createOscillator();
             const gain = audioContext.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, now + i * 0.15);
-            gain.gain.setValueAtTime(0.1, now + i * 0.15);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.15 + 0.5);
+            osc.frequency.value = freq;
+            osc.type = 'triangle';
             
             osc.connect(gain);
             gain.connect(audioContext.destination);
-            osc.start(now + i * 0.15);
-            osc.stop(now + i * 0.15 + 0.5);
+            
+            gain.gain.setValueAtTime(0.1, t + i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + i*0.1 + 1.5);
+            
+            osc.start(t + i*0.1);
+            osc.stop(t + i*0.1 + 1.5);
         });
     }
 };
 
 // --- Initialization ---
-
 function initCandles() {
     for (let i = 0; i < TOTAL_CANDLES; i++) {
         const candle = document.createElement('div');
         candle.className = 'candle';
-        
-        const randomColor = candleColors[Math.floor(Math.random() * candleColors.length)];
-        candle.style.setProperty('--c-color', randomColor);
+        const color = candleColors[i % candleColors.length];
+        candle.style.setProperty('--c-color', color);
         
         const flame = document.createElement('div');
         flame.className = 'flame';
@@ -97,224 +96,120 @@ function initCandles() {
     }
 }
 
-function initSprinkles() {
-    const sprinkleContainers = document.querySelectorAll('.sprinkles-container');
-    sprinkleContainers.forEach(container => {
-        const count = Math.floor(Math.random() * 10) + 20; 
-        for (let i = 0; i < count; i++) {
-            const sprinkle = document.createElement('div');
-            sprinkle.className = 'sprinkle';
-            sprinkle.style.left = `${Math.random() * 90 + 5}%`;
-            sprinkle.style.top = `${Math.random() * 90 + 5}%`;
-            sprinkle.style.transform = `rotate(${Math.random() * 360}deg)`;
-            sprinkle.style.backgroundColor = sprinkleColors[Math.floor(Math.random() * sprinkleColors.length)];
-            container.appendChild(sprinkle);
-        }
-    });
-}
-
-// --- Audio Handling ---
-
+// --- Logic ---
 async function startListening() {
+    playSound.setup();
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioContext.createAnalyser();
         microphone = audioContext.createMediaStreamSource(stream);
         
-        // Use a low-pass filter to isolate breath/wind sounds (bass heavy)
-        const filter = audioContext.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 1000;
-        
-        microphone.connect(filter);
-        filter.connect(analyser);
-        
-        analyser.fftSize = 512; // Higher resolution
+        microphone.connect(analyser);
+        analyser.fftSize = 512;
         
         isListening = true;
         overlay.classList.add('hidden');
-        detectBlow();
-    } catch (err) {
-        console.error("Microphone error:", err);
-        alert("We need microphone access to blow out the candles! Please allow it and try again.");
+        loop();
+    } catch (e) {
+        alert("Microphone needed to blow candles!");
     }
 }
 
-function detectBlow() {
+function loop() {
     if (!isListening || gameWon) return;
-
+    
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     analyser.getByteFrequencyData(dataArray);
-
+    
     let sum = 0;
-    // Focus on lower frequencies for blowing sound
-    const lowFreqCount = Math.floor(bufferLength * 0.3);
-    for (let i = 0; i < lowFreqCount; i++) {
-        sum += dataArray[i];
-    }
-    const average = sum / lowFreqCount;
-
-    // Visual feedback based on volume
-    visualizeBlow(average);
-
-    if (average > BLOW_THRESHOLD) {
-        // Debounce slightly to prevent instant clear
-        if (Math.random() > 0.1) {
-            blowOutCandles();
-        }
-    }
-
-    requestAnimationFrame(detectBlow);
-}
-
-function visualizeBlow(volume) {
-    // Shake the candles and stretch flames based on volume
+    // Check low frequencies for "blowing" sound
+    for(let i=0; i<bufferLength/3; i++) sum += dataArray[i];
+    const avg = sum / (bufferLength/3);
+    
+    // Flicker effect
     const flames = document.querySelectorAll('.flame:not(.out)');
-    const scaleY = 1 + (volume / 200);
-    const shake = (Math.random() - 0.5) * (volume / 10);
-    
-    flames.forEach(flame => {
-        flame.style.transform = `translateX(-50%) scale(1, ${scaleY}) rotate(${shake}deg)`;
-        flame.style.opacity = 1 - (volume / 300); // Flicker dim
+    flames.forEach(f => {
+        const flicker = (Math.random() - 0.5) * (avg / 5);
+        f.style.transform = `translateX(-50%) scale(${1 + avg/100}) rotate(${flicker}deg)`;
     });
+
+    if (avg > BLOW_THRESHOLD) {
+        // Blow out 1-2 candles
+        if (Math.random() > 0.8 && flames.length > 0) {
+             const idx = Math.floor(Math.random() * flames.length);
+             extinguish(flames[idx]);
+        }
+    }
     
-    // Pulse the whole cake slightly
-    if (volume > 10) {
-        cakeContainer.style.transform = `translateY(${shake}px)`;
+    requestAnimationFrame(loop);
+}
+
+function extinguish(flameElement) {
+    flameElement.classList.add('out');
+    candlesExtinguished++;
+    playSound.blow();
+    
+    // Smoke Effect
+    const smoke = document.createElement('div');
+    smoke.className = 'smoke';
+    flameElement.parentElement.appendChild(smoke);
+    setTimeout(() => smoke.remove(), 1400);
+
+    if (candlesExtinguished >= TOTAL_CANDLES) {
+        win();
     }
 }
 
-function blowOutCandles() {
-    if (candlesExtinguished >= TOTAL_CANDLES) return;
-
-    const litFlames = Array.from(document.querySelectorAll('.flame:not(.out)'));
-    
-    if (litFlames.length > 0) {
-        playSound.blow();
-        
-        const amount = Math.min(Math.floor(Math.random() * 2) + 1, litFlames.length);
-        
-        for (let i = 0; i < amount; i++) {
-            const randomIndex = Math.floor(Math.random() * litFlames.length);
-            const flame = litFlames[randomIndex];
-            
-            // Extinguish
-            flame.classList.add('out');
-            
-            // Add Smoke
-            const smoke = document.createElement('div');
-            smoke.className = 'smoke';
-            flame.parentElement.appendChild(smoke);
-            
-            // Cleanup smoke
-            setTimeout(() => smoke.remove(), 1500);
-            
-            litFlames.splice(randomIndex, 1);
-            candlesExtinguished++;
-        }
-
-        if (candlesExtinguished >= TOTAL_CANDLES) {
-            celebrate();
-        }
-    }
-}
-
-function celebrate() {
+function win() {
     gameWon = true;
     isListening = false;
-    
-    // Reset visual transforms
-    cakeContainer.style.transform = '';
-    
+    headerText.classList.add('hidden');
     playSound.win();
     
-    headerText.classList.add('hidden');
     setTimeout(() => {
-        headerText.style.display = 'none';
         message.classList.remove('hidden');
-        startConfetti(true); // Continuous burst
+        headerText.style.display = 'none';
+        startConfetti();
     }, 500);
 }
 
-// --- Confetti System ---
-let particles = [];
-
-function startConfetti(continuous = false) {
+// --- Confetti ---
+const particles = [];
+function startConfetti() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Add initial blast
-    addConfettiBatch(200, canvas.width / 2, canvas.height / 2);
-    
-    if (continuous) {
-        animateConfetti();
-    }
-}
-
-function addConfettiBatch(amount, x, y) {
-    for (let i = 0; i < amount; i++) {
+    // Burst
+    for(let i=0; i<300; i++) {
         particles.push({
-            x: x,
-            y: y,
-            color: `hsl(${Math.random() * 360}, 100%, 50%)`,
-            size: Math.random() * 8 + 4,
-            speedX: (Math.random() - 0.5) * 20, // Explosive X
-            speedY: (Math.random() - 1) * 20, // Explosive Y (Upwards)
-            gravity: 0.5,
-            rotation: Math.random() * 360,
-            rotationSpeed: (Math.random() - 0.5) * 10,
-            opacity: 1
+            x: canvas.width/2, 
+            y: canvas.height/2,
+            vx: (Math.random()-0.5)*20,
+            vy: (Math.random()-1)*20,
+            color: `hsl(${Math.random()*360}, 100%, 50%)`,
+            size: Math.random()*8 + 2
         });
     }
+    animateConfetti();
 }
 
 function animateConfetti() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    for (let i = 0; i < particles.length; i++) {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    for(let i=0; i<particles.length; i++) {
         const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.5; // Gravity
         
-        ctx.save();
-        ctx.translate(p.x, p.y);
-        ctx.rotate(p.rotation * Math.PI / 180);
-        ctx.globalAlpha = p.opacity;
         ctx.fillStyle = p.color;
-        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
-        ctx.restore();
+        ctx.fillRect(p.x, p.y, p.size, p.size);
         
-        p.speedY += p.gravity; // Gravity
-        p.speedX *= 0.96; // Air resistance
-        p.x += p.speedX;
-        p.y += p.speedY;
-        p.rotation += p.rotationSpeed;
-        
-        // Remove particles that fall off screen
-        if (p.y > canvas.height + 50) {
-            particles.splice(i, 1);
-            i--;
-        }
+        if(p.y > canvas.height) particles.splice(i--, 1);
     }
-    
-    requestAnimationFrame(animateConfetti);
+    if(particles.length > 0) requestAnimationFrame(animateConfetti);
 }
 
-// Allow user to click for more confetti
-canvas.addEventListener('click', (e) => {
-    if(gameWon) {
-        addConfettiBatch(50, e.clientX, e.clientY);
-        playSound.win(); // Replay little jingle on click
-    }
-});
-
-// Event Listeners
+// Bindings
 startBtn.addEventListener('click', startListening);
-window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
-
-// Run
 initCandles();
-initSprinkles();

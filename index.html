@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday!</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Titan+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
 <script type="importmap">
 {
   "imports": {
@@ -23,53 +23,75 @@
     <!-- Start Overlay -->
     <div id="start-overlay">
         <div class="content">
-            <h1>Ready?</h1>
+            <h1>Ready for the Magic?</h1>
             <p>Allow microphone access to blow out the candles!</p>
             <p style="font-size: 0.9rem; margin-top: 10px; color: #666;">(Sound effects enabled)</p>
             <button id="start-btn">Light the Candles 🎂</button>
         </div>
     </div>
 
-    <!-- Main Celebration Container -->
-    <div class="container">
-        <!-- Text matches the reference image style -->
+    <!-- Main Scene -->
+    <div class="scene">
+        <!-- Floating Text -->
         <h1 id="header-text">Happy Birthday Babyy</h1>
-        
-        <div class="cake-container" id="cake-container">
-            <div class="cake">
-                <div class="plate"></div>
-                
-                <!-- Bottom Layer -->
-                <div class="layer layer-bottom">
-                    <div class="decoration-swirl"></div>
-                    <div class="sprinkles-container"></div>
-                </div>
-                
-                <!-- Middle Layer -->
-                <div class="layer layer-middle">
-                    <div class="decoration-swirl"></div>
-                    <div class="sprinkles-container"></div>
-                </div>
-                
-                <!-- Top Layer -->
-                <div class="layer layer-top">
-                    <div class="icing-drips"></div>
-                    <div class="decoration-swirl"></div>
-                    <div class="sprinkles-container"></div>
-                </div>
-                
-                <!-- Candles Container -->
-                <div class="candles-container" id="candles-container">
-                    <!-- Candles will be generated here by script.js -->
+
+        <!-- The Table Surface -->
+        <div class="table">
+            
+            <!-- Gifts placed on the table -->
+            <div class="gift gift-purple">
+                <div class="ribbon-x"></div>
+                <div class="ribbon-y"></div>
+                <div class="bow"></div>
+            </div>
+            <div class="gift gift-blue">
+                <div class="ribbon-x"></div>
+                <div class="ribbon-y"></div>
+                <div class="bow"></div>
+            </div>
+            <div class="cupcake">
+                <div class="cup"></div>
+                <div class="cream"></div>
+                <div class="sprinkles"></div>
+            </div>
+
+            <!-- The Cake -->
+            <div class="cake-container" id="cake-container">
+                <div class="cake">
+                    <!-- Candles sit on top -->
+                    <div class="candles-container" id="candles-container"></div>
+
+                    <!-- Top Layer -->
+                    <div class="layer layer-top">
+                        <div class="icing-top"></div> <!-- Flat top surface -->
+                        <div class="chocolate-drips"></div>
+                        <div class="chocolate-border-bottom"></div>
+                    </div>
+
+                    <!-- Middle Layer -->
+                    <div class="layer layer-middle">
+                        <div class="layer-top-surface"></div>
+                        <div class="chocolate-border-top"></div>
+                        <div class="chocolate-details"></div> <!-- Swirls -->
+                        <div class="chocolate-border-bottom"></div>
+                    </div>
+
+                    <!-- Bottom Layer -->
+                    <div class="layer layer-bottom">
+                        <div class="layer-top-surface"></div>
+                        <div class="chocolate-border-top"></div>
+                        <div class="chocolate-details"></div>
+                        <div class="chocolate-border-bottom"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
+        </div> <!-- End Table -->
+
+        <!-- Celebration Message -->
         <div id="message" class="hidden">
-            <!-- Specific text requested by user -->
             <h2>Happy Birthday My Honeyyyyyy!</h2>
             <p>May all your wishes come true! ❤️</p>
-            <p style="font-size: 1rem; color: #888; margin-top:10px;">(Click screen for more confetti!)</p>
             <button onclick="location.reload()" class="retry-btn">Play Again</button>
         </div>
     </div>
