@@ -1,0 +1,7 @@
+{
+  "name": "Birthday Wish",
+  "description": "A 3-layer birthday cake with 17 candles that you can blow out using your microphone.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
