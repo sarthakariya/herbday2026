@@ -20,6 +20,11 @@
 </head>
 <body>
 
+    <!-- Background Decorations -->
+    <div id="background-decorations">
+        <!-- Balloons will be injected here by script.js -->
+    </div>
+
     <!-- Start Overlay -->
     <div id="start-overlay">
         <div class="content">
@@ -27,6 +32,14 @@
             <p>Allow microphone access to blow out the candles!</p>
             <p style="font-size: 0.9rem; margin-top: 10px; color: #666;">(Sound effects enabled)</p>
             <button id="start-btn">Light the Candles 🎂</button>
+        </div>
+    </div>
+
+    <!-- Microphone Feedback Indicator -->
+    <div id="mic-indicator" class="hidden">
+        <div class="mic-icon">🎤</div>
+        <div class="mic-bar-container">
+            <div id="mic-level-bar"></div>
         </div>
     </div>
 
@@ -63,25 +76,31 @@
 
                     <!-- Top Layer -->
                     <div class="layer layer-top">
-                        <div class="icing-top"></div> <!-- Flat top surface -->
-                        <div class="chocolate-drips"></div>
+                        <div class="icing-top"></div> 
+                        <div class="icing-drips-container">
+                            <div class="drip drip-1"></div>
+                            <div class="drip drip-2"></div>
+                            <div class="drip drip-3"></div>
+                            <div class="drip drip-4"></div>
+                        </div>
                         <div class="chocolate-border-bottom"></div>
+                        <div class="sprinkles-layer"></div>
                     </div>
 
                     <!-- Middle Layer -->
                     <div class="layer layer-middle">
                         <div class="layer-top-surface"></div>
-                        <div class="chocolate-border-top"></div>
-                        <div class="chocolate-details"></div> <!-- Swirls -->
+                        <div class="chocolate-swirls"></div>
                         <div class="chocolate-border-bottom"></div>
+                        <div class="sprinkles-layer"></div>
                     </div>
 
                     <!-- Bottom Layer -->
                     <div class="layer layer-bottom">
                         <div class="layer-top-surface"></div>
-                        <div class="chocolate-border-top"></div>
-                        <div class="chocolate-details"></div>
+                        <div class="chocolate-swirls"></div>
                         <div class="chocolate-border-bottom"></div>
+                        <div class="sprinkles-layer"></div>
                     </div>
                 </div>
             </div>
