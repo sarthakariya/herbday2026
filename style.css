@@ -1,255 +1,96 @@
-/* --- Core --- */
-* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
-    height: 100vh; width: 100vw; overflow: hidden;
-    background: #1a0b1c;
-    font-family: 'Montserrat', sans-serif;
-    display: flex; justify-content: center; align-items: center;
+  margin: 0;
+  overflow: hidden;
+  background-color: #1a0b1c;
+  font-family: 'Montserrat', sans-serif;
 }
 
-/* --- Lighting --- */
+/* Volumetric Lighting */
 .spotlight {
-    position: fixed; top: -50%; left: 50%; transform: translateX(-50%);
-    width: 100vw; height: 150vh;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.15) 0%, transparent 60%);
-    pointer-events: none; z-index: 5;
-    mix-blend-mode: overlay;
+  position: fixed;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120vw;
+  height: 150vh;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
 }
 
-/* --- Curtains --- */
-.curtain-container {
-    position: fixed; inset: 0; pointer-events: none; z-index: 800;
-    display: flex;
-}
-.curtain-panel {
-    flex: 1; height: 100%;
-    background: linear-gradient(90deg, #5a0000 0%, #800000 20%, #400000 50%, #800000 80%, #300000 100%);
-    box-shadow: 10px 0 30px rgba(0,0,0,0.8);
-    transform-origin: top center;
-    animation: lashOpen 2.5s cubic-bezier(0.22, 1, 0.36, 1) forwards 0.5s;
-}
-.curtain-panel.left { transform-origin: top left; }
-.curtain-panel.right { transform-origin: top right; }
-
-@keyframes lashOpen {
-    0% { transform: scaleX(1); }
-    40% { transform: scaleX(0.2) skewX(5deg); }
-    100% { transform: scaleX(0); }
+/* 2.5D Cake Construction */
+.cake-structure {
+  perspective: 1000px;
+  transform-style: preserve-3d;
 }
 
-/* --- Stage & Table --- */
-.stage-container {
-    position: relative; width: 100%; height: 100%;
-    display: flex; justify-content: center; align-items: center;
-}
-.table {
-    position: absolute; bottom: -20vh;
-    width: 150vw; height: 60vh;
-    background: #3e2723;
-    border-radius: 50% 50% 0 0;
-    box-shadow: inset 0 20px 50px rgba(0,0,0,0.6);
-    z-index: 1;
+.plate-shadow {
+  background: radial-gradient(closest-side, rgba(0,0,0,0.6), transparent);
+  filter: blur(20px);
 }
 
-/* --- 2.5D CAKE ARCHITECTURE (Stacked Ovals) --- */
-.cake-container {
-    position: relative;
-    width: 400px; height: 350px;
-    z-index: 10;
-    margin-bottom: 50px;
-    /* Initial Animation */
-    animation: dropIn 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards 2s;
+.cake-surface {
+  background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
+  background-size: 8px 8px;
 }
 
-@keyframes dropIn {
-    0% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
-    100% { transform: translateY(0) scale(1); opacity: 1; }
+/* Flame Animation */
+@keyframes flicker-real {
+  0% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 0.9; }
+  25% { transform: translateX(-50%) scale(1.1, 0.9) rotate(-2deg); opacity: 1; }
+  50% { transform: translateX(-50%) scale(0.95, 1.05) rotate(2deg); opacity: 0.8; }
+  75% { transform: translateX(-50%) scale(1.05, 0.95) rotate(-1deg); opacity: 1; }
+  100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 0.9; }
 }
 
-/* The Plate */
-.plate-layer {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 500px; height: 160px; /* Oval shape */
-    z-index: 1;
-}
-.plate-base {
-    position: absolute; bottom: 0; width: 100%; height: 100%;
-    border-radius: 50%;
-    background: #e0f7fa;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4), inset 0 -10px 20px rgba(0,172,193,0.3);
-    border: 5px solid #fff;
-}
-.plate-inner {
-    position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #fff, #b2ebf2);
-    box-shadow: inset 0 5px 15px rgba(0,0,0,0.1);
+.animate-flicker-real {
+  animation: flicker-real 0.15s infinite alternate ease-in-out;
 }
 
-/* Generic Layer Styles */
-.cake-layer {
-    position: absolute; left: 50%; transform: translateX(-50%);
+/* Curtain Physics */
+@keyframes curtain-open-left {
+  0% { transform: scaleX(1); }
+  30% { transform: scaleX(0.8) skewX(10deg); }
+  60% { transform: scaleX(0.4) skewX(-5deg); }
+  100% { transform: scaleX(0); }
 }
-.side {
-    position: absolute; bottom: 0;
-    width: 100%; height: 100%; /* Height handled by parent height */
-    background: inherit;
-    /* This creates the bottom curve of the cylinder */
-    border-radius: 0 0 50% 50% / 0 0 20% 20%; 
-}
-.lid {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%; /* Height is oval height */
-    border-radius: 50%;
-    background: inherit;
-    transform: translateY(-50%); /* Center on top edge */
+@keyframes curtain-open-right {
+  0% { transform: scaleX(1); }
+  30% { transform: scaleX(0.8) skewX(-10deg); }
+  60% { transform: scaleX(0.4) skewX(5deg); }
+  100% { transform: scaleX(0); }
 }
 
-/* Bottom Layer (Chocolate) */
-.bottom-layer {
-    bottom: 50px; width: 380px; height: 100px; /* Height of the side wall */
-    z-index: 5;
+.animate-curtain-left {
+  transform-origin: top left;
+  animation: curtain-open-left 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
-.bottom-layer .side {
-    height: 100px;
-    background: linear-gradient(to right, #3e2723, #5d4037, #3e2723);
-    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.5);
-    border-radius: 0 0 50% 50% / 0 0 30px 30px; /* Perspective curve */
-}
-.bottom-layer .lid {
-    height: 80px; /* Perspective depth */
-    background: #5d4037;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+.animate-curtain-right {
+  transform-origin: top right;
+  animation: curtain-open-right 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
-/* Top Layer (Cream) */
-.top-layer {
-    bottom: 150px; width: 380px; height: 120px;
-    z-index: 10;
+/* Balloon Float */
+@keyframes float-balloon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
 }
-.top-layer .side {
-    height: 120px;
-    background: linear-gradient(to right, #fff9c4, #fff176, #fff9c4);
-    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
-    border-radius: 0 0 50% 50% / 0 0 30px 30px;
+.animate-float-balloon {
+  animation: float-balloon 6s ease-in-out infinite;
 }
-.top-layer .lid {
-    height: 80px; /* Matches bottom layer perspective */
-    background: #fffdeb;
-    box-shadow: inset 0 0 30px rgba(255,215,0,0.2);
-    /* Anchor for decorations */
-    display: flex; justify-content: center; align-items: center;
-}
-
-/* Details */
-.cake-text {
-    position: absolute; top: 40%; width: 100%; text-align: center;
-    font-family: 'Great Vibes', cursive; font-size: 3rem; color: #d81b60;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
-    transform: translateY(-50%);
-}
-.drip {
-    position: absolute; top: 0; width: 20px; background: #fffdeb;
-    border-radius: 0 0 10px 10px;
-    box-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-}
-.frosting-rim {
-    position: absolute; inset: 0; border-radius: 50%;
-    border: 5px solid rgba(255,255,255,0.6);
-    filter: blur(1px);
-}
-
-/* --- Decorations (Candles & Treats) --- */
-/* Important: This container must match top .lid position/size perfectly */
-#candle-container {
-    position: absolute; 
-    bottom: 270px; /* top-layer bottom (150) + top-layer height (120) */
-    left: 50%; transform: translateX(-50%);
-    width: 380px; height: 80px; /* Matches lid dimensions */
-    z-index: 20;
-    pointer-events: none;
-}
-
-.candle {
-    position: absolute;
-    width: 8px; height: 60px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.8), var(--c-color), rgba(0,0,0,0.1));
-    border-radius: 3px;
-    bottom: 50%; /* Sit on the middle line of the oval (approx) */
-    transform-origin: bottom center;
-    box-shadow: 2px 5px 5px rgba(0,0,0,0.2);
-}
-
-.flame {
-    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
-    width: 10px; height: 20px;
-    background: radial-gradient(ellipse at bottom, #fff, #ffeb3b, #ff9800);
-    border-radius: 50% 50% 20% 20%;
-    animation: flicker 0.15s infinite alternate;
-    box-shadow: 0 0 15px #ffeb3b, 0 0 30px #ff9800;
-}
-.flame.out { display: none; }
-@keyframes flicker { 0%{opacity:1; transform:translateX(-50%) scale(1);} 100%{opacity:0.9; transform:translateX(-50%) scale(0.9, 1.1);} }
 
 /* Sparkles */
+@keyframes sparkle-twinkle {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+}
 .sparkle {
-    position: absolute;
-    width: 4px; height: 4px; background: white;
-    border-radius: 50%;
-    box-shadow: 0 0 10px white, 0 0 20px gold;
-    animation: twinkle 1.5s infinite ease-in-out;
+  animation: sparkle-twinkle 1.5s ease-in-out infinite;
 }
-@keyframes twinkle { 0%,100%{opacity:0; transform:scale(0);} 50%{opacity:1; transform:scale(1) rotate(45deg);} }
 
-/* --- UI --- */
-#ui-layer { position: fixed; top: 0; width: 100%; z-index: 900; }
-#unlock-audio-layer {
-    position: absolute; top: 20vh; width: 100%; text-align: center;
-    cursor: pointer;
-}
-.tap-hint-box {
-    display: inline-block; padding: 15px 30px;
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-    color: white; border-radius: 50px; border: 1px solid rgba(255,255,255,0.3);
-    animation: pulseHint 2s infinite;
-}
-@keyframes pulseHint { 0%,100%{transform:scale(1);} 50%{transform:scale(1.05);} }
-#mic-indicator {
-    position: absolute; top: 20px; right: 20px;
-    background: rgba(0,0,0,0.5); padding: 8px 12px; border-radius: 20px;
-    display: flex; align-items: center; gap: 8px;
-    color: white;
-}
-#mic-indicator.hidden { opacity: 0; }
-.bar-container { width: 60px; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; }
-#mic-level-bar { width: 0%; height: 100%; background: #00e676; transition: width 0.1s; }
-
-/* Bunting */
-#bunting-container { position: absolute; top: 0; width: 100%; height: 100px; z-index: 2; pointer-events: none; }
-
-/* Win Card */
-#win-message {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.85);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 2000; animation: fadeIn 0.5s;
-}
-#win-message.hidden { display: none; }
-.card {
-    background: white; padding: 40px; border-radius: 20px; text-align: center;
-    box-shadow: 0 0 50px #d81b60; border: 4px solid #f8bbd0;
-}
-.card h2 { font-family: 'Great Vibes'; font-size: 4rem; color: #c2185b; }
-.card button {
-    margin-top: 20px; padding: 10px 30px; background: #c2185b; color: white;
-    border: none; border-radius: 50px; font-size: 1.2rem; cursor: pointer;
-}
-.balloons { position: absolute; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
-.balloon { 
-    position: absolute; bottom: -100px; width: 60px; height: 80px; border-radius: 50%; 
-    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.2); opacity: 0.9;
-    animation: floatUp 10s infinite linear;
-}
-.balloon.red { background: #e53935; left: 10%; animation-delay: 0s; }
-.balloon.gold { background: #fdd835; left: 50%; animation-delay: 2s; }
-.balloon.blue { background: #1e88e5; left: 85%; animation-delay: 1s; }
-@keyframes floatUp { 0%{transform:translateY(0);} 100%{transform:translateY(-120vh);} }

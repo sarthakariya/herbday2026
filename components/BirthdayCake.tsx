@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 
 interface BirthdayCakeProps {
@@ -5,77 +6,111 @@ interface BirthdayCakeProps {
 }
 
 export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished }) => {
-  // Generate 17 candles
-  const candles = useMemo(() => Array.from({ length: 17 }), []);
+  // 17 candles
+  const candles = useMemo(() => Array.from({ length: 17 }).map((_, i) => ({
+    id: i,
+    color: ['#FF69B4', '#FFB6C1', '#FFD700', '#87CEEB'][i % 4], // Varied colors
+    height: 40 + Math.random() * 10, // Slight height variation
+    x: Math.cos((i / 17) * Math.PI * 2) * 45, // Circular distribution X
+    y: Math.sin((i / 17) * Math.PI * 2) * 20  // Circular distribution Y (squashed for 3D)
+  })), []);
 
   return (
-    <div className="relative mt-20 transform scale-75 md:scale-100 transition-transform duration-500">
-      {/* Cake Container */}
-      <div className="flex flex-col items-center relative z-10">
-        
-        {/* Candles Container - Sitting on top */}
-        <div className="absolute -top-12 flex justify-center items-end space-x-1 md:space-x-2 w-full px-4 flex-wrap z-20">
-          {candles.map((_, index) => (
-            <div key={index} className="relative group mx-0.5 md:mx-1 mb-1">
-              {/* Flame */}
-              <div 
-                className={`absolute left-1/2 -translate-x-1/2 bottom-full mb-1 w-3 h-4 md:w-4 md:h-6 bg-yellow-400 rounded-full blur-[1px] animate-flicker origin-bottom transition-opacity duration-300 ${
-                  index < candlesExtinguished ? 'opacity-0 scale-0' : 'opacity-100'
-                }`}
-                style={{
-                  animationDelay: `${Math.random()}s`,
-                  boxShadow: '0 0 10px #ffb700, 0 0 20px #ffb700'
-                }}
-              >
-                 {/* Inner blue part of flame */}
-                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-2 bg-blue-300 rounded-full opacity-50"></div>
-              </div>
-              
-              {/* Wick */}
-              <div className="w-[2px] h-2 bg-gray-800 mx-auto opacity-80"></div>
-              
-              {/* Candle Body */}
-              <div 
-                className="w-3 h-10 md:w-4 md:h-12 rounded-sm"
-                style={{
-                   backgroundColor: index % 2 === 0 ? '#FF69B4' : '#FFB6C1', // HotPink vs LightPink
-                   boxShadow: 'inset -2px 0 2px rgba(0,0,0,0.1)'
-                }}
-              >
-                  {/* Stripes */}
-                  <div className="w-full h-2 bg-white/30 rotate-45 mt-2"></div>
-                  <div className="w-full h-2 bg-white/30 rotate-45 mt-4"></div>
-              </div>
+    <div className="relative mt-32 w-[350px] h-[300px] md:w-[450px] md:h-[350px] mx-auto select-none">
+      
+      {/* --- PLATE --- */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[120%] h-[30%] bg-gradient-to-b from-gray-100 to-gray-300 rounded-[100%] shadow-2xl border-4 border-white flex items-center justify-center z-0">
+         <div className="w-[90%] h-[90%] bg-gradient-to-tr from-gray-50 to-gray-200 rounded-[100%] shadow-inner"></div>
+      </div>
+
+      {/* --- KNIFE (SVG) --- */}
+      <div className="absolute bottom-2 -right-12 w-32 md:w-48 z-10 opacity-90 drop-shadow-lg">
+        <svg viewBox="0 0 100 20" className="transform rotate-12">
+          <path d="M0,8 Q50,0 90,8 L100,10 L90,12 Q50,20 0,12 Z" fill="#C0C0C0" stroke="#999" strokeWidth="1" />
+          <rect x="-10" y="6" width="30" height="8" rx="2" fill="#5D4037" />
+          <circle cx="-5" cy="10" r="1" fill="#8D6E63"/>
+          <circle cx="5" cy="10" r="1" fill="#8D6E63"/>
+        </svg>
+      </div>
+
+      {/* --- BOTTOM CAKE LAYER (Chocolate) --- */}
+      <div className="absolute bottom-[20px] left-1/2 -translate-x-1/2 w-full h-[120px] z-10">
+        {/* Side */}
+        <div className="absolute bottom-0 w-full h-full bg-gradient-to-r from-[#3E2723] via-[#5D4037] to-[#3E2723] rounded-b-[50%] shadow-lg"></div>
+        {/* Top (Lid) */}
+        <div className="absolute top-0 w-full h-[60px] bg-[#4E342E] rounded-[50%] -translate-y-1/2 shadow-inner"></div>
+      </div>
+
+      {/* --- TOP CAKE LAYER (Cream/Yellow) --- */}
+      <div className="absolute bottom-[90px] left-1/2 -translate-x-1/2 w-[85%] h-[110px] z-20">
+        {/* Side */}
+        <div className="absolute bottom-0 w-full h-full bg-gradient-to-r from-[#FFF9C4] via-[#FFF176] to-[#FFF9C4] rounded-b-[50%] shadow-md flex items-center justify-center overflow-hidden">
+            {/* Texture */}
+            <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"></div>
+            {/* Text - Curved illusion via translateY */}
+            <div className="font-['Great_Vibes'] text-4xl md:text-5xl text-[#D81B60] mt-8 transform rotate-x-12 z-20 drop-shadow-sm tracking-wide">
+                My Babyyy
             </div>
-          ))}
-        </div>
-
-        {/* Top Layer */}
-        <div className="w-48 h-24 md:w-64 md:h-32 bg-pink-300 rounded-t-full rounded-b-lg relative shadow-lg z-10 border-b-4 border-pink-400">
-            {/* Frosting Drips */}
-            <div className="absolute top-0 w-full h-full overflow-hidden rounded-t-full">
-                <div className="flex">
-                    {Array.from({length: 8}).map((_, i) => (
-                        <div key={i} className="w-8 h-8 bg-white rounded-full -mt-4 shadow-sm"></div>
-                    ))}
-                </div>
-            </div>
-        </div>
-
-        {/* Middle Layer */}
-        <div className="w-64 h-24 md:w-80 md:h-32 bg-pink-400 rounded-lg relative -mt-4 shadow-md z-0 border-b-4 border-pink-500">
-             <div className="absolute top-0 w-full flex justify-around">
-                 <div className="w-full h-4 bg-white/20 rounded-full mt-4"></div>
-             </div>
-        </div>
-
-        {/* Bottom Layer */}
-        <div className="w-80 h-28 md:w-96 md:h-36 bg-pink-500 rounded-b-3xl rounded-t-lg relative -mt-4 shadow-xl -z-10 flex items-center justify-center">
-             <div className="w-full h-full absolute top-0 left-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20"></div>
+            {/* Gold Badge Decoration */}
+            <div className="absolute bottom-2 w-12 h-16 bg-gradient-to-tr from-yellow-400 to-yellow-200 rounded-full shadow-lg border border-yellow-600"></div>
         </div>
         
-        {/* Plate */}
-        <div className="w-[22rem] h-4 md:w-[28rem] md:h-6 bg-gray-200 rounded-[100%] absolute bottom-[-10px] -z-20 shadow-2xl"></div>
+        {/* Top (Lid) - The Surface */}
+        <div className="absolute top-0 w-full h-[60px] bg-[#FFFDE7] rounded-[50%] -translate-y-1/2 shadow-inner border-[1px] border-[#FFF59D] flex items-center justify-center">
+            
+            {/* Frosting Rim */}
+            <div className="absolute inset-[-2px] rounded-[50%] border-4 border-white opacity-60 blur-[1px]"></div>
+
+            {/* --- CANDLES --- */}
+            <div className="absolute w-full h-full">
+              {candles.map((c, i) => {
+                 // Adjust z-index based on Y position (pseudo-3D sorting)
+                 // Higher Y (closer to bottom of oval) should be higher Z
+                 const zIndex = Math.floor(c.y + 50);
+                 const isExtinguished = i < candlesExtinguished;
+
+                 return (
+                  <div 
+                    key={i}
+                    className="absolute"
+                    style={{
+                        left: `calc(50% + ${c.x}%)`,
+                        top: `calc(50% + ${c.y}%)`,
+                        zIndex: zIndex,
+                        transform: 'translate(-50%, -100%)' // Anchor at bottom
+                    }}
+                  >
+                     {/* Flame */}
+                     <div 
+                        className={`absolute bottom-full left-1/2 -translate-x-1/2 w-3 h-6 rounded-[50%_50%_20%_20%] 
+                                   bg-gradient-to-t from-orange-500 via-yellow-300 to-white 
+                                   animate-flicker-real shadow-[0_0_15px_rgba(255,200,0,0.8)]
+                                   transition-all duration-300 ${isExtinguished ? 'opacity-0 scale-0' : 'opacity-100'}`}
+                     ></div>
+
+                     {/* Wick */}
+                     <div className="absolute bottom-[calc(100%-2px)] left-1/2 -translate-x-1/2 w-[2px] h-2 bg-black opacity-50"></div>
+
+                     {/* Body */}
+                     <div 
+                        className="w-2 md:w-3 shadow-sm rounded-sm"
+                        style={{
+                            height: `${c.height}px`,
+                            background: `linear-gradient(90deg, rgba(255,255,255,0.4), ${c.color}, rgba(0,0,0,0.2))`
+                        }}
+                     ></div>
+                  </div>
+                 );
+              })}
+            </div>
+
+            {/* Sparkles Overlay */}
+            <div className="absolute inset-0 overflow-visible pointer-events-none">
+                {/* Static sparkles for magic effect */}
+                <div className="absolute top-0 left-10 w-2 h-2 bg-white rounded-full shadow-[0_0_10px_white] animate-pulse"></div>
+                <div className="absolute bottom-2 right-10 w-1 h-1 bg-yellow-200 rounded-full shadow-[0_0_10px_gold] animate-pulse delay-75"></div>
+            </div>
+        </div>
       </div>
     </div>
   );

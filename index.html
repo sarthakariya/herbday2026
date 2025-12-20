@@ -4,112 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday!</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@700&display=swap" rel="stylesheet">
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react-confetti": "https://esm.sh/react-confetti@^6.4.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
+    <link rel="stylesheet" href="style.css">
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@^19.2.3",
+        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+        "react/": "https://esm.sh/react@^19.2.3/",
+        "react-confetti": "https://esm.sh/react-confetti@^6.4.0",
+        "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+      }
+    }
+    </script>
 </head>
 <body>
-
-    <!-- Volumetric Light Beam -->
-    <div class="spotlight"></div>
-
-    <!-- Realistic Curtains -->
-    <div class="curtain-container">
-        <div class="curtain-panel left"></div>
-        <div class="curtain-panel right"></div>
-    </div>
-
-    <!-- Background Bunting -->
-    <div id="bunting-container"></div>
-
-    <!-- UI Layer -->
-    <div id="ui-layer">
-        <div id="mic-indicator" class="hidden">
-            <span class="icon">🎙️</span>
-            <div class="bar-container"><div id="mic-level-bar"></div></div>
-        </div>
-        <div id="unlock-audio-layer">
-            <div class="tap-hint-box">
-                <span class="sparkle-icon">✨</span>
-                Tap anywhere to start
-                <span class="sparkle-icon">✨</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Stage -->
-    <div class="stage-container">
-        
-        <!-- Table -->
-        <div class="table"></div>
-
-        <!-- New 2.5D Cake Structure -->
-        <div class="cake-container" id="cake-container">
-            
-            <!-- Plate -->
-            <div class="plate-layer">
-                <div class="plate-base"></div>
-                <div class="plate-inner"></div>
-            </div>
-
-            <!-- Bottom Cake Layer (Chocolate) -->
-            <div class="cake-layer bottom-layer">
-                <div class="side"></div>
-                <div class="lid"></div>
-            </div>
-
-            <!-- Top Cake Layer (Cream) -->
-            <div class="cake-layer top-layer">
-                <div class="side">
-                    <div class="drip-container">
-                        <div class="drip" style="left: 10%; height: 40px;"></div>
-                        <div class="drip" style="left: 30%; height: 60px;"></div>
-                        <div class="drip" style="left: 50%; height: 35px;"></div>
-                        <div class="drip" style="left: 70%; height: 50px;"></div>
-                        <div class="drip" style="left: 90%; height: 45px;"></div>
-                    </div>
-                    <div class="cake-text">My Babyyy</div>
-                </div>
-                <div class="lid">
-                    <div class="frosting-rim"></div>
-                </div>
-            </div>
-
-            <!-- Decorations anchored to top lid -->
-            <div id="candle-container"></div>
-            
-            <!-- Sparkles Container -->
-            <div id="sparkle-container"></div>
-        </div>
-
-        <!-- Balloons -->
-        <div class="balloons">
-            <div class="balloon red"></div>
-            <div class="balloon gold"></div>
-            <div class="balloon blue"></div>
-        </div>
-
-        <!-- Win Card -->
-        <div id="win-message" class="hidden">
-            <div class="card">
-                <h2>Happy Birthday!</h2>
-                <p>May all your wishes come true ❤️</p>
-                <button onclick="location.reload()">Replay</button>
-            </div>
-        </div>
-    </div>
-
-    <canvas id="confetti-canvas"></canvas>
-    <script src="script.js"></script>
+    <div id="root"></div>
 </body>
 </html>
