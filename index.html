@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy 17th Birthday My Love</title>
+    <title>Happy Birthday My Love</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS (for layout) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -24,21 +24,18 @@
 }
 </script>
 </head>
-<body class="overflow-hidden bg-[#fff0f5] font-['Montserrat'] selection:bg-rose-400 selection:text-white">
+<body class="overflow-hidden bg-[#1a0509] font-['Montserrat'] selection:bg-rose-500 selection:text-white">
 
-    <!-- DECORATIVE BACKGROUND -->
+    <!-- DECORATIONS -->
     <div id="balloon-container" class="absolute inset-0 pointer-events-none z-0"></div>
-    <div id="streamer-container" class="absolute inset-0 pointer-events-none z-0"></div>
-    
-    <!-- LIGHTING -->
     <div class="spotlight"></div>
     <div id="particles-container" class="absolute inset-0 pointer-events-none z-0 overflow-hidden"></div>
 
-    <!-- START OVERLAY -->
+    <!-- START SCREEN -->
     <div id="start-overlay" class="fixed inset-0 z-[100] bg-[#fff0f5] flex flex-col items-center justify-center transition-opacity duration-1000">
         <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hearts.png')] opacity-20"></div>
         
-        <button id="start-btn" class="group relative z-10 bg-gradient-to-r from-rose-400 to-pink-500 text-white px-16 py-6 rounded-full text-3xl font-serif font-bold shadow-[0_10px_40px_rgba(233,30,99,0.3)] border-4 border-white hover:scale-105 transition-transform flex items-center gap-4 cursor-pointer">
+        <button id="start-btn" class="group relative z-10 bg-gradient-to-r from-rose-500 to-pink-600 text-white px-16 py-6 rounded-full text-3xl font-serif font-bold shadow-[0_10px_40px_rgba(233,30,99,0.4)] border-4 border-white hover:scale-105 transition-transform flex items-center gap-4 cursor-pointer">
             <span class="animate-pulse">❤️</span>
             <span>Open Surprise</span>
         </button>
@@ -46,88 +43,103 @@
     </div>
 
     <!-- CURTAINS -->
-    <div id="curtain-left" class="curtain fixed top-0 left-0 w-[50%] h-full z-[90] bg-gradient-to-r from-rose-800 to-rose-600 shadow-[10px_0_60px_rgba(0,0,0,0.5)] transition-transform duration-[3000ms] ease-in-out origin-top">
-        <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.2)_50px,transparent_60px)] opacity-30"></div>
+    <div id="curtain-left" class="curtain fixed top-0 left-0 w-[51%] h-full z-[90] bg-gradient-to-r from-[#880e4f] to-[#b71c1c] shadow-[10px_0_60px_rgba(0,0,0,0.8)] origin-top-left flex flex-col justify-end">
+        <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.3)_50px,transparent_80px)] opacity-50"></div>
+        <!-- Gold Tassel -->
+        <div class="absolute bottom-[30%] right-[-15px] w-8 h-32 bg-yellow-600 rounded-full blur-[10px] opacity-0 transition-opacity duration-1000 tassel-glow"></div>
     </div>
-    <div id="curtain-right" class="curtain fixed top-0 right-0 w-[50%] h-full z-[90] bg-gradient-to-l from-rose-800 to-rose-600 shadow-[-10px_0_60px_rgba(0,0,0,0.5)] transition-transform duration-[3000ms] ease-in-out origin-top">
-        <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.2)_50px,transparent_60px)] opacity-30"></div>
+    <div id="curtain-right" class="curtain fixed top-0 right-0 w-[51%] h-full z-[90] bg-gradient-to-l from-[#880e4f] to-[#b71c1c] shadow-[-10px_0_60px_rgba(0,0,0,0.8)] origin-top-right">
+        <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.3)_50px,transparent_80px)] opacity-50"></div>
     </div>
 
-    <!-- MAIN APP STAGE -->
+    <!-- MAIN STAGE -->
     <div id="app-stage" class="relative w-full h-screen flex flex-col items-center justify-center opacity-0 transition-opacity duration-1000 z-40">
         
         <!-- HEADER -->
-        <div class="absolute top-[8%] z-30 text-center w-full pointer-events-none select-none">
-            <h1 id="header-text" class="font-['Great_Vibes'] text-6xl md:text-9xl text-rose-500 drop-shadow-sm animate-pulse">
+        <div class="absolute top-[5%] z-30 text-center w-full pointer-events-none select-none">
+            <h1 id="header-text" class="font-['Great_Vibes'] text-6xl md:text-[8rem] leading-tight text-[#ffc107] drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-pulse">
                 Make a Wish...
             </h1>
         </div>
 
         <!-- MIC METER -->
-        <div class="absolute top-6 right-6 z-50 flex items-center gap-3 bg-white/80 backdrop-blur-md px-5 py-2 rounded-full border border-rose-200 shadow-xl">
+        <div class="absolute top-6 right-6 z-50 flex items-center gap-3 bg-black/50 backdrop-blur-md px-5 py-2 rounded-full border border-white/10 shadow-xl">
             <div id="mic-icon" class="text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
             </div>
-            <div class="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
                 <div id="mic-level" class="h-full bg-gradient-to-r from-green-400 to-rose-500 w-0 transition-all duration-75"></div>
             </div>
         </div>
 
-        <!-- 3D CAKE SCENE -->
-        <div class="cake-container relative z-20 transform scale-90 md:scale-100 transition-transform duration-1000">
+        <!-- 3D SCENE -->
+        <div class="scene-container relative z-20 transform scale-90 md:scale-100 transition-transform duration-1000 mt-32">
             
-            <!-- Plate -->
-            <div class="plate">
-                <div class="plate-inner"></div>
-                <div class="plate-reflection"></div>
+            <!-- TABLE SURFACE -->
+            <div class="wood-table-surface">
+                 <div class="table-reflection"></div>
+                 
+                 <!-- 3D Gifts -->
+                 <div class="gift-box" style="--x: -220px; --z: 100px; --rot: 25deg; --color: #9c27b0;">
+                    <div class="gift-lid"></div>
+                    <div class="gift-ribbon"></div>
+                 </div>
+                 <div class="gift-box" style="--x: 200px; --z: 60px; --rot: -15deg; --color: #e91e63;">
+                    <div class="gift-lid"></div>
+                    <div class="gift-ribbon"></div>
+                 </div>
+                 <div class="gift-box" style="--x: 180px; --z: 180px; --rot: 45deg; --color: #03a9f4; transform: scale(0.8)">
+                    <div class="gift-lid"></div>
+                    <div class="gift-ribbon"></div>
+                 </div>
             </div>
 
-            <!-- Cake Base (Chocolate) -->
-            <div class="cake-base">
-                <div class="cake-base-side cake-texture">
-                     <div class="sprinkles"></div>
+            <!-- CAKE ASSEMBLY -->
+            <div class="cake-assembly">
+                
+                <!-- Plate -->
+                <div class="plate">
+                    <div class="plate-inner"></div>
                 </div>
-                <div class="cake-base-top"></div>
-            </div>
 
-            <!-- Cake Top (Pink/Vanilla) -->
-            <div class="cake-top">
-                <div class="cake-top-side cake-texture">
-                     <div class="frosting-swirl"></div>
+                <!-- Cake Base -->
+                <div class="cake-layer base-layer">
+                    <div class="layer-side"></div>
+                    <div class="layer-top"></div>
                 </div>
-                <div class="cake-top-surface">
-                     <!-- Piped Edge -->
-                     <div class="piped-edge"></div>
-                     
-                     <!-- Panda Decoration -->
-                     <div class="panda-decoration">
-                         <div class="ear left"></div>
-                         <div class="ear right"></div>
-                         <div class="panda-face">
-                             <div class="eyes">
-                                 <div class="eye"><div class="pupil"></div></div>
-                                 <div class="eye"><div class="pupil"></div></div>
+
+                <!-- Cake Top -->
+                <div class="cake-layer top-layer">
+                    <div class="layer-side">
+                        <div class="frosting-drip"></div>
+                    </div>
+                    <div class="layer-top">
+                         <!-- Decorations -->
+                         <div class="panda-container">
+                             <div class="panda-body">
+                                 <div class="ear left"></div>
+                                 <div class="ear right"></div>
+                                 <div class="face">
+                                     <div class="eye left"><div class="pupil"></div></div>
+                                     <div class="eye right"><div class="pupil"></div></div>
+                                     <div class="nose"></div>
+                                     <div class="mouth"></div>
+                                     <div class="cheek left"></div>
+                                     <div class="cheek right"></div>
+                                 </div>
                              </div>
-                             <div class="nose"></div>
-                             <div class="mouth"></div>
-                             <div class="blush left"></div>
-                             <div class="blush right"></div>
                          </div>
-                     </div>
 
-                     <!-- Text -->
-                     <div class="cake-text" data-text="My Babyyy">My Babyyy</div>
-                     
-                     <!-- Dynamic Content Targets -->
-                     <div id="cherries-container"></div>
-                     <div id="candles-container"></div>
+                         <!-- Text -->
+                         <div class="cake-writing">My Babyyy</div>
+                         
+                         <!-- Script populates these -->
+                         <div id="cherries-container"></div>
+                         <div id="candles-container"></div>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- TABLE -->
-        <div class="wood-table">
-            <div class="table-reflection"></div>
         </div>
 
         <!-- REPLAY BUTTON -->
@@ -139,7 +151,6 @@
 
     </div>
 
-    <!-- Main Logic -->
     <script src="script.js"></script>
 </body>
 </html>
