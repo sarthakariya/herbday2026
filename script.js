@@ -86,7 +86,7 @@ function createCherries() {
         el.style.background = 'radial-gradient(circle at 30% 30%, #ff1744, #b71c1c)';
         el.style.borderRadius = '50%';
         el.style.position = 'absolute';
-        el.style.transform = 'translate(-50%, -50%) rotateX(-20deg)';
+        // Note: transform is handled in CSS class .cherry to override specifics
         el.style.zIndex = Math.floor(y + 50);
         
         cherriesContainer.appendChild(el);

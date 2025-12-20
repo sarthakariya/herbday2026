@@ -69,131 +69,86 @@ body {
 .choc.square { border-radius: 2px; }
 
 /* --- TABLE SURFACE --- */
+/* This is the flat surface. The parent scene rotates 75deg so this looks like a floor/tabletop */
 .wood-table-surface {
     position: absolute;
     top: 50%; left: 50%;
-    /* FINITE SIZE - Makes it look like a table, not the floor */
-    width: 1000px; 
-    height: 1000px;
+    width: 1200px; 
+    height: 1200px;
     border-radius: 50%;
     background: #3e2723 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-    /* Pushed back in Z space to sit 'on the floor' */
-    transform: translate(-50%, -50%) rotateX(0deg) translateZ(-150px); 
+    /* Slightly lower Z so items sit on top */
+    transform: translate(-50%, -50%) translateZ(-50px); 
     box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.9);
-    border: 10px solid #281a16; /* Table Rim */
-}
-
-/* Floor shadow under the table */
-.wood-table-surface::after {
-    content: '';
-    position: absolute;
-    top: 50%; left: 50%;
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) translateZ(-50px) scale(1.1);
-    background: radial-gradient(rgba(0,0,0,0.8), transparent 70%);
-    z-index: -1;
+    border: 20px solid #281a16;
 }
 
 .table-reflection {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 400px; height: 400px;
-    background: radial-gradient(rgba(255,255,255,0.08), transparent 70%);
-    filter: blur(40px);
+    width: 600px; height: 600px;
+    background: radial-gradient(rgba(255,255,255,0.05), transparent 70%);
+    filter: blur(50px);
 }
 
-/* --- BOOK/CARD STYLES --- */
-.book-container {
-    perspective: 1500px;
-    z-index: 200;
-}
-.book {
-    width: 100%; height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 1s;
-}
-
-/* The Front Cover + Back of Cover Group */
-.cover {
-    position: absolute; width: 100%; height: 100%;
-    transform-origin: left;
-    transform-style: preserve-3d;
-    transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1);
-    z-index: 10;
-}
-
-/* Faces of the Cover */
-.front, .back {
-    position: absolute; width: 100%; height: 100%;
-    backface-visibility: hidden;
-    border-radius: 4px 12px 12px 4px;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-}
-
-.front {
-    /* Solid background color first to prevent transparency */
-    background-color: #c2185b;
-    background: linear-gradient(135deg, #e91e63, #ad1457);
-    /* Leather texture approx */
-    background-image: url('https://www.transparenttextures.com/patterns/leather.png'), linear-gradient(135deg, #e91e63, #ad1457);
-    background-blend-mode: overlay;
-    display: flex; justify-content: center; align-items: center;
-}
-
-.back {
-    background: #fff;
-    transform: rotateY(180deg); /* Faces inwards initially */
-}
-
-/* The Static Right Page (Inside) */
-.page-right {
-    position: absolute; width: 100%; height: 100%;
-    background: #fff;
-    border-radius: 4px 12px 12px 4px;
-    z-index: 5;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-    /* Looks like pages */
-    border-left: 1px solid #ddd;
-    background: radial-gradient(circle at left, #f5f5f5, #fff);
-}
-
-/* Open State */
-.book.open .cover {
-    transform: rotateY(-180deg);
-}
-
-/* --- CAKE & GIFTS 3D (Refined from previous) --- */
+/* --- CAKE ASSEMBLY --- */
 .cake-assembly {
     position: relative; width: 320px; height: 320px; transform-style: preserve-3d;
     margin: 0 auto;
 }
 .plate {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(-10px);
-    width: 130%; height: 130%; border-radius: 50%; background: #fff;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.1); border: 1px solid #ddd;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(-5px);
+    width: 140%; height: 140%; border-radius: 50%; background: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.1); border: 2px solid #eee;
 }
-.plate-inner { position: absolute; inset: 12px; border-radius: 50%; border: 4px solid #FFC107; box-shadow: 0 0 15px rgba(255,193,7,0.4); }
+.plate-inner { position: absolute; inset: 15px; border-radius: 50%; border: 4px solid #FFC107; box-shadow: 0 0 15px rgba(255,193,7,0.4); }
 
+/* --- CAKE LAYERS (THICKNESS) --- */
 .cake-layer { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); transform-style: preserve-3d; }
 .layer-side, .layer-top { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; }
 
-.base-layer { width: 100%; height: 100%; transform: translate(-50%, -50%) translateZ(0px); }
-.base-layer .layer-side { background: linear-gradient(to right, #3E2723, #4E342E 25%, #5D4037 50%, #4E342E 75%, #3E2723); transform: translateZ(-45px); }
+/* Base Layer (Chocolate) - 70px thick */
+.base-layer { width: 100%; height: 100%; transform: translate(-50%, -50%) translateZ(20px); }
+.base-layer .layer-side {
+    background: linear-gradient(to right, #3E2723, #4E342E 25%, #5D4037 50%, #4E342E 75%, #3E2723);
+    /* Thickness via translateZ gap */
+    transform: translateZ(-70px); 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+}
+/* Side visual hack to connect top and bottom (CSS 3D limitation handled by thick shadow or duplicating layers, 
+   but for simple cylinder we use the wall pushed back. Here we use a pseudo element for "wall" thickness appearance) */
+.base-layer::before {
+    content:''; position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 50%;
+    background: #3E2723; transform: translateZ(-35px) scale(0.98); 
+    box-shadow: 0 0 20px #3E2723;
+}
 .base-layer .layer-top { background: radial-gradient(circle, #5D4037 20%, #3E2723 100%); transform: translateZ(0px); border: 1px solid #3E2723; }
 
-.top-layer { width: 75%; height: 75%; transform: translate(-50%, -50%) translateZ(45px); }
-.top-layer .layer-side { background: linear-gradient(to right, #ec407a, #f48fb1 25%, #f8bbd0 50%, #f48fb1 75%, #ec407a); transform: translateZ(-40px); }
+/* Top Layer (Pink) - 60px thick */
+.top-layer { width: 75%; height: 75%; transform: translate(-50%, -50%) translateZ(90px); } /* Base(20) + 70 = 90 start */
+.top-layer .layer-side {
+    background: linear-gradient(to right, #ec407a, #f48fb1 25%, #f8bbd0 50%, #f48fb1 75%, #ec407a);
+    transform: translateZ(-60px);
+}
+.top-layer::before {
+    content:''; position: absolute; top:0; left:0; width:100%; height:100%; border-radius: 50%;
+    background: #ec407a; transform: translateZ(-30px) scale(0.98);
+}
 .top-layer .layer-top { background: radial-gradient(circle at 30% 30%, #fff3e0 0%, #ffcc80 100%); transform: translateZ(0px); box-shadow: inset 0 0 20px rgba(0,0,0,0.1); border: 1px solid #ffb74d; }
+
 .frosting-drip { position: absolute; top: -5px; left: 0; width: 100%; height: 25px; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.4), rgba(255,255,255,0.4) 10px, transparent 10px, transparent 20px); opacity: 0.6; border-radius: 50%; filter: blur(1px); }
 
+/* --- BILLBOARDS (Facing Camera) --- */
+/* Since Scene is rotated X 75deg, we rotate these -75deg to stand up straight */
+
 .cake-writing {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotateX(-20deg) translateY(30px) translateZ(5px);
-    font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #c2185b; text-shadow: 1px 1px 0 rgba(255,255,255,0.6); white-space: nowrap; pointer-events: none;
+    position: absolute; top: 50%; left: 50%; 
+    transform: translate(-50%, -50%) rotateX(-75deg) translateY(-60px) translateZ(30px);
+    font-family: 'Great Vibes', cursive; font-size: 3.5rem; color: #c2185b; 
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.6); white-space: nowrap; pointer-events: none;
 }
 
 /* Panda */
-.panda-container { position: absolute; top: 25%; left: 50%; transform: translate(-50%, -50%) rotateX(-20deg); z-index: 50; }
+.panda-container { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%) rotateX(-75deg) translateY(-20px); z-index: 50; }
 .panda-body { width: 60px; height: 50px; background: #fff; border-radius: 45% 45% 40% 40%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; border: 1px solid #f5f5f5; animation: bob 3s ease-in-out infinite; }
 .ear { position: absolute; top: -10px; width: 20px; height: 20px; background: #222; border-radius: 50%; z-index: -1; }
 .ear.left { left: 0; } .ear.right { right: 0; }
@@ -207,7 +162,7 @@ body {
 .cheek.left { left: 2px; } .cheek.right { right: 2px; }
 
 /* Candles */
-.candle-wrapper { position: absolute; transform-origin: bottom center; transform: translate(-50%, 0) rotateX(-20deg); z-index: 100; }
+.candle-wrapper { position: absolute; transform-origin: bottom center; transform: translate(-50%, 0) rotateX(-75deg); z-index: 100; }
 .candle-stick { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 8px; border-radius: 2px; box-shadow: 1px 1px 4px rgba(0,0,0,0.3); }
 .candle-stick::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, rgba(255,255,255,0.4) 0, rgba(255,255,255,0.4) 3px, transparent 3px, transparent 6px); }
 .wick { position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); width: 2px; height: 7px; background: #333; transition: background-color 0.2s; }
@@ -216,6 +171,11 @@ body {
 .flame-plane:nth-child(2) { transform: rotateY(90deg); }
 .flame-3d.out { transform: translateX(-50%) scale(0.1); opacity: 0; }
 .candle-wrapper.extinguished .wick { animation: wick-glow 1.5s ease-out forwards; }
+
+/* Cherries - Tilted to face camera slightly */
+.cherry {
+    transform: translate(-50%, -50%) rotateX(-60deg) !important;
+}
 
 /* Smoke */
 .smoke { position: absolute; bottom: calc(100% + 15px); left: 50%; width: 8px; height: 8px; background: rgba(255,255,255,0.5); border-radius: 50%; filter: blur(3px); animation: smoke-rise 2s ease-out forwards; }
@@ -227,6 +187,16 @@ body {
 .gift-box::after { content: ''; position: absolute; top: 100%; left: 0; width: 100%; height: 40px; background-color: var(--color); filter: brightness(0.7); transform-origin: top; transform: rotateX(-90deg); }
 .gift-lid { position: absolute; inset: -3px; background: rgba(255,255,255,0.15); transform: translateZ(42px); border: 1px solid rgba(255,255,255,0.3); }
 .gift-ribbon { position: absolute; inset: 0; background: linear-gradient(90deg, transparent 40%, #FFD700 40%, #FFD700 60%, transparent 60%), linear-gradient(0deg, transparent 40%, #FFD700 40%, #FFD700 60%, transparent 60%); transform: translateZ(43px); }
+
+/* Card Modal Styles */
+.book-container { perspective: 1500px; z-index: 200; }
+.book { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 1s; }
+.cover { position: absolute; width: 100%; height: 100%; transform-origin: left; transform-style: preserve-3d; transition: transform 1.5s cubic-bezier(0.25, 1, 0.5, 1); z-index: 10; }
+.front, .back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 4px 12px 12px 4px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
+.front { background-color: #c2185b; background: linear-gradient(135deg, #e91e63, #ad1457); background-image: url('https://www.transparenttextures.com/patterns/leather.png'), linear-gradient(135deg, #e91e63, #ad1457); background-blend-mode: overlay; display: flex; justify-content: center; align-items: center; }
+.back { background: #fff; transform: rotateY(180deg); }
+.page-right { position: absolute; width: 100%; height: 100%; background: #fff; border-radius: 4px 12px 12px 4px; z-index: 5; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); border-left: 1px solid #ddd; background: radial-gradient(circle at left, #f5f5f5, #fff); }
+.book.open .cover { transform: rotateY(-180deg); }
 
 /* Animation Utils */
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
