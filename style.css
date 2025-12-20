@@ -1,98 +1,133 @@
-/* --- GLOBAL --- */
-.spotlight {
-    position: fixed;
-    top: -50%; left: 50%;
-    transform: translateX(-50%);
-    width: 120vw; height: 150vh;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 5;
+/* --- SETTINGS --- */
+:root {
+    --curtain-time: 3s; /* EXACTLY 3 SECONDS AS REQUESTED */
 }
 
+body {
+    background-color: #000;
+    margin: 0;
+    font-family: 'Playfair Display', serif;
+}
+
+/* --- CURTAINS --- */
+.curtain-texture {
+    /* Creates a velvet fold effect using repeating gradients */
+    background-image: repeating-linear-gradient(
+        90deg,
+        #4a0404 0px,
+        #4a0404 40px,
+        #720e0e 80px,
+        #4a0404 120px
+    );
+}
+
+#curtain-left {
+    transition: transform var(--curtain-time) cubic-bezier(0.65, 0.05, 0.36, 1);
+    transform: translateX(0);
+}
+#curtain-right {
+    transition: transform var(--curtain-time) cubic-bezier(0.65, 0.05, 0.36, 1);
+    transform: translateX(0);
+}
+
+.curtains-open #curtain-left {
+    transform: translateX(-100%);
+}
+.curtains-open #curtain-right {
+    transform: translateX(100%);
+}
+
+/* --- PERSPECTIVE --- */
 .perspective-1000 {
     perspective: 1000px;
 }
 
-/* --- CAKE LAYERS --- */
-.cake-layer-bottom {
+/* --- FLOATING HEARTS (Background) --- */
+.heart-bg {
     position: absolute;
-    bottom: 20px; left: 50%;
-    transform: translateX(-50%);
-    width: 100%; height: 110px;
-    border-radius: 50%;
-    background: #3E2723; /* Chocolate */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-.cake-layer-bottom::before {
-    content: ''; position: absolute; top: 0; left: 0;
-    width: 100%; height: 50px;
-    border-radius: 50%;
-    background: #4E342E; /* Lighter Choc top */
-    transform: translateY(-50%);
-    border-bottom: 4px solid #3E2723;
-}
-.cake-layer-bottom::after {
-    content: ''; position: absolute; bottom: 0; left: 0;
-    width: 100%; height: 50%;
-    border-radius: 0 0 50% 50%;
-    background: linear-gradient(to right, #281815, #3E2723, #281815);
+    color: #ef9a9a;
+    opacity: 0;
+    animation: floatHeart 10s linear infinite;
+    text-shadow: 0 0 10px rgba(239, 154, 154, 0.5);
 }
 
-.cake-layer-top {
-    position: absolute;
-    bottom: 90px; left: 50%;
-    transform: translateX(-50%);
-    width: 85%; height: 120px;
-    border-radius: 50%;
-    background: #FFF9C4; /* Cream */
-    z-index: 10;
-}
-.cake-layer-top::before {
-    content: ''; position: absolute; top: 0; left: 0;
-    width: 100%; height: 60px;
-    border-radius: 50%;
-    background: #FFFDE7;
-    transform: translateY(-50%);
-    border: 1px solid #FFF59D;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
-}
-.cake-layer-top::after {
-    content: ''; position: absolute; bottom: 0; left: 0;
-    width: 100%; height: 50%;
-    border-radius: 0 0 50% 50%;
-    background: linear-gradient(to right, #FFF9C4, #FFF176, #FFF9C4);
+@keyframes floatHeart {
+    0% { transform: translateY(110vh) scale(0.5) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.4; }
+    80% { opacity: 0.4; }
+    100% { transform: translateY(-10vh) scale(1.2) rotate(20deg); opacity: 0; }
 }
 
-/* --- CANDLE --- */
-.candle {
+/* --- REALISTIC CANDLE --- */
+.candle-container {
     position: absolute;
-    width: 10px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.8), var(--c-color), rgba(0,0,0,0.1));
+    width: 20px; /* Interaction area */
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: bottom center;
+    z-index: 50;
+    /* Debug: background: rgba(255,0,0,0.2); */
+}
+
+.wax {
+    width: 6px;
+    height: 40px;
+    background: linear-gradient(90deg, #e0e0e0, #ffffff, #bdbdbd);
     border-radius: 2px;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    transform-origin: bottom center;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    position: relative;
+    top: 5px;
 }
-.wick {
+/* Stripes on candle */
+.wax::after {
+    content: '';
     position: absolute;
-    bottom: 100%; left: 50%;
-    transform: translateX(-50%);
-    width: 2px; height: 6px;
-    background: #333;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(233, 30, 99, 0.2) 5px, rgba(233, 30, 99, 0.2) 10px);
+    border-radius: 2px;
 }
 
-/* --- FLAME --- */
+.wick {
+    width: 2px;
+    height: 6px;
+    background: #1a1a1a;
+    position: relative;
+    top: 5px;
+}
+
+/* --- REALISTIC FLAME --- */
 .flame {
-    position: absolute;
-    bottom: calc(100% + 4px); left: 50%;
-    transform: translateX(-50%);
-    width: 14px; height: 30px;
-    background: radial-gradient(ellipse at bottom, #ffeb3b 0%, #ff9800 60%, transparent 100%);
+    width: 14px;
+    height: 35px;
     border-radius: 50% 50% 20% 20%;
-    filter: drop-shadow(0 0 10px #ffc107);
+    background: radial-gradient(white, yellow, orange, rgba(255, 69, 0, 0.8));
+    box-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.6),
+        0 0 20px rgba(255, 69, 0, 0.4),
+        0 0 40px rgba(255, 69, 0, 0.2);
+    position: absolute;
+    top: -25px; /* Position above wick */
+    left: 50%;
+    transform: translateX(-50%);
+    transform-origin: 50% 90%;
     animation: flicker 0.1s infinite alternate;
-    transform-origin: bottom center;
     opacity: 0.9;
-    transition: all 0.2s;
+    filter: blur(0.5px);
+    transition: opacity 0.3s, transform 0.1s;
+}
+
+.flame::after {
+    /* Blue core */
+    content: '';
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 6px; height: 8px;
+    background: rgba(0, 0, 255, 0.3);
+    border-radius: 50%;
+    filter: blur(2px);
 }
 
 .flame.out {
@@ -101,48 +136,33 @@
 }
 
 @keyframes flicker {
-    0% { transform: translateX(-50%) scale(1) rotate(-2deg); opacity: 0.9; }
-    100% { transform: translateX(-50%) scale(1.1) rotate(2deg); opacity: 1; }
+    0% { transform: translateX(-50%) scale(1.0) skewX(-2deg); opacity: 0.95; height: 35px; }
+    25% { transform: translateX(-50%) scale(1.02) skewX(2deg); opacity: 0.9; height: 36px; }
+    50% { transform: translateX(-50%) scale(0.98) skewX(-1deg); opacity: 1.0; height: 34px; }
+    75% { transform: translateX(-50%) scale(1.01) skewX(1deg); opacity: 0.9; height: 35px; }
+    100% { transform: translateX(-50%) scale(1.0) skewX(-2deg); opacity: 0.95; height: 36px; }
 }
 
-/* --- SMOKE --- */
-.smoke {
+/* --- SMOKE EFFECT --- */
+.smoke-particle {
     position: absolute;
-    bottom: calc(100% + 5px); left: 50%;
-    width: 6px; height: 6px;
-    background: rgba(200,200,200,0.6);
+    top: 0; left: 50%;
+    background: rgba(255, 255, 255, 0.6);
     border-radius: 50%;
-    animation: rise 1s forwards;
     pointer-events: none;
-}
-@keyframes rise {
-    to { transform: translate(-20px, -50px) scale(4); opacity: 0; }
-}
-
-/* --- BALLOONS --- */
-.balloon {
-    position: absolute;
-    bottom: -150px;
-    width: 60px; height: 80px;
-    border-radius: 50%;
-    opacity: 0.8;
-    animation: floatUp 10s linear infinite;
-}
-.balloon::after {
-    content: ''; position: absolute;
-    bottom: -20px; left: 50%;
-    width: 2px; height: 60px;
-    background: rgba(255,255,255,0.5);
-}
-@keyframes floatUp {
-    0% { transform: translateY(0) rotate(0deg); }
-    100% { transform: translateY(-120vh) rotate(20deg); }
+    animation: smokeRise 1.5s forwards ease-out;
+    filter: blur(3px);
 }
 
-/* --- CURTAINS --- */
-.curtain-open-left {
-    transform: translateX(-100%);
+@keyframes smokeRise {
+    0% { width: 4px; height: 4px; opacity: 0.6; transform: translate(-50%, 0); }
+    100% { width: 30px; height: 30px; opacity: 0; transform: translate(-50%, -80px); }
 }
-.curtain-open-right {
-    transform: translateX(100%);
+
+/* --- UTILS --- */
+.fade-in-up {
+    animation: fadeInUp 1.5s forwards;
+}
+@keyframes fadeInUp {
+    to { opacity: 1; transform: translateY(0); }
 }

@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday!</title>
+    <title>Happy Birthday My Love</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (Utility classes) -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Confetti Library (Global) -->
+    <!-- Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Custom Styles -->
     <link rel="stylesheet" href="style.css">
@@ -24,64 +24,92 @@
 }
 </script>
 </head>
-<body class="bg-[#1a0b1c] overflow-hidden text-white font-['Montserrat']">
+<body class="overflow-hidden">
 
-    <!-- Start Overlay -->
-    <div id="start-overlay" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm transition-opacity duration-700">
-        <button id="start-btn" class="group relative px-10 py-5 bg-gradient-to-r from-pink-600 to-purple-600 rounded-full text-2xl font-bold shadow-[0_0_40px_rgba(236,72,153,0.6)] border-4 border-pink-400 hover:scale-110 transition-transform">
-            <span class="flex items-center gap-3">
-                <!-- Play Icon -->
-                <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+    <!-- Start Overlay (Dark and Romantic) -->
+    <div id="start-overlay" class="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-[#2c0b0e] transition-opacity duration-1000">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/heart-necklace.png')] opacity-10"></div>
+        
+        <button id="start-btn" class="group relative px-12 py-6 bg-gradient-to-r from-[#d32f2f] to-[#b71c1c] rounded-full text-3xl font-serif text-white shadow-[0_0_50px_rgba(211,47,47,0.6)] border-2 border-[#ffcdd2] hover:scale-105 transition-transform duration-300">
+            <span class="flex items-center gap-4 relative z-10 drop-shadow-md">
+                <svg class="w-8 h-8 fill-current animate-pulse" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
                 Open Surprise
             </span>
+            <div class="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
         </button>
-        <p class="mt-6 text-pink-200 text-lg animate-pulse">Please enable Microphone & Sound 🔊</p>
+        <p class="mt-8 text-[#ffcdd2] text-xl font-light tracking-widest uppercase animate-pulse">Enable Sound & Microphone</p>
     </div>
 
-    <!-- Main App Container (Hidden initially) -->
-    <div id="app" class="relative w-full h-screen flex flex-col items-center justify-center opacity-0 transition-opacity duration-1000">
+    <!-- Main App -->
+    <div id="app" class="relative w-full h-screen flex flex-col items-center justify-center opacity-0 transition-opacity duration-1000 bg-[#fdfbf7]">
         
+        <!-- Background Atmosphere -->
+        <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_#000000_120%)] opacity-60 pointer-events-none"></div>
+        <div id="hearts-container" class="absolute inset-0 pointer-events-none z-0 overflow-hidden"></div>
+
         <!-- Header -->
-        <div class="absolute top-10 z-30 text-center w-full">
-            <h1 id="header-text" class="font-['Great_Vibes'] text-6xl md:text-8xl text-[#FFD700] drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-pulse">
-                Make a Wish!
+        <div class="absolute top-[10%] z-30 text-center w-full pointer-events-none">
+            <h1 id="header-text" class="font-['Great_Vibes'] text-7xl md:text-9xl text-[#d32f2f] drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)] opacity-0 transform translate-y-10 transition-all duration-1000 ease-out">
+                Make a Wish...
             </h1>
         </div>
 
-        <!-- Mic Meter -->
-        <div id="mic-meter" class="absolute top-5 right-5 z-40 flex items-center gap-3 bg-black/50 px-4 py-2 rounded-full border border-white/10 opacity-0 transition-opacity duration-500">
-            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-            <div class="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div id="mic-level" class="h-full bg-gradient-to-r from-green-400 to-red-500 w-0 transition-all duration-75"></div>
+        <!-- Mic Meter (Elegant) -->
+        <div id="mic-meter" class="absolute top-6 right-6 z-40 flex items-center gap-3 bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-red-200/30 opacity-0 transition-opacity duration-1000 shadow-lg">
+            <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+            <div class="w-32 h-1.5 bg-red-900/20 rounded-full overflow-hidden">
+                <div id="mic-level" class="h-full bg-gradient-to-r from-red-300 to-red-600 w-0 transition-all duration-100 ease-out"></div>
             </div>
         </div>
 
-        <!-- Decorations -->
-        <div class="spotlight"></div>
-        <div id="balloon-container" class="absolute inset-0 pointer-events-none z-0"></div>
-
-        <!-- Cake Container -->
-        <div class="relative z-20 mt-20 transform scale-75 md:scale-100 perspective-1000">
-            <div id="cake" class="relative w-[350px] h-[300px]">
-                <!-- Generated by JS/CSS -->
+        <!-- THE CAKE CONTAINER -->
+        <div class="relative z-20 mt-20 perspective-1000">
+            <!-- Realistic Cake Image -->
+            <div id="cake-container" class="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px]">
+                <!-- Plate & Cake Image -->
+                <img 
+                    src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1089&auto=format&fit=crop" 
+                    alt="Birthday Cake" 
+                    class="w-full h-full object-contain drop-shadow-2xl filter contrast-110 saturate-110"
+                    style="mask-image: linear-gradient(to bottom, black 80%, transparent 100%);"
+                >
+                
+                <!-- Candles Container (Overlaid on image) -->
+                <div id="candles-layer" class="absolute inset-0 pointer-events-none">
+                    <!-- Candles injected by JS -->
+                </div>
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="absolute bottom-[-20vh] w-[150vw] h-[60vh] bg-[#3E2723] rounded-[50%] z-10 transform rotate-x-12 border-t-8 border-[#2d1b18] shadow-2xl"></div>
+        <!-- Table Surface -->
+        <div class="absolute bottom-0 w-full h-[35vh] bg-[#2d1b18] z-10 shadow-[0_-10px_50px_rgba(0,0,0,0.5)]">
+            <!-- Wood Texture overlay -->
+            <div class="absolute inset-0 opacity-40 bg-[url('https://www.transparenttextures.com/patterns/wood-pattern.png')]"></div>
+        </div>
 
-        <!-- Success Button -->
-        <div id="replay-container" class="absolute bottom-20 z-50 hidden">
-            <button onclick="location.reload()" class="bg-white text-pink-600 px-8 py-3 rounded-full font-bold shadow-xl hover:bg-gray-100 hover:-translate-y-1 transition-all">
-                Blow Again
+        <!-- Controls -->
+        <div id="replay-container" class="absolute bottom-10 z-50 hidden opacity-0 transition-opacity duration-1000">
+            <button onclick="location.reload()" class="bg-white text-red-600 px-10 py-4 rounded-full text-xl font-serif font-bold shadow-2xl border border-red-100 hover:bg-red-50 hover:scale-105 transition-all">
+                Light them again ❤️
             </button>
         </div>
 
     </div>
 
-    <!-- Curtains -->
-    <div id="curtain-left" class="fixed top-0 left-0 w-1/2 h-full bg-gradient-to-r from-red-900 to-red-700 z-[45] transition-transform duration-[2000ms] ease-out shadow-2xl"></div>
-    <div id="curtain-right" class="fixed top-0 right-0 w-1/2 h-full bg-gradient-to-l from-red-900 to-red-700 z-[45] transition-transform duration-[2000ms] ease-out shadow-2xl"></div>
+    <!-- THE CURTAINS -->
+    <!-- Left Curtain -->
+    <div id="curtain-left" class="fixed top-0 left-0 w-[51%] h-full z-[50] flex transition-transform ease-in-out shadow-[10px_0_50px_rgba(0,0,0,0.8)]">
+        <div class="w-full h-full bg-[#5a0909] relative overflow-hidden curtain-texture">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+        </div>
+    </div>
+    
+    <!-- Right Curtain -->
+    <div id="curtain-right" class="fixed top-0 right-0 w-[51%] h-full z-[50] flex transition-transform ease-in-out shadow-[-10px_0_50px_rgba(0,0,0,0.8)]">
+        <div class="w-full h-full bg-[#5a0909] relative overflow-hidden curtain-texture">
+             <div class="absolute inset-0 bg-gradient-to-l from-black/40 to-transparent"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
