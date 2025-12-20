@@ -16,9 +16,7 @@ let winTriggered = false;
 /* --- DOM ELEMENTS --- */
 const startBtn = document.getElementById('start-btn');
 const startOverlay = document.getElementById('start-overlay');
-const appStage = document.getElementById('app-stage');
-const curtainLeft = document.getElementById('curtain-left');
-const curtainRight = document.getElementById('curtain-right');
+const room = document.getElementById('room');
 const micLevelEl = document.getElementById('mic-level');
 const micIconEl = document.getElementById('mic-icon');
 const headerText = document.getElementById('header-text');
@@ -30,8 +28,7 @@ const balloonContainer = document.getElementById('balloon-container');
 const openCardBtn = document.getElementById('open-card-btn');
 const replayBtn = document.getElementById('replay-btn');
 const cardModal = document.getElementById('card-modal');
-const cardWrapper = document.getElementById('card-wrapper');
-const cardInner = document.querySelector('.card-inner');
+const bookElement = document.getElementById('book-element');
 const closeCardBtn = document.getElementById('close-card-btn');
 
 /* --- INITIALIZATION --- */
@@ -46,14 +43,16 @@ function init() {
     // Card Event Listeners
     openCardBtn.addEventListener('click', showCard);
     closeCardBtn.addEventListener('click', hideCard);
-    cardWrapper.addEventListener('click', () => {
-        cardInner.classList.toggle('open');
+    
+    // Book Hinge Logic
+    bookElement.addEventListener('click', () => {
+        bookElement.classList.toggle('open');
     });
 }
 
 function createDecorations() {
     const colors = ['#f48fb1', '#ce93d8', '#fff59d', '#80cbc4'];
-    for(let i=0; i<10; i++) {
+    for(let i=0; i<15; i++) {
         const b = document.createElement('div');
         b.className = 'balloon';
         b.style.left = (Math.random() * 95) + '%';
@@ -62,10 +61,9 @@ function createDecorations() {
         b.style.background = `radial-gradient(circle at 30% 30%, #fff, ${colors[i%4]})`;
         b.style.borderRadius = '50% 50% 50% 50% / 40% 40% 60% 60%';
         b.style.opacity = '0.6';
-        b.style.animation = `float-up ${15 + Math.random() * 10}s linear infinite`;
+        b.style.animation = `float-up ${20 + Math.random() * 10}s linear infinite`;
         b.style.animationDelay = `${Math.random() * 10}s`;
         
-        // Inline styles for float animation (defined in CSS previously but ensuring here)
         b.style.transition = 'transform 10s linear';
         
         balloonContainer.appendChild(b);
@@ -143,9 +141,6 @@ async function startApp() {
     startOverlay.style.opacity = '0';
     setTimeout(() => startOverlay.style.display = 'none', 1000);
 
-    curtainLeft.classList.add('curtain-open-left');
-    curtainRight.classList.add('curtain-open-right');
-
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -161,17 +156,17 @@ async function startApp() {
         analyser.fftSize = 256;
 
         setTimeout(() => {
-            appStage.style.opacity = '1';
+            room.style.opacity = '1';
             isListening = true;
             micIconEl.classList.add('text-green-400');
             micIconEl.classList.remove('text-gray-400');
             detectBlow();
-        }, 1200);
+        }, 800);
 
     } catch (err) {
         console.warn(err);
         setTimeout(() => {
-            appStage.style.opacity = '1';
+            room.style.opacity = '1';
             alert("Mic access denied or error. Tap the candles to blow them out!");
         }, 1000);
     }
@@ -348,6 +343,6 @@ function hideCard() {
     setTimeout(() => {
         cardModal.classList.add('hidden');
         // Reset card flip
-        cardInner.classList.remove('open');
+        bookElement.classList.remove('open');
     }, 500);
 }
