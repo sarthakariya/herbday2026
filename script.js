@@ -1,13 +1,15 @@
 /* --- CONFIG --- */
-const TOTAL_CANDLES = 17; 
-const BLOW_THRESHOLD = 35; // Lower = easier to blow
-const BLOW_MAX = 80;       // Max intensity for bending flames
+const TOTAL_CANDLES = 17;
+const BLOW_THRESHOLD = 20; // Reduced from 35 to 20 for easier blowing
+const SENSITIVITY_SCALE = 2.5; // Multiplier for visual meter
 
-let audioCtx, analyser, microphone, dataArray;
+let audioCtx;
+let analyser;
+let microphone;
+let dataArray;
 let isListening = false;
 let candlesExtinguished = 0;
 let candleElements = [];
-let sparklesInterval;
 
 /* --- DOM --- */
 const startBtn = document.getElementById('start-btn');
@@ -15,109 +17,95 @@ const startOverlay = document.getElementById('start-overlay');
 const app = document.getElementById('app');
 const micMeter = document.getElementById('mic-meter');
 const micLevelEl = document.getElementById('mic-level');
-const candlesLayer = document.getElementById('candles-layer');
-const sparklesLayer = document.getElementById('sparkles-container');
+const candlesContainer = document.getElementById('candles-container');
 const headerText = document.getElementById('header-text');
 const replayContainer = document.getElementById('replay-container');
-const balloonsContainer = document.getElementById('balloons-container');
 const heartsContainer = document.getElementById('hearts-container');
 
 /* --- INIT --- */
 init();
 
 function init() {
-    createHeartsBg();
+    createHearts();
     placeCandles();
-    startSparkles(); // Magic effect immediately
-    startBtn.addEventListener('click', startGame);
+    startBtn.addEventListener('click', startApp);
 }
 
-function createHeartsBg() {
-    for(let i=0; i<40; i++) {
+function createHearts() {
+    for(let i=0; i<30; i++) {
         const h = document.createElement('div');
-        h.className = 'heart-float';
-        h.innerHTML = Math.random() > 0.5 ? '❤' : '♥';
+        h.className = 'heart';
+        h.innerHTML = '❤';
         h.style.left = Math.random() * 100 + '%';
         h.style.animationDelay = Math.random() * 5 + 's';
-        h.style.fontSize = (Math.random() * 20 + 10) + 'px';
+        h.style.fontSize = (10 + Math.random()*20) + 'px';
         heartsContainer.appendChild(h);
     }
 }
 
-function startSparkles() {
-    sparklesInterval = setInterval(() => {
-        const s = document.createElement('div');
-        s.className = 'sparkle';
-        // Random position over the cake area
-        s.style.left = (20 + Math.random() * 60) + '%';
-        s.style.top = (20 + Math.random() * 60) + '%';
-        sparklesLayer.appendChild(s);
-        setTimeout(() => s.remove(), 2000);
-    }, 300);
-}
-
 function placeCandles() {
-    // Elliptical placement to match the 3D perspective of the cake top
+    // We place candles in an oval shape on top of the cake
+    // The cake top center is roughly 50% X, 50% Y within the .cake-stage perspective
+    // But since the container is absolute, we calculate relative percentages.
     const centerX = 50; 
-    const centerY = 35;
-    const rx = 22; // Radius X
-    const ry = 14; // Radius Y (compressed)
-    
+    const centerY = 50; 
+    const radiusX = 35;
+    const radiusY = 15; // Flattened for perspective
+
     for(let i=0; i<TOTAL_CANDLES; i++) {
         const angle = (i / TOTAL_CANDLES) * Math.PI * 2;
-        const x = centerX + Math.cos(angle) * rx;
-        const y = centerY + Math.sin(angle) * ry;
+        const x = centerX + Math.cos(angle) * radiusX;
+        const y = centerY + Math.sin(angle) * radiusY;
 
-        const container = document.createElement('div');
-        container.className = 'candle-container';
-        container.style.left = x + '%';
-        container.style.top = y + '%';
-        container.style.zIndex = Math.floor(y); // Depth sorting
+        const candle = document.createElement('div');
+        candle.className = 'candle';
+        candle.style.left = x + '%';
+        candle.style.top = y + '%';
+        candle.style.height = (30 + Math.random() * 15) + 'px';
+        candle.style.zIndex = Math.floor(y + 100);
+        candle.style.setProperty('--c-color', ['#ff8a80', '#82b1ff', '#b9f6ca', '#ffff8d'][i%4]);
 
         const flame = document.createElement('div');
         flame.className = 'flame';
         
         const wick = document.createElement('div');
-        wick.className = 'wick';
-        
-        const wax = document.createElement('div');
-        wax.className = 'wax';
-        wax.style.setProperty('--candle-color', ['#ff80ab', '#80d8ff', '#ffff8d'][i%3]);
+        wick.className = 'absolute bottom-[100%] left-1/2 -translate-x-1/2 w-[2px] h-[5px] bg-[#333]';
 
-        container.appendChild(wax);
-        container.appendChild(wick);
-        container.appendChild(flame);
-        candlesLayer.appendChild(container);
+        candle.appendChild(wick);
+        candle.appendChild(flame);
+        candlesContainer.appendChild(candle);
 
-        candleElements.push({ el: container, flame: flame, active: true, x: x });
+        candleElements.push({ el: candle, flame: flame, active: true, x: x });
     }
 }
 
-/* --- GAME START --- */
-async function startGame() {
+/* --- START --- */
+async function startApp() {
+    // 1. Fade Overlay
     startOverlay.style.opacity = '0';
     setTimeout(() => startOverlay.remove(), 1000);
 
-    // Curtain Reveal
+    // 2. Open Curtains
     document.body.classList.add('curtains-open');
 
-    // Audio Setup
+    // 3. Audio & Reveal
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
         microphone = audioCtx.createMediaStreamSource(stream);
-        
+
+        // Low pass filter to catch "blowing" (wind noise is low freq)
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 400; // Isolate blow noise
+        filter.frequency.value = 600;
         
         microphone.connect(filter);
         filter.connect(analyser);
         analyser.fftSize = 256;
         dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-        // Show UI after curtains
+        // Wait for curtains (3s) then show UI
         setTimeout(() => {
             app.style.opacity = '1';
             micMeter.style.opacity = '1';
@@ -125,58 +113,55 @@ async function startGame() {
             headerText.style.transform = 'translateY(0)';
             isListening = true;
             loop();
-        }, 3000); // 3s curtain wait
-    } catch(e) {
-        alert("Please allow the microphone to blow out the candles!");
+        }, 3000);
+
+    } catch(err) {
+        alert("Microphone access is needed to blow out the candles!");
     }
 }
 
-/* --- MAIN LOOP --- */
+/* --- LOOP --- */
 function loop() {
     if(!isListening) return;
     requestAnimationFrame(loop);
 
     analyser.getByteFrequencyData(dataArray);
-    
-    // Compute volume
+
+    // Calculate Average Volume
     let sum = 0;
-    const bins = dataArray.length;
-    for(let i=0; i<bins; i++) sum += dataArray[i];
-    const avg = sum / bins;
-    
-    // UI Meter
-    micLevelEl.style.width = Math.min(100, (avg / 60) * 100) + '%';
+    const len = dataArray.length;
+    for(let i=0; i<len; i++) sum += dataArray[i];
+    const avg = sum / len;
 
-    // Physics
-    const intensity = Math.min(1, (avg - BLOW_THRESHOLD) / (BLOW_MAX - BLOW_THRESHOLD));
-    
-    candleElements.forEach(c => {
-        if(!c.active) return;
+    // Visual Meter
+    micLevelEl.style.width = Math.min(100, avg * SENSITIVITY_SCALE) + '%';
+
+    // Logic
+    if (avg > BLOW_THRESHOLD) {
+        // Blowing detected
         
-        if (avg > BLOW_THRESHOLD) {
-            // Shake/Bend Flames based on position relative to center (blowing effect)
-            const dir = (c.x > 50) ? 1 : -1;
-            const bend = 10 + (intensity * 40);
+        // 1. Visual Wind Effect
+        const intensity = Math.min(1, (avg - BLOW_THRESHOLD) / 50);
+        candleElements.forEach(c => {
+            if(!c.active) return;
+            // Bend flame away from center
+            const dir = c.x > 50 ? 1 : -1;
+            c.flame.style.transform = `translateX(-50%) rotate(${dir * 20 * intensity}deg) skewX(${dir * 10 * intensity}deg) scale(${1 - intensity * 0.2})`;
             
-            // Apply complex transform for windy look
-            c.flame.style.animation = 'none'; // Stop idle wave
-            c.flame.style.transform = `translateX(-50%) rotate(${dir * bend}deg) skewX(${dir * bend}deg) scale(${1 - intensity * 0.3})`;
-            c.flame.style.opacity = 1 - (intensity * 0.5);
-
-            // Extinguish Check
-            // The harder you blow, higher chance to kill flame
-            if (avg > 50 && Math.random() < 0.03 + (intensity * 0.1)) {
+            // Chance to extinguish (higher vol = higher chance)
+            if (Math.random() < 0.05 + (intensity * 0.1)) {
                 extinguish(c);
             }
-        } else {
-            // Restore idle
-            c.flame.style.animation = 'waveFlame 2s ease-in-out infinite';
-            c.flame.style.opacity = '0.9';
-        }
-    });
+        });
+    } else {
+        // Reset flames
+        candleElements.forEach(c => {
+            if(!c.active) return;
+            c.flame.style.transform = `translateX(-50%) scale(1)`;
+        });
+    }
 
-    // Check Win
-    if(candlesExtinguished >= TOTAL_CANDLES && isListening) {
+    if (candlesExtinguished >= TOTAL_CANDLES) {
         win();
     }
 }
@@ -187,85 +172,52 @@ function extinguish(candle) {
     candle.flame.classList.add('out');
     candlesExtinguished++;
     
-    // Smoke
-    const smoke = document.createElement('div');
-    smoke.className = 'smoke-puff';
-    // Random offset
-    const dx = (Math.random() - 0.5) * 20;
-    smoke.style.transform = `translate(${dx}px, 0)`;
-    candle.el.appendChild(smoke);
-    
-    // Sound
-    playPuff();
-}
-
-function playPuff() {
-    // Simple white noise burst
+    // Sound Effect
     const osc = audioCtx.createBufferSource();
     const buf = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
     const d = buf.getChannelData(0);
     for(let i=0; i<d.length; i++) d[i] = Math.random() * 2 - 1;
     osc.buffer = buf;
     const g = audioCtx.createGain();
-    g.gain.setValueAtTime(0.2, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
     osc.connect(g);
     g.connect(audioCtx.destination);
     osc.start();
 }
 
-/* --- WINNING --- */
 function win() {
     isListening = false;
-    
-    // 1. Text Change
-    headerText.style.opacity = 0;
+    headerText.style.opacity = '0';
     setTimeout(() => {
         headerText.innerHTML = "Happy Birthday<br>My Babyyy! ❤️";
-        headerText.style.color = "#ff4081";
-        headerText.style.opacity = 1;
+        headerText.style.color = "#e91e63";
+        headerText.style.opacity = '1';
     }, 500);
 
-    // 2. Balloons
-    balloonsContainer.classList.remove('hidden');
-    const colors = ['#f44336', '#e91e63', '#9c27b0', '#ffeb3b', '#03a9f4'];
-    for(let i=0; i<30; i++) {
-        const b = document.createElement('div');
-        b.className = 'balloon';
-        b.style.left = Math.random() * 100 + '%';
-        b.style.background = colors[Math.floor(Math.random()*colors.length)];
-        b.style.color = b.style.background; // For the knot color
-        b.style.animationDelay = Math.random() * 2 + 's';
-        b.style.animationDuration = (4 + Math.random() * 4) + 's';
-        balloonsContainer.appendChild(b);
-    }
-
-    // 3. Fireworks / Confetti
+    // Confetti
     const duration = 5000;
     const end = Date.now() + duration;
-
     (function frame() {
-        confetti({
-            particleCount: 5,
-            angle: 60,
-            spread: 55,
-            origin: { x: 0 },
-            colors: ['#ffeb3b', '#ff4081', '#ffffff']
-        });
-        confetti({
-            particleCount: 5,
-            angle: 120,
-            spread: 55,
-            origin: { x: 1 },
-            colors: ['#ffeb3b', '#ff4081', '#ffffff']
-        });
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
         if (Date.now() < end) requestAnimationFrame(frame);
     }());
 
-    // 4. Music
+    // Balloons
+    const colors = ['#e91e63', '#9c27b0', '#ffeb3b', '#03a9f4'];
+    for(let i=0; i<20; i++) {
+        const b = document.createElement('div');
+        b.className = 'balloon';
+        b.style.left = Math.random() * 100 + '%';
+        b.style.background = colors[i % colors.length];
+        b.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(b);
+    }
+
+    // Music
     playWinMusic();
     
-    // 5. Replay Button
     setTimeout(() => {
         replayContainer.classList.remove('hidden');
         replayContainer.style.opacity = '1';
@@ -273,18 +225,16 @@ function win() {
 }
 
 function playWinMusic() {
-    // Simple chime melody
     const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 523.25];
     notes.forEach((f, i) => {
         const o = audioCtx.createOscillator();
         const g = audioCtx.createGain();
         o.frequency.value = f;
-        g.gain.setValueAtTime(0, audioCtx.currentTime + i*0.2);
-        g.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + i*0.2 + 0.1);
-        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i*0.2 + 0.8);
+        g.gain.setValueAtTime(0, audioCtx.currentTime + i*0.25);
+        g.gain.linearRampToValueAtTime(0.1, audioCtx.currentTime + i*0.25 + 0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + i*0.25 + 0.5);
         o.connect(g);
         g.connect(audioCtx.destination);
-        o.start(audioCtx.currentTime + i*0.2);
-        o.stop(audioCtx.currentTime + i*0.2 + 1);
+        o.start(audioCtx.currentTime + i*0.25);
     });
 }

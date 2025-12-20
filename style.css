@@ -1,130 +1,182 @@
-/* --- SETTINGS --- */
-:root {
-    --curtain-time: 3s; 
+/* --- GLOBAL --- */
+body {
+    background-color: #fdfbf7;
+    font-family: 'Playfair Display', serif;
 }
 
-/* --- CURTAIN ANIMATION --- */
+/* --- CURTAINS --- */
 #curtain-left, #curtain-right {
-    transition: transform var(--curtain-time) cubic-bezier(0.77, 0, 0.175, 1);
-    /* Velvet texture overlay */
-    background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.3) 50px, rgba(0,0,0,0.3) 80px);
+    /* Velvet texture */
+    background-image: repeating-linear-gradient(90deg, #880e4f 0px, #700a40 40px, #a01360 80px);
 }
-
 .curtains-open #curtain-left { transform: translateX(-100%); }
 .curtains-open #curtain-right { transform: translateX(100%); }
 
-/* --- SPARKLES --- */
-.sparkle {
-    position: absolute;
-    width: 4px; height: 4px;
-    background-color: #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #fff, 0 0 20px #ffeb3b;
-    opacity: 0;
-    animation: sparkleAnim 2s infinite ease-in-out;
+/* --- CSS 3D CAKE --- */
+.cake-stage {
+    position: relative;
+    width: 400px;
+    height: 300px;
+    perspective: 1200px;
 }
-@keyframes sparkleAnim {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.5); opacity: 1; }
-    100% { transform: scale(0); opacity: 0; }
+
+.plate {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotateX(60deg);
+    width: 420px;
+    height: 420px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.1);
+    z-index: 1;
+}
+
+.cake-body {
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 200px;
+    z-index: 10;
+}
+
+/* Layers */
+.layer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    border-radius: 50%;
+}
+
+.layer-bottom {
+    bottom: 0;
+    height: 100px; /* Visual height of side */
+    background: #5d4037; /* Chocolate */
+    width: 300px;
+    border-radius: 15px; /* Hack for cylinder side */
+    z-index: 2;
+    box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
+}
+.layer-bottom::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+    border-radius: 50%; background: #6d4c41; transform: translateY(-50%);
+}
+
+.layer-middle {
+    bottom: 80px;
+    height: 40px;
+    background: #f8bbd0; /* Pink Cream */
+    width: 290px;
+    z-index: 3;
+    border-radius: 10px;
+}
+.layer-middle::after {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+    border-radius: 50%; background: #f48fb1; transform: translateY(-50%);
+}
+
+.layer-top {
+    bottom: 110px;
+    height: 60px;
+    background: #fff9c4; /* Vanilla Top */
+    width: 280px;
+    z-index: 4;
+    border-radius: 10px;
+}
+.layer-top::before {
+    /* The very top surface */
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 70px;
+    border-radius: 50%; background: #fffde7; transform: translateY(-50%);
+    border: 1px solid #fff59d;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
+}
+
+/* Icing Text */
+.icing-text {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-5deg);
+    font-family: 'Great Vibes', cursive;
+    font-size: 3rem;
+    color: #e91e63;
+    white-space: nowrap;
+    text-shadow: 1px 1px 0 #fff, 2px 2px 5px rgba(0,0,0,0.2);
+    z-index: 20;
+    pointer-events: none;
+}
+
+/* --- CANDLES --- */
+#candles-container {
+    position: absolute;
+    top: -40px; /* On top of cake */
+    left: 0; width: 100%; height: 100%;
+    z-index: 30;
+    pointer-events: none;
+}
+
+.candle {
+    position: absolute;
+    width: 8px;
+    background: linear-gradient(to right, rgba(255,255,255,0.8), var(--c-color), rgba(0,0,0,0.1));
+    border-radius: 2px;
+    box-shadow: 2px 5px 5px rgba(0,0,0,0.2);
+    transform-origin: bottom center;
+}
+
+.flame {
+    position: absolute;
+    bottom: 100%; left: 50%;
+    transform: translateX(-50%);
+    width: 14px; height: 36px;
+    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff6d00 60%, transparent 100%);
+    border-radius: 50% 50% 20% 20%;
+    filter: drop-shadow(0 0 8px #ffeb3b);
+    animation: flicker 1.5s infinite ease-in-out;
+    transform-origin: 50% 90%;
+    transition: all 0.2s;
+}
+
+.flame.out {
+    transform: scale(0);
+    opacity: 0;
+}
+
+@keyframes flicker {
+    0%, 100% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.05) rotate(2deg); }
+}
+
+/* --- HEARTS BG --- */
+.heart {
+    position: absolute;
+    color: #f48fb1;
+    font-size: 20px;
+    animation: float 6s linear infinite;
+    opacity: 0;
+}
+@keyframes float {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    50% { opacity: 0.6; }
+    100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
 }
 
 /* --- BALLOONS --- */
 .balloon {
     position: absolute;
     bottom: -150px;
-    width: 60px; height: 75px;
-    border-radius: 45%;
-    box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
-    animation: floatUp 6s linear forwards;
-}
-.balloon::before {
-    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
-    width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid currentColor;
+    width: 50px; height: 70px;
+    border-radius: 50%;
+    animation: balloonRise 5s linear forwards;
 }
 .balloon::after {
-    content: ''; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
-    width: 1px; height: 35px; background: rgba(255,255,255,0.6);
+    content: ''; position: absolute; bottom: -40px; left: 50%;
+    width: 1px; height: 40px; background: rgba(0,0,0,0.3);
 }
-@keyframes floatUp {
-    0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
-    100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
-}
-
-/* --- CANDLE PHYSICS --- */
-.candle-container {
-    position: absolute;
-    transform-origin: bottom center;
-    pointer-events: none;
-}
-
-/* The Flame */
-.flame {
-    width: 16px; height: 40px;
-    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff9800 50%, rgba(255,0,0,0.5) 100%);
-    border-radius: 50% 50% 20% 20%;
-    position: absolute; bottom: 100%; left: 50%;
-    transform: translateX(-50%);
-    transform-origin: 50% 90%;
-    filter: drop-shadow(0 0 8px #ffc107);
-    opacity: 0.9;
-    /* Default wave animation */
-    animation: waveFlame 2s ease-in-out infinite;
-}
-
-.flame::after {
-    content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
-    width: 6px; height: 8px; background: #00f; border-radius: 50%; opacity: 0.3; filter: blur(2px);
-}
-
-.flame.out {
-    animation: none;
-    transition: all 0.2s ease-out;
-    transform: scale(0);
-    opacity: 0;
-}
-
-@keyframes waveFlame {
-    0%, 100% { transform: translateX(-50%) rotate(-2deg) scaleY(1); }
-    50% { transform: translateX(-50%) rotate(2deg) scaleY(1.05); }
-}
-
-/* Candle Body */
-.wax {
-    width: 8px; height: 40px;
-    background: linear-gradient(90deg, rgba(255,255,255,0.8), var(--candle-color), rgba(0,0,0,0.1));
-    border-radius: 2px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
-}
-
-.wick {
-    width: 2px; height: 6px; background: #333;
-    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-}
-
-/* --- SMOKE --- */
-.smoke-puff {
-    position: absolute;
-    width: 10px; height: 10px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 50%;
-    filter: blur(4px);
-    animation: smokeFloat 1.5s forwards;
-}
-@keyframes smokeFloat {
-    to { transform: translate(0, -50px) scale(3); opacity: 0; }
-}
-
-/* --- BACKGROUND HEARTS --- */
-.heart-float {
-    position: absolute;
-    color: #e91e63;
-    font-size: 24px;
-    opacity: 0;
-    animation: floatHeartBg 10s linear infinite;
-}
-@keyframes floatHeartBg {
-    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
-    50% { opacity: 0.3; }
-    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+@keyframes balloonRise {
+    to { transform: translateY(-120vh); }
 }
