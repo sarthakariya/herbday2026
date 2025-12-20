@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,7 +9,19 @@ body {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Volumetric Lighting */
+/* Textures */
+.wood-texture {
+  background-color: #3e2723;
+  background-image: 
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0px, transparent 2px, rgba(0,0,0,0.3) 5px),
+    linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));
+}
+
+.sponge-texture {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.2'/%3E%3C/svg%3E");
+}
+
+/* Lighting */
 .spotlight {
   position: fixed;
   top: -50%;
@@ -18,29 +29,13 @@ body {
   transform: translateX(-50%);
   width: 120vw;
   height: 150vh;
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 70%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 10;
   mix-blend-mode: overlay;
 }
 
-/* 2.5D Cake Construction */
-.cake-structure {
-  perspective: 1000px;
-  transform-style: preserve-3d;
-}
-
-.plate-shadow {
-  background: radial-gradient(closest-side, rgba(0,0,0,0.6), transparent);
-  filter: blur(20px);
-}
-
-.cake-surface {
-  background-image: radial-gradient(rgba(255,255,255,0.15) 1px, transparent 1px);
-  background-size: 8px 8px;
-}
-
-/* Flame Animation */
+/* Animations */
 @keyframes flicker-real {
   0% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 0.9; }
   25% { transform: translateX(-50%) scale(1.1, 0.9) rotate(-2deg); opacity: 1; }
@@ -48,49 +43,49 @@ body {
   75% { transform: translateX(-50%) scale(1.05, 0.95) rotate(-1deg); opacity: 1; }
   100% { transform: translateX(-50%) scale(1) rotate(0deg); opacity: 0.9; }
 }
-
 .animate-flicker-real {
   animation: flicker-real 0.15s infinite alternate ease-in-out;
 }
 
-/* Curtain Physics */
+@keyframes puff-smoke {
+  0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.6; }
+  100% { transform: translate(-50%, -60px) scale(2.5); opacity: 0; }
+}
+.animate-smoke {
+  animation: puff-smoke 1.5s forwards ease-out;
+}
+
 @keyframes curtain-open-left {
   0% { transform: scaleX(1); }
-  30% { transform: scaleX(0.8) skewX(10deg); }
-  60% { transform: scaleX(0.4) skewX(-5deg); }
+  30% { transform: scaleX(0.9) skewX(5deg); }
   100% { transform: scaleX(0); }
 }
 @keyframes curtain-open-right {
   0% { transform: scaleX(1); }
-  30% { transform: scaleX(0.8) skewX(-10deg); }
-  60% { transform: scaleX(0.4) skewX(5deg); }
+  30% { transform: scaleX(0.9) skewX(-5deg); }
   100% { transform: scaleX(0); }
 }
-
 .animate-curtain-left {
   transform-origin: top left;
-  animation: curtain-open-left 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: curtain-open-left 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 .animate-curtain-right {
   transform-origin: top right;
-  animation: curtain-open-right 3.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  animation: curtain-open-right 3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-/* Balloon Float */
 @keyframes float-balloon {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
 }
 .animate-float-balloon {
-  animation: float-balloon 6s ease-in-out infinite;
+  animation: float-balloon 5s ease-in-out infinite;
 }
 
-/* Sparkles */
-@keyframes sparkle-twinkle {
-  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
-  50% { transform: scale(1) rotate(45deg); opacity: 1; }
+@keyframes swing {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
 }
-.sparkle {
-  animation: sparkle-twinkle 1.5s ease-in-out infinite;
+.animate-swing {
+  animation: swing 3s ease-in-out infinite;
 }
-
