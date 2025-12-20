@@ -8,11 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
     
-    <!-- LOAD LIBS GLOBALLY TO FIX LOADING ERRORS -->
+    <!-- LOAD LIBS GLOBALLY (Fixes 'import' errors) -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Babel compiles the TSX in the browser -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script type="importmap">
 {
   "imports": {
@@ -28,7 +30,7 @@
 <body>
     <div id="root"></div>
     
-    <!-- Load the application logic -->
-    <script type="text/babel" src="index.tsx"></script>
+    <!-- Load the Combined Application Logic -->
+    <script type="text/babel" data-presets="react,typescript" src="index.tsx"></script>
 </body>
 </html>
