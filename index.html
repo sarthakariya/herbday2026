@@ -46,10 +46,11 @@
     </div>
 
     <!-- CURTAINS -->
-    <div id="curtain-left" class="fixed top-0 left-0 w-[50%] h-full z-[90] bg-gradient-to-r from-[#5a0000] to-[#800000] shadow-[10px_0_60px_rgba(0,0,0,0.8)] transition-transform duration-[3000ms] ease-in-out">
+    <!-- Added curtain-sway class via CSS -->
+    <div id="curtain-left" class="curtain fixed top-0 left-0 w-[50%] h-full z-[90] bg-gradient-to-r from-[#5a0000] to-[#800000] shadow-[10px_0_60px_rgba(0,0,0,0.8)] transition-transform duration-[3000ms] ease-in-out origin-top">
         <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.3)_50px,transparent_60px)] opacity-50"></div>
     </div>
-    <div id="curtain-right" class="fixed top-0 right-0 w-[50%] h-full z-[90] bg-gradient-to-l from-[#5a0000] to-[#800000] shadow-[-10px_0_60px_rgba(0,0,0,0.8)] transition-transform duration-[3000ms] ease-in-out">
+    <div id="curtain-right" class="curtain fixed top-0 right-0 w-[50%] h-full z-[90] bg-gradient-to-l from-[#5a0000] to-[#800000] shadow-[-10px_0_60px_rgba(0,0,0,0.8)] transition-transform duration-[3000ms] ease-in-out origin-top">
         <div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent_0px,transparent_40px,rgba(0,0,0,0.3)_50px,transparent_60px)] opacity-50"></div>
     </div>
 
@@ -117,9 +118,11 @@
                 <div class="cake-top-side cake-texture">
                      <div class="frosting-drip"></div>
                      <div class="sprinkles"></div>
-                     <div class="cake-text">My Babyyy</div>
                 </div>
                 <div class="cake-top-surface">
+                     <!-- Text Moved Here -->
+                     <div class="cake-text">My Babyyy</div>
+                     
                      <!-- Panda -->
                      <div class="panda-decoration">
                          <div class="ear left"></div>
