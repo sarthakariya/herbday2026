@@ -1,6 +1,6 @@
 /* --- CONFIGURATION --- */
 const TOTAL_CANDLES = 17;
-const BLOW_THRESHOLD = 30; // Lowered for better detection
+const BLOW_THRESHOLD = 30; 
 const CANDLE_COLORS = ['#F48FB1', '#90CAF9', '#FFF59D', '#A5D6A7'];
 
 /* --- STATE --- */
@@ -35,19 +35,19 @@ function init() {
     createParticles();
     createCherries();
     createCandles();
-    createDecorations(); // Balloons & Streamers
+    createDecorations(); 
     startBtn.addEventListener('click', startApp);
 }
 
 function createDecorations() {
-    // Balloons
-    const colors = ['#e91e63', '#2196f3', '#ffeb3b', '#4caf50', '#9c27b0'];
+    // Balloons (Pastel colors for light theme)
+    const colors = ['#f8bbd0', '#e1bee7', '#fff9c4', '#b2dfdb', '#ffccbc'];
     for(let i=0; i<8; i++) {
         const b = document.createElement('div');
         b.className = 'balloon';
         b.style.left = (Math.random() * 90 + 5) + '%';
         b.style.setProperty('--color', colors[i % colors.length]);
-        b.style.setProperty('--duration', (8 + Math.random() * 8) + 's');
+        b.style.setProperty('--duration', (12 + Math.random() * 8) + 's'); // Slower float
         b.style.setProperty('--delay', (Math.random() * 5) + 's');
         balloonContainer.appendChild(b);
     }
@@ -57,7 +57,7 @@ function createDecorations() {
         const s = document.createElement('div');
         s.className = 'streamer';
         s.style.left = (Math.random() * 100) + '%';
-        s.style.setProperty('--color', colors[i % colors.length]);
+        s.style.setProperty('--color', ['#ef5350', '#42a5f5', '#ffca28', '#66bb6a'][i%4]);
         s.style.setProperty('--duration', (4 + Math.random() * 4) + 's');
         s.style.setProperty('--delay', (Math.random() * 5) + 's');
         streamerContainer.appendChild(s);
@@ -67,10 +67,11 @@ function createDecorations() {
 function createParticles() {
     for (let i = 0; i < 20; i++) {
         const p = document.createElement('div');
-        p.className = 'particle text-2xl';
-        p.innerText = Math.random() > 0.5 ? '♥' : '★';
+        p.className = 'absolute text-2xl text-rose-200';
+        p.innerText = Math.random() > 0.5 ? '♥' : '✨';
         p.style.left = Math.random() * 100 + '%';
-        p.style.animationDuration = (10 + Math.random() * 10) + 's';
+        p.style.top = '100%';
+        p.style.animation = `float-up ${10 + Math.random() * 10}s linear infinite`;
         p.style.animationDelay = (Math.random() * 5) + 's';
         particlesContainer.appendChild(p);
     }
@@ -88,32 +89,34 @@ function createCherries() {
         el.className = 'cherry';
         el.style.left = x + '%';
         el.style.top = y + '%';
-        el.style.zIndex = Math.floor(y);
+        // zIndex Logic: Lower items in Y (closer to viewer) have higher Z
+        el.style.zIndex = Math.floor(y + 50);
         cherriesContainer.appendChild(el);
     }
 }
 
 function createCandles() {
-    const radius = 35; // %
+    const radius = 38; // Slightly tighter radius so they fit on top
     
     for (let i = 0; i < TOTAL_CANDLES; i++) {
         const angle = (i / TOTAL_CANDLES) * Math.PI * 2;
         const x = 50 + Math.cos(angle) * radius;
         const y = 50 + Math.sin(angle) * radius;
         const color = CANDLE_COLORS[i % CANDLE_COLORS.length];
-        const height = 40 + Math.random() * 10;
+        const height = 40 + Math.random() * 8;
         
         const wrapper = document.createElement('div');
         wrapper.className = 'candle-wrapper';
         wrapper.style.left = x + '%';
         wrapper.style.top = y + '%';
-        wrapper.style.zIndex = Math.floor(y + 10);
+        wrapper.style.zIndex = Math.floor(y + 100); // Candles generally in front of cherries
         
         wrapper.innerHTML = `
             <div class="candle-stick" style="height: ${height}px; background: linear-gradient(90deg, rgba(255,255,255,0.6), ${color}, rgba(0,0,0,0.1));"></div>
             <div class="wick"></div>
-            <div class="flame" id="flame-${i}">
-                <div class="flame-inner"></div>
+            <div class="flame-3d" id="flame-${i}">
+                <div class="flame-plane" style="--ry: 0deg;"></div>
+                <div class="flame-plane" style="--ry: 90deg;"></div>
             </div>
         `;
         
@@ -128,7 +131,7 @@ function createCandles() {
         candles.push({
             id: i,
             el: wrapper,
-            flameEl: wrapper.querySelector('.flame'),
+            flameEl: wrapper.querySelector('.flame-3d'),
             isLit: true
         });
     }
@@ -160,7 +163,7 @@ async function startApp() {
             appStage.style.opacity = '1';
             isListening = true;
             micIconEl.classList.add('text-green-400');
-            micIconEl.classList.remove('text-gray-500');
+            micIconEl.classList.remove('text-gray-400');
             detectBlow();
         }, 1000);
 
@@ -201,7 +204,6 @@ function manualExtinguish(index) {
     const c = candles[index];
     c.isLit = false;
     c.flameEl.classList.add('extinguished');
-    c.el.classList.add('extinguished'); // triggers ember effect
     createSmoke(c.el);
     candlesExtinguished++;
     playPuffSound();
@@ -214,7 +216,8 @@ function extinguishCandles() {
 
     // Flicker effect
     litCandles.forEach(c => {
-         c.flameEl.style.transform = `translateX(-50%) skewX(${Math.random() * 30 - 15}deg) scale(1.2)`;
+        // Just scale slightly to show disturbance
+         c.flameEl.style.transform = `translateX(-50%) scale(1.2)`;
     });
 
     const amount = Math.min(litCandles.length, Math.floor(Math.random() * 2) + 1);
@@ -225,7 +228,6 @@ function extinguishCandles() {
         
         candle.isLit = false;
         candle.flameEl.classList.add('extinguished');
-        candle.el.classList.add('extinguished'); // triggers ember
         
         createSmoke(candle.el);
         
@@ -272,8 +274,8 @@ function winSequence() {
     cancelAnimationFrame(animationFrameId);
     micLevelEl.style.width = '0%';
     
-    headerText.innerHTML = "Happy Birthday to you My Babyyyyy ❤️";
-    headerText.classList.add('text-pink-500');
+    headerText.innerHTML = "I Love You My Babyyyyy ❤️";
+    headerText.classList.add('text-rose-600');
     
     playWinMusic();
     
@@ -294,16 +296,18 @@ function winSequence() {
 function playWinMusic() {
     if (!audioCtx) return;
     const t = audioCtx.currentTime;
-    const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 523.25];
+    // Celebration melody
+    const notes = [261.63, 261.63, 293.66, 261.63, 349.23, 329.63, 261.63, 261.63, 293.66, 261.63, 392.00, 349.23];
     notes.forEach((f, i) => {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.frequency.value = f;
-        gain.gain.setValueAtTime(0, t + i * 0.2);
-        gain.gain.linearRampToValueAtTime(0.1, t + i * 0.2 + 0.1);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.2 + 1.0);
+        osc.type = 'triangle';
+        gain.gain.setValueAtTime(0, t + i * 0.3);
+        gain.gain.linearRampToValueAtTime(0.1, t + i * 0.3 + 0.1);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.3 + 0.5);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
-        osc.start(t + i * 0.2);
+        osc.start(t + i * 0.3);
     });
 }
