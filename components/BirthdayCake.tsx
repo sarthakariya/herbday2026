@@ -8,12 +8,11 @@ export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished 
   // Candles Distribution
   const candles = useMemo(() => Array.from({ length: 17 }).map((_, i) => {
     const angle = (i / 17) * Math.PI * 2;
-    // Adjusted radius for the flatter 10deg perspective
     const radius = 38; 
     return {
       id: i,
       color: ['#F48FB1', '#90CAF9', '#FFF59D', '#A5D6A7'][i % 4], 
-      height: 40 + Math.random() * 8,
+      height: 50 + Math.random() * 10, // Made candles slightly taller
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius
     };
@@ -22,7 +21,7 @@ export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished 
   // Cherries Distribution
   const cherries = useMemo(() => Array.from({ length: 12 }).map((_, i) => {
     const angle = (i / 12) * Math.PI * 2;
-    const radius = 46;
+    const radius = 48; // Slightly wider than candles
     return {
       x: Math.cos(angle) * radius,
       y: Math.sin(angle) * radius
@@ -30,110 +29,122 @@ export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished 
   }), []);
 
   return (
-    // Cake Container
-    <div className="cake-container mx-auto">
+    // Cake Container - We assume the parent handles the main Scene rotation (X axis)
+    // This component handles the local stacking (Z axis)
+    <div className="cake-assembly w-[300px] h-[300px] relative preserve-3d">
       
       {/* --- PLATE --- */}
-      <div className="absolute top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] z-0" style={{ transform: 'translate(-50%, -50%) translateZ(-10px)' }}>
-         <div className="w-full h-full bg-white rounded-full shadow-[0_20px_40px_rgba(0,0,0,0.2)] border-[1px] border-gray-100 flex items-center justify-center">
+      {/* Moved down slightly to support the base */}
+      <div className="absolute top-1/2 left-1/2 w-[140%] h-[140%] z-0" 
+           style={{ transform: 'translate(-50%, -50%) translateZ(-10px)' }}>
+         <div className="w-full h-full bg-white rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.3)] border border-gray-200 flex items-center justify-center">
             {/* Gold Rim */}
-            <div className="absolute inset-0 rounded-full border-[6px] border-[#FFD700] opacity-80 shadow-sm"></div>
+            <div className="absolute inset-0 rounded-full border-[8px] border-[#FFD700] opacity-90 shadow-sm"></div>
             {/* Inner Design */}
             <div className="w-[85%] h-[85%] rounded-full border border-gray-100 bg-gradient-to-tr from-gray-50 to-white"></div>
          </div>
       </div>
 
       {/* --- CAKE BASE (Chocolate) --- */}
-      <div className="absolute top-[50%] left-1/2 w-[80%] h-[80%] z-10" 
+      {/* Increased height for side view visibility */}
+      <div className="absolute top-1/2 left-1/2 w-[85%] h-[85%] z-10 preserve-3d" 
            style={{ transform: 'translate(-50%, -50%) translateZ(0px)' }}>
         
-        {/* Side Walls */}
-        <div className="absolute top-0 left-0 w-full h-full z-10" style={{ transform: 'translateZ(-30px)' }}>
-             <div className="absolute top-0 left-0 w-full h-full bg-[#3E2723] rounded-full shadow-2xl">
-                 <div className="absolute inset-0 bg-gradient-to-r from-[#281915] via-[#5D4037] to-[#281915] rounded-full"></div>
-             </div>
-             {/* Crumb Texture */}
-             <div className="absolute inset-0 sponge-texture opacity-40 mix-blend-overlay rounded-full"></div>
-             {/* Decoration on side */}
-             <div className="absolute top-1/2 w-full h-[10px] bg-[#5d4037] opacity-50 blur-[1px]"></div>
-        </div>
+        {/* Side Walls - Chocolate */}
+        <div className="absolute inset-0 rounded-full bg-[#3E2723]" style={{ transform: 'translateZ(-40px)' }}></div>
+        {/* We create a "cylinder" look by stacking slightly offset layers or using a thick border/shadow hack. 
+            For CSS 3D, a true cylinder is hard, so we use a dark side layer + top layer. */}
+        <div className="absolute inset-0 rounded-full bg-[#3E2723]" 
+             style={{ 
+               transform: 'translateZ(-40px)', 
+               boxShadow: '0 20px 40px rgba(0,0,0,0.6)' // Shadow cast by the cake
+             }}></div>
+        
+        {/* The "Side" visual - rendered as a pseudo-thickness using multiple shadows or a gradient container */}
+        <div className="absolute top-0 left-0 w-full h-full rounded-full bg-[#4E342E]" 
+             style={{ 
+               transform: 'translateZ(-20px) scale(0.99)',
+               boxShadow: '0 0 5px rgba(0,0,0,0.5)'
+             }}></div>
 
-        {/* Top of Base */}
-        <div className="absolute top-0 left-0 w-full h-full bg-[#4E342E] rounded-full border border-[#3E2723] shadow-inner" style={{ transform: 'translateZ(0px)' }}></div>
+        {/* Top of Base Layer */}
+        <div className="absolute top-0 left-0 w-full h-full bg-[#4E342E] rounded-full border-[2px] border-[#3E2723] shadow-inner" 
+             style={{ transform: 'translateZ(0px)' }}>
+             {/* Glossy Texture */}
+             <div className="absolute inset-0 rounded-full bg-gradient-to-br from-white/10 to-transparent opacity-30"></div>
+        </div>
       </div>
 
       {/* --- CAKE TOP (Pink/Vanilla) --- */}
-      <div className="absolute top-[50%] left-1/2 w-[65%] h-[65%] z-20"
-           style={{ transform: 'translate(-50%, -50%) translateZ(30px)' }}>
+      <div className="absolute top-1/2 left-1/2 w-[70%] h-[70%] z-20 preserve-3d"
+           style={{ transform: 'translate(-50%, -50%) translateZ(40px)' }}>
             
-            {/* Side Wall */}
-            <div className="absolute top-0 left-0 w-full h-full z-10" style={{ transform: 'translateZ(-30px)' }}>
-                <div className="absolute inset-0 bg-[#F8BBD0] rounded-full shadow-lg">
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#F06292] via-[#FCE4EC] to-[#F06292] rounded-full"></div>
-                </div>
-                {/* Frosting Swirls on Side */}
-                <div className="absolute inset-0 frosting-swirl rounded-full mix-blend-soft-light"></div>
-            </div>
-
+            {/* Side Wall Pink */}
+            <div className="absolute inset-0 rounded-full bg-[#F06292] shadow-lg" 
+                 style={{ transform: 'translateZ(-40px)' }}></div>
+            
             {/* Top Surface */}
             <div className="absolute top-0 left-0 w-full h-full bg-[#FFF3E0] rounded-full border border-[#FFE0B2] shadow-inner flex items-center justify-center"
                  style={{ transform: 'translateZ(0px)' }}>
                 
-                {/* Piped Edge (Using Border Trick) */}
-                <div className="absolute inset-[-5px] rounded-full border-[8px] border-dashed border-[#FFF8E1] shadow-sm"></div>
+                {/* Piped Edge */}
+                <div className="absolute inset-[-5px] rounded-full border-[6px] border-dashed border-[#FFF8E1] shadow-sm"></div>
 
                 {/* --- ANIMATED PANDA --- */}
-                <div className="absolute z-30 animate-bob" style={{ transform: 'rotateX(-10deg) translateY(-10px)' }}>
-                     <div className="relative w-14 h-12 bg-white rounded-[45%_45%_40%_40%] shadow-md border border-gray-100 flex items-center justify-center">
+                {/* Stood up vertically relative to the cake surface */}
+                <div className="absolute z-30 animate-bob preserve-3d" 
+                     style={{ transform: 'rotateX(-25deg) translateY(-15px) translateZ(10px)' }}>
+                     <div className="relative w-16 h-14 bg-white rounded-[45%_45%_40%_40%] shadow-lg border border-gray-100 flex items-center justify-center">
                          {/* Ears */}
-                         <div className="absolute -top-2 -left-1 w-5 h-5 bg-black rounded-full -z-10"></div>
-                         <div className="absolute -top-2 -right-1 w-5 h-5 bg-black rounded-full -z-10"></div>
+                         <div className="absolute -top-3 -left-2 w-6 h-6 bg-black rounded-full -z-10"></div>
+                         <div className="absolute -top-3 -right-2 w-6 h-6 bg-black rounded-full -z-10"></div>
                          
                          {/* Face Container */}
                          <div className="flex flex-col items-center mt-2">
                              {/* Eyes */}
                              <div className="flex gap-2">
-                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center overflow-hidden">
+                                 <div className="w-4 h-4 bg-black rounded-full flex items-center justify-center overflow-hidden">
                                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-blink"></div>
                                  </div>
-                                 <div className="w-3.5 h-3.5 bg-black rounded-full flex items-center justify-center overflow-hidden">
+                                 <div className="w-4 h-4 bg-black rounded-full flex items-center justify-center overflow-hidden">
                                      <div className="w-1.5 h-1.5 bg-white rounded-full animate-blink"></div>
                                  </div>
                              </div>
                              {/* Nose & Mouth */}
-                             <div className="w-2 h-1.5 bg-black rounded-full mt-1"></div>
+                             <div className="w-2.5 h-2 bg-black rounded-full mt-1"></div>
                              <div className="flex gap-[2px]">
-                                <div className="w-2 h-2 border-b-2 border-black rounded-full"></div>
-                                <div className="w-2 h-2 border-b-2 border-black rounded-full"></div>
+                                <div className="w-2.5 h-2.5 border-b-[3px] border-black rounded-full"></div>
+                                <div className="w-2.5 h-2.5 border-b-[3px] border-black rounded-full"></div>
                              </div>
                          </div>
                          
                          {/* Blush */}
-                         <div className="absolute top-6 left-1 w-2 h-1 bg-pink-200 rounded-full blur-[1px]"></div>
-                         <div className="absolute top-6 right-1 w-2 h-1 bg-pink-200 rounded-full blur-[1px]"></div>
+                         <div className="absolute top-7 left-1 w-2.5 h-1.5 bg-pink-300 rounded-full blur-[2px]"></div>
+                         <div className="absolute top-7 right-1 w-2.5 h-1.5 bg-pink-300 rounded-full blur-[2px]"></div>
                      </div>
                 </div>
 
                 {/* --- TEXT --- */}
-                {/* Positioned slightly 'above' the cake surface using translateZ via parent context or absolute positioning hack */}
-                <div className="absolute z-40 w-[200%] text-center pointer-events-none" style={{ transform: 'translateY(-45px) translateZ(10px) rotateX(-10deg)' }}>
-                    <span className="font-['Great_Vibes'] text-5xl text-icing drop-shadow-md" data-text="My Babyyy">
+                {/* Floating slightly above and tilted up to face camera */}
+                <div className="absolute z-40 w-[200%] text-center pointer-events-none" 
+                     style={{ transform: 'translateY(-50px) translateZ(25px) rotateX(-25deg)' }}>
+                    <span className="font-['Great_Vibes'] text-6xl text-[#D81B60] drop-shadow-[0_2px_0_rgba(255,255,255,0.8)]" style={{ textShadow: '2px 2px 0px white' }}>
                         My Babyyy
                     </span>
                 </div>
 
                 {/* --- CHERRIES --- */}
                 {cherries.map((c, i) => {
-                     const zIndex = Math.floor(c.y + 100);
+                     const zIndex = 50 + Math.floor(c.y);
                      return (
-                         <div key={`cherry-${i}`} className="absolute w-5 h-5 z-20"
+                         <div key={`cherry-${i}`} className="absolute w-6 h-6 z-20"
                               style={{
                                   left: `calc(50% + ${c.x}%)`,
                                   top: `calc(50% + ${c.y}%)`,
                                   zIndex: zIndex,
-                                  transform: 'translate(-50%, -50%) rotateX(-10deg)' // Counter rotate slightly
+                                  transform: 'translate(-50%, -50%) rotateX(-25deg)' // Counter rotate to look spherical
                               }}>
-                              <div className="w-full h-full rounded-full bg-gradient-to-br from-red-500 to-red-900 shadow-sm">
+                              <div className="w-full h-full rounded-full bg-gradient-to-br from-red-500 to-red-900 shadow-md">
                                   <div className="absolute top-[20%] left-[20%] w-[30%] h-[30%] bg-white rounded-full opacity-40 blur-[0.5px]"></div>
                               </div>
                          </div>
@@ -143,20 +154,21 @@ export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished 
                 {/* --- CANDLES --- */}
                 {candles.map((c, i) => {
                      const isExtinguished = i < candlesExtinguished;
-                     const zIndex = Math.floor(c.y + 150);
+                     // Order by Y so front candles overlap back ones
+                     const zIndex = 100 + Math.floor(c.y);
 
                      return (
-                      <div key={`candle-${i}`} className="absolute" 
+                      <div key={`candle-${i}`} className="absolute preserve-3d" 
                            style={{
                                 left: `calc(50% + ${c.x}%)`,
                                 top: `calc(50% + ${c.y}%)`,
                                 zIndex: zIndex,
-                                transform: 'translate(-50%, 0) rotateX(-10deg)', // Stand up straight from tilted surface
+                                transform: 'translate(-50%, 0) rotateX(-25deg)', // Counter-rotate container to stand up vertically
                                 transformOrigin: 'bottom center'
                            }}>
                            
                            {/* Stick */}
-                           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2.5 rounded-sm shadow-sm"
+                           <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-3 rounded-sm shadow-sm"
                                 style={{
                                     height: `${c.height}px`,
                                     background: `linear-gradient(90deg, rgba(255,255,255,0.8), ${c.color}, rgba(0,0,0,0.1))`
@@ -168,7 +180,7 @@ export const BirthdayCake: React.FC<BirthdayCakeProps> = ({ candlesExtinguished 
                            </div>
 
                            {/* Wick */}
-                           <div className="absolute bottom-[calc(100%-1px)] left-1/2 -translate-x-1/2 w-[2px] h-2 bg-gray-800"></div>
+                           <div className="absolute bottom-[calc(100%-1px)] left-1/2 -translate-x-1/2 w-[2px] h-2.5 bg-gray-800"></div>
 
                            {/* 3D Flame */}
                            <div className={`flame-3d ${isExtinguished ? 'extinguished' : ''}`} style={{ bottom: `calc(100% + ${c.height}px)` }}>
