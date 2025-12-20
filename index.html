@@ -24,7 +24,7 @@
 }
 </script>
 </head>
-<body class="overflow-hidden bg-[#0d0205] font-['Montserrat'] selection:bg-rose-500 selection:text-white">
+<body class="overflow-hidden bg-[#1a0509] font-['Montserrat'] selection:bg-rose-500 selection:text-white">
 
     <!-- START SCREEN -->
     <div id="start-overlay" class="fixed inset-0 z-[100] bg-[#fff0f5] flex flex-col items-center justify-center transition-opacity duration-1000">
@@ -38,16 +38,18 @@
     </div>
 
     <!-- MAIN ROOM CONTAINER -->
-    <div id="room" class="relative w-full h-screen overflow-hidden perspective-1000 opacity-0 transition-opacity duration-1000">
+    <div id="room" class="relative w-full h-screen overflow-hidden perspective-1000 opacity-0 transition-opacity duration-1000 bg-gradient-to-b from-[#2b0a10] to-[#100305]">
         
         <!-- WALLS -->
-        <div class="absolute inset-0 bg-[#2b0a10] z-0">
-            <!-- Wallpaper Texture -->
-            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/wall-4-light.png')]"></div>
+        <div class="absolute inset-0 z-0">
+            <!-- Wall Texture -->
+            <div class="absolute top-0 left-0 w-full h-[60%] bg-[url('https://www.transparenttextures.com/patterns/wall-4-light.png')] opacity-10"></div>
+            <!-- Floor Texture -->
+            <div class="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-[#000] to-[#2b1015] opacity-90"></div>
         </div>
 
         <!-- WINDOW -->
-        <div class="absolute top-[10%] left-1/2 -translate-x-1/2 w-[300px] h-[200px] bg-[#0a0a1a] border-8 border-[#3e2723] shadow-[0_0_50px_rgba(0,0,0,0.8)] z-0 overflow-hidden rounded-t-full">
+        <div class="absolute top-[8%] left-1/2 -translate-x-1/2 w-[300px] h-[200px] bg-[#0a0a1a] border-8 border-[#3e2723] shadow-[0_0_50px_rgba(0,0,0,0.8)] z-0 overflow-hidden rounded-t-full">
             <!-- Night Sky -->
             <div class="absolute inset-0 bg-gradient-to-b from-[#020111] to-[#111133]">
                 <div class="absolute top-4 right-8 w-12 h-12 bg-yellow-100 rounded-full blur-[2px] shadow-[0_0_20px_rgba(255,255,200,0.6)]"></div> <!-- Moon -->
@@ -114,10 +116,10 @@
         </div>
 
         <!-- 3D TABLE SCENE -->
-        <div class="absolute top-[55%] left-1/2 -translate-x-1/2 z-20" style="perspective: 1000px;">
-            <div class="scene-container relative" style="transform: rotateX(20deg);">
+        <div class="absolute top-[60%] left-1/2 -translate-x-1/2 z-20" style="perspective: 1200px;">
+            <div class="scene-container relative" style="transform: rotateX(15deg);">
                 
-                <!-- TABLE SURFACE -->
+                <!-- TABLE SURFACE (Round & Centered) -->
                 <div class="wood-table-surface">
                     <div class="table-reflection"></div>
                     
@@ -152,7 +154,7 @@
                 </div>
 
                 <!-- CAKE ASSEMBLY (Center) -->
-                <div class="cake-assembly">
+                <div class="cake-assembly" style="transform: translateY(-80px);">
                     <div class="plate"><div class="plate-inner"></div></div>
                     
                     <!-- Cake Base -->

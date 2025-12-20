@@ -1,6 +1,6 @@
 /* --- GLOBAL --- */
 body {
-    background: #0d0205;
+    background: #1a0509; /* Dark room color */
     margin: 0;
     overflow: hidden;
     font-family: 'Montserrat', sans-serif;
@@ -72,11 +72,29 @@ body {
 .wood-table-surface {
     position: absolute;
     top: 50%; left: 50%;
-    width: 200vw; height: 200vh;
+    /* FINITE SIZE - Makes it look like a table, not the floor */
+    width: 1000px; 
+    height: 1000px;
+    border-radius: 50%;
     background: #3e2723 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
-    transform: translate(-50%, -50%) translateZ(-50px); 
-    box-shadow: inset 0 0 150px rgba(0,0,0,0.9);
+    /* Pushed back in Z space to sit 'on the floor' */
+    transform: translate(-50%, -50%) rotateX(0deg) translateZ(-150px); 
+    box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 0 100px rgba(0,0,0,0.9);
+    border: 10px solid #281a16; /* Table Rim */
 }
+
+/* Floor shadow under the table */
+.wood-table-surface::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) translateZ(-50px) scale(1.1);
+    background: radial-gradient(rgba(0,0,0,0.8), transparent 70%);
+    z-index: -1;
+}
+
 .table-reflection {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     width: 400px; height: 400px;
@@ -114,9 +132,12 @@ body {
 }
 
 .front {
-    background: linear-gradient(135deg, #e91e63, #c2185b);
+    /* Solid background color first to prevent transparency */
+    background-color: #c2185b;
+    background: linear-gradient(135deg, #e91e63, #ad1457);
     /* Leather texture approx */
-    background-image: url('https://www.transparenttextures.com/patterns/leather.png');
+    background-image: url('https://www.transparenttextures.com/patterns/leather.png'), linear-gradient(135deg, #e91e63, #ad1457);
+    background-blend-mode: overlay;
     display: flex; justify-content: center; align-items: center;
 }
 
