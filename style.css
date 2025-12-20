@@ -1,168 +1,130 @@
 /* --- SETTINGS --- */
 :root {
-    --curtain-time: 3s; /* EXACTLY 3 SECONDS AS REQUESTED */
+    --curtain-time: 3s; 
 }
 
-body {
-    background-color: #000;
-    margin: 0;
-    font-family: 'Playfair Display', serif;
+/* --- CURTAIN ANIMATION --- */
+#curtain-left, #curtain-right {
+    transition: transform var(--curtain-time) cubic-bezier(0.77, 0, 0.175, 1);
+    /* Velvet texture overlay */
+    background-image: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,0,0,0.3) 50px, rgba(0,0,0,0.3) 80px);
 }
 
-/* --- CURTAINS --- */
-.curtain-texture {
-    /* Creates a velvet fold effect using repeating gradients */
-    background-image: repeating-linear-gradient(
-        90deg,
-        #4a0404 0px,
-        #4a0404 40px,
-        #720e0e 80px,
-        #4a0404 120px
-    );
-}
+.curtains-open #curtain-left { transform: translateX(-100%); }
+.curtains-open #curtain-right { transform: translateX(100%); }
 
-#curtain-left {
-    transition: transform var(--curtain-time) cubic-bezier(0.65, 0.05, 0.36, 1);
-    transform: translateX(0);
-}
-#curtain-right {
-    transition: transform var(--curtain-time) cubic-bezier(0.65, 0.05, 0.36, 1);
-    transform: translateX(0);
-}
-
-.curtains-open #curtain-left {
-    transform: translateX(-100%);
-}
-.curtains-open #curtain-right {
-    transform: translateX(100%);
-}
-
-/* --- PERSPECTIVE --- */
-.perspective-1000 {
-    perspective: 1000px;
-}
-
-/* --- FLOATING HEARTS (Background) --- */
-.heart-bg {
+/* --- SPARKLES --- */
+.sparkle {
     position: absolute;
-    color: #ef9a9a;
+    width: 4px; height: 4px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #fff, 0 0 20px #ffeb3b;
     opacity: 0;
-    animation: floatHeart 10s linear infinite;
-    text-shadow: 0 0 10px rgba(239, 154, 154, 0.5);
+    animation: sparkleAnim 2s infinite ease-in-out;
+}
+@keyframes sparkleAnim {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(0); opacity: 0; }
 }
 
-@keyframes floatHeart {
-    0% { transform: translateY(110vh) scale(0.5) rotate(0deg); opacity: 0; }
-    20% { opacity: 0.4; }
-    80% { opacity: 0.4; }
-    100% { transform: translateY(-10vh) scale(1.2) rotate(20deg); opacity: 0; }
+/* --- BALLOONS --- */
+.balloon {
+    position: absolute;
+    bottom: -150px;
+    width: 60px; height: 75px;
+    border-radius: 45%;
+    box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
+    animation: floatUp 6s linear forwards;
+}
+.balloon::before {
+    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid currentColor;
+}
+.balloon::after {
+    content: ''; position: absolute; bottom: -40px; left: 50%; transform: translateX(-50%);
+    width: 1px; height: 35px; background: rgba(255,255,255,0.6);
+}
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(-120vh) rotate(20deg); opacity: 0; }
 }
 
-/* --- REALISTIC CANDLE --- */
+/* --- CANDLE PHYSICS --- */
 .candle-container {
     position: absolute;
-    width: 20px; /* Interaction area */
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     transform-origin: bottom center;
-    z-index: 50;
-    /* Debug: background: rgba(255,0,0,0.2); */
+    pointer-events: none;
 }
 
-.wax {
-    width: 6px;
-    height: 40px;
-    background: linear-gradient(90deg, #e0e0e0, #ffffff, #bdbdbd);
-    border-radius: 2px;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
-    position: relative;
-    top: 5px;
-}
-/* Stripes on candle */
-.wax::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(233, 30, 99, 0.2) 5px, rgba(233, 30, 99, 0.2) 10px);
-    border-radius: 2px;
-}
-
-.wick {
-    width: 2px;
-    height: 6px;
-    background: #1a1a1a;
-    position: relative;
-    top: 5px;
-}
-
-/* --- REALISTIC FLAME --- */
+/* The Flame */
 .flame {
-    width: 14px;
-    height: 35px;
+    width: 16px; height: 40px;
+    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff9800 50%, rgba(255,0,0,0.5) 100%);
     border-radius: 50% 50% 20% 20%;
-    background: radial-gradient(white, yellow, orange, rgba(255, 69, 0, 0.8));
-    box-shadow: 
-        0 0 10px rgba(255, 215, 0, 0.6),
-        0 0 20px rgba(255, 69, 0, 0.4),
-        0 0 40px rgba(255, 69, 0, 0.2);
-    position: absolute;
-    top: -25px; /* Position above wick */
-    left: 50%;
+    position: absolute; bottom: 100%; left: 50%;
     transform: translateX(-50%);
     transform-origin: 50% 90%;
-    animation: flicker 0.1s infinite alternate;
+    filter: drop-shadow(0 0 8px #ffc107);
     opacity: 0.9;
-    filter: blur(0.5px);
-    transition: opacity 0.3s, transform 0.1s;
+    /* Default wave animation */
+    animation: waveFlame 2s ease-in-out infinite;
 }
 
 .flame::after {
-    /* Blue core */
-    content: '';
-    position: absolute;
-    bottom: 0; left: 50%;
-    transform: translateX(-50%);
-    width: 6px; height: 8px;
-    background: rgba(0, 0, 255, 0.3);
-    border-radius: 50%;
-    filter: blur(2px);
+    content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 8px; background: #00f; border-radius: 50%; opacity: 0.3; filter: blur(2px);
 }
 
 .flame.out {
-    opacity: 0;
+    animation: none;
+    transition: all 0.2s ease-out;
     transform: scale(0);
+    opacity: 0;
 }
 
-@keyframes flicker {
-    0% { transform: translateX(-50%) scale(1.0) skewX(-2deg); opacity: 0.95; height: 35px; }
-    25% { transform: translateX(-50%) scale(1.02) skewX(2deg); opacity: 0.9; height: 36px; }
-    50% { transform: translateX(-50%) scale(0.98) skewX(-1deg); opacity: 1.0; height: 34px; }
-    75% { transform: translateX(-50%) scale(1.01) skewX(1deg); opacity: 0.9; height: 35px; }
-    100% { transform: translateX(-50%) scale(1.0) skewX(-2deg); opacity: 0.95; height: 36px; }
+@keyframes waveFlame {
+    0%, 100% { transform: translateX(-50%) rotate(-2deg) scaleY(1); }
+    50% { transform: translateX(-50%) rotate(2deg) scaleY(1.05); }
 }
 
-/* --- SMOKE EFFECT --- */
-.smoke-particle {
+/* Candle Body */
+.wax {
+    width: 8px; height: 40px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.8), var(--candle-color), rgba(0,0,0,0.1));
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px rgba(0,0,0,0.3);
+}
+
+.wick {
+    width: 2px; height: 6px; background: #333;
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+}
+
+/* --- SMOKE --- */
+.smoke-puff {
     position: absolute;
-    top: 0; left: 50%;
-    background: rgba(255, 255, 255, 0.6);
+    width: 10px; height: 10px;
+    background: rgba(255,255,255,0.5);
     border-radius: 50%;
-    pointer-events: none;
-    animation: smokeRise 1.5s forwards ease-out;
-    filter: blur(3px);
+    filter: blur(4px);
+    animation: smokeFloat 1.5s forwards;
+}
+@keyframes smokeFloat {
+    to { transform: translate(0, -50px) scale(3); opacity: 0; }
 }
 
-@keyframes smokeRise {
-    0% { width: 4px; height: 4px; opacity: 0.6; transform: translate(-50%, 0); }
-    100% { width: 30px; height: 30px; opacity: 0; transform: translate(-50%, -80px); }
+/* --- BACKGROUND HEARTS --- */
+.heart-float {
+    position: absolute;
+    color: #e91e63;
+    font-size: 24px;
+    opacity: 0;
+    animation: floatHeartBg 10s linear infinite;
 }
-
-/* --- UTILS --- */
-.fade-in-up {
-    animation: fadeInUp 1.5s forwards;
-}
-@keyframes fadeInUp {
-    to { opacity: 1; transform: translateY(0); }
+@keyframes floatHeartBg {
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    50% { opacity: 0.3; }
+    100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
 }
