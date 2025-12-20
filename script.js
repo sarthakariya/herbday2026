@@ -1,6 +1,6 @@
 /* --- CONFIGURATION --- */
 const TOTAL_CANDLES = 17;
-const BLOW_THRESHOLD = 35; // Sensitivity
+const BLOW_THRESHOLD = 30; // Lowered for better detection
 const CANDLE_COLORS = ['#F48FB1', '#90CAF9', '#FFF59D', '#A5D6A7'];
 
 /* --- STATE --- */
@@ -25,6 +25,8 @@ const replayContainer = document.getElementById('replay-container');
 const candlesContainer = document.getElementById('candles-container');
 const cherriesContainer = document.getElementById('cherries-container');
 const particlesContainer = document.getElementById('particles-container');
+const balloonContainer = document.getElementById('balloon-container');
+const streamerContainer = document.getElementById('streamer-container');
 
 /* --- INITIALIZATION --- */
 window.addEventListener('load', init);
@@ -33,7 +35,33 @@ function init() {
     createParticles();
     createCherries();
     createCandles();
+    createDecorations(); // Balloons & Streamers
     startBtn.addEventListener('click', startApp);
+}
+
+function createDecorations() {
+    // Balloons
+    const colors = ['#e91e63', '#2196f3', '#ffeb3b', '#4caf50', '#9c27b0'];
+    for(let i=0; i<8; i++) {
+        const b = document.createElement('div');
+        b.className = 'balloon';
+        b.style.left = (Math.random() * 90 + 5) + '%';
+        b.style.setProperty('--color', colors[i % colors.length]);
+        b.style.setProperty('--duration', (8 + Math.random() * 8) + 's');
+        b.style.setProperty('--delay', (Math.random() * 5) + 's');
+        balloonContainer.appendChild(b);
+    }
+    
+    // Streamers
+    for(let i=0; i<15; i++) {
+        const s = document.createElement('div');
+        s.className = 'streamer';
+        s.style.left = (Math.random() * 100) + '%';
+        s.style.setProperty('--color', colors[i % colors.length]);
+        s.style.setProperty('--duration', (4 + Math.random() * 4) + 's');
+        s.style.setProperty('--delay', (Math.random() * 5) + 's');
+        streamerContainer.appendChild(s);
+    }
 }
 
 function createParticles() {
@@ -49,10 +77,8 @@ function createParticles() {
 }
 
 function createCherries() {
-    // 12 Cherries in a circle
     const count = 12;
     const radius = 46; // %
-    
     for (let i = 0; i < count; i++) {
         const angle = (i / count) * Math.PI * 2;
         const x = 50 + Math.cos(angle) * radius;
@@ -62,15 +88,12 @@ function createCherries() {
         el.className = 'cherry';
         el.style.left = x + '%';
         el.style.top = y + '%';
-        // Z-index based on Y to simulate 3D occlusion
         el.style.zIndex = Math.floor(y);
-        
         cherriesContainer.appendChild(el);
     }
 }
 
 function createCandles() {
-    // 17 Candles in a circle (inner)
     const radius = 35; // %
     
     for (let i = 0; i < TOTAL_CANDLES; i++) {
@@ -84,7 +107,7 @@ function createCandles() {
         wrapper.className = 'candle-wrapper';
         wrapper.style.left = x + '%';
         wrapper.style.top = y + '%';
-        wrapper.style.zIndex = Math.floor(y + 10); // Candles in front of cherries if lower
+        wrapper.style.zIndex = Math.floor(y + 10);
         
         wrapper.innerHTML = `
             <div class="candle-stick" style="height: ${height}px; background: linear-gradient(90deg, rgba(255,255,255,0.6), ${color}, rgba(0,0,0,0.1));"></div>
@@ -94,6 +117,13 @@ function createCandles() {
             </div>
         `;
         
+        // Add click listener fallback
+        wrapper.addEventListener('click', (e) => {
+            if(candles[i].isLit) {
+                manualExtinguish(i);
+            }
+        });
+
         candlesContainer.appendChild(wrapper);
         candles.push({
             id: i,
@@ -106,42 +136,41 @@ function createCandles() {
 
 /* --- APP START --- */
 async function startApp() {
-    // 1. Hide Overlay
     startOverlay.style.opacity = '0';
     setTimeout(() => startOverlay.style.display = 'none', 1000);
 
-    // 2. Open Curtains
     curtainLeft.classList.add('curtain-open-left');
     curtainRight.classList.add('curtain-open-right');
 
-    // 3. Audio Context Setup
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         analyser = audioCtx.createAnalyser();
         microphone = audioCtx.createMediaStreamSource(stream);
 
-        // Low pass filter for wind noise
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 600;
+        filter.frequency.value = 600; // Isolate bass/wind sound
 
         microphone.connect(filter);
         filter.connect(analyser);
         analyser.fftSize = 256;
 
-        // 4. Reveal Stage
         setTimeout(() => {
             appStage.style.opacity = '1';
             isListening = true;
             micIconEl.classList.add('text-green-400');
             micIconEl.classList.remove('text-gray-500');
             detectBlow();
-        }, 1000); // Wait for curtain start
+        }, 1000);
 
     } catch (err) {
         console.error("Mic Error", err);
-        alert("Please allow microphone access to blow out the candles!");
+        // Fallback if mic fails - still show the cake
+        setTimeout(() => {
+            appStage.style.opacity = '1';
+            alert("Microphone not found! You can tap the candles to blow them out.");
+        }, 1000);
     }
 }
 
@@ -153,56 +182,68 @@ function detectBlow() {
     analyser.getByteFrequencyData(dataArray);
 
     let sum = 0;
-    // Focus on lower frequencies for "blowing" sound
-    const binCount = Math.floor(dataArray.length / 4); 
+    // Look at lower frequencies (blowing sound is mostly bass)
+    const binCount = Math.floor(dataArray.length / 3); 
     for (let i = 0; i < binCount; i++) sum += dataArray[i];
     const average = sum / binCount;
 
-    // Visual Meter
     micLevelEl.style.width = Math.min(average * 3, 100) + '%';
 
     if (average > BLOW_THRESHOLD) {
-        // Blow detected!
         extinguishCandles();
     }
 
     animationFrameId = requestAnimationFrame(detectBlow);
 }
 
+function manualExtinguish(index) {
+    if(!candles[index].isLit) return;
+    const c = candles[index];
+    c.isLit = false;
+    c.flameEl.classList.add('extinguished');
+    c.el.classList.add('extinguished'); // triggers ember effect
+    createSmoke(c.el);
+    candlesExtinguished++;
+    playPuffSound();
+    checkWin();
+}
+
 function extinguishCandles() {
-    // Randomly extinguish 1-2 candles if any are left
     const litCandles = candles.filter(c => c.isLit);
     if (litCandles.length === 0) return;
 
-    // Trigger visual flicker on all
+    // Flicker effect
     litCandles.forEach(c => {
-         c.flameEl.style.transform = `translateX(-50%) skewX(${Math.random() * 20 - 10}deg) scale(1.1)`;
+         c.flameEl.style.transform = `translateX(-50%) skewX(${Math.random() * 30 - 15}deg) scale(1.2)`;
     });
 
-    // Actually put out
     const amount = Math.min(litCandles.length, Math.floor(Math.random() * 2) + 1);
     
     for (let i = 0; i < amount; i++) {
-        // Pick a random candle from the lit ones
         const idx = Math.floor(Math.random() * litCandles.length);
         const candle = litCandles[idx];
         
         candle.isLit = false;
         candle.flameEl.classList.add('extinguished');
+        candle.el.classList.add('extinguished'); // triggers ember
         
-        // Create smoke
-        const smoke = document.createElement('div');
-        smoke.className = 'smoke';
-        candle.el.appendChild(smoke);
+        createSmoke(candle.el);
         
-        // Remove from local list to avoid picking again immediately
         litCandles.splice(idx, 1);
         candlesExtinguished++;
-        
         playPuffSound();
     }
+    checkWin();
+}
 
-    // Check Win
+function createSmoke(parent) {
+    const smoke = document.createElement('div');
+    smoke.className = 'smoke';
+    parent.appendChild(smoke);
+    setTimeout(() => smoke.remove(), 2000);
+}
+
+function checkWin() {
     if (candlesExtinguished >= TOTAL_CANDLES) {
         winSequence();
     }
@@ -231,14 +272,11 @@ function winSequence() {
     cancelAnimationFrame(animationFrameId);
     micLevelEl.style.width = '0%';
     
-    // Header Change
     headerText.innerHTML = "Happy Birthday to you My Babyyyyy ❤️";
     headerText.classList.add('text-pink-500');
     
-    // Music
     playWinMusic();
     
-    // Confetti
     const duration = 5000;
     const end = Date.now() + duration;
     
@@ -248,7 +286,6 @@ function winSequence() {
         if (Date.now() < end) requestAnimationFrame(frame);
     }());
 
-    // Show Replay
     setTimeout(() => {
         replayContainer.classList.remove('hidden');
     }, 2000);
@@ -257,7 +294,6 @@ function winSequence() {
 function playWinMusic() {
     if (!audioCtx) return;
     const t = audioCtx.currentTime;
-    // Simple chime melody
     const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 523.25];
     notes.forEach((f, i) => {
         const osc = audioCtx.createOscillator();

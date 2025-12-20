@@ -6,7 +6,7 @@
     <title>Happy 17th Birthday My Love</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS (for layout utilities) -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -26,7 +26,11 @@
 </head>
 <body class="overflow-hidden bg-[#1a0b1c] font-['Montserrat'] selection:bg-pink-500 selection:text-white">
 
-    <!-- AMBIENT LIGHTING -->
+    <!-- DECORATIVE BACKGROUND -->
+    <div id="balloon-container" class="absolute inset-0 pointer-events-none z-0"></div>
+    <div id="streamer-container" class="absolute inset-0 pointer-events-none z-0"></div>
+    
+    <!-- LIGHTING -->
     <div class="spotlight"></div>
     <div id="particles-container" class="absolute inset-0 pointer-events-none z-0 overflow-hidden"></div>
 
@@ -38,7 +42,7 @@
             <span class="animate-pulse">❤️</span>
             <span>Open Surprise</span>
         </button>
-        <p class="mt-8 text-pink-200/80 tracking-[0.3em] uppercase text-sm font-semibold">Please Enable Microphone 🎙️</p>
+        <p class="mt-8 text-pink-200/80 tracking-[0.3em] uppercase text-sm font-semibold">Enable Microphone 🎙️</p>
     </div>
 
     <!-- CURTAINS -->
@@ -102,16 +106,17 @@
 
             <!-- Cake Base -->
             <div class="cake-base">
-                <!-- Added cake-texture class -->
-                <div class="cake-base-side cake-texture"></div>
+                <div class="cake-base-side cake-texture">
+                     <div class="sprinkles"></div>
+                </div>
                 <div class="cake-base-top"></div>
             </div>
 
             <!-- Cake Top -->
             <div class="cake-top">
-                <!-- Added cake-texture class -->
                 <div class="cake-top-side cake-texture">
                      <div class="frosting-drip"></div>
+                     <div class="sprinkles"></div>
                      <div class="cake-text">My Babyyy</div>
                 </div>
                 <div class="cake-top-surface">
