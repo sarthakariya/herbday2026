@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Happy Birthday!</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@700&display=swap" rel="stylesheet">
 <script type="importmap">
 {
   "imports": {
@@ -20,92 +20,104 @@
 </head>
 <body>
 
-    <!-- Room Background -->
-    <div class="room">
-        <div class="wall"></div> 
-        <div class="floor"></div>
+    <!-- Dark Room Ambiance -->
+    <div class="room-vignette"></div>
+
+    <!-- Realistic Curtains -->
+    <div class="curtain-container">
+        <div class="curtain-panel left">
+            <div class="fold"></div><div class="fold"></div><div class="fold"></div><div class="fold"></div>
+        </div>
+        <div class="curtain-panel right">
+            <div class="fold"></div><div class="fold"></div><div class="fold"></div><div class="fold"></div>
+        </div>
     </div>
 
-    <!-- Curtains -->
-    <div class="curtain left">
-        <div class="rope"></div>
-    </div>
-    <div class="curtain right">
-        <div class="rope"></div>
-    </div>
+    <!-- Bunting (Background) -->
+    <div class="bunting-layer" id="bunting-container"></div>
 
-    <!-- Bunting Flags -->
-    <div class="bunting" id="bunting-container"></div>
-
-    <!-- Mic Indicator (Hidden initially) -->
-    <div id="mic-indicator" class="hidden">
-        <span>🎤</span>
-        <div class="bar-bg"><div id="mic-level-bar"></div></div>
-    </div>
-
-    <!-- Invisible Interaction Layer to unlock Audio -->
-    <div id="unlock-audio-layer">
-        <p class="tap-hint">Tap anywhere to enable magic ✨</p>
+    <!-- UI: Mic & Hints -->
+    <div id="ui-layer">
+        <div id="mic-indicator" class="hidden">
+            <span class="icon">🎙️</span>
+            <div class="bar-container"><div id="mic-level-bar"></div></div>
+        </div>
+        <div id="unlock-audio-layer">
+            <div class="tap-hint-box">
+                <span class="sparkle-icon">✨</span>
+                Tap to Start the Magic
+                <span class="sparkle-icon">✨</span>
+            </div>
+        </div>
     </div>
 
-    <!-- Main Cake Scene -->
-    <div class="stage">
+    <!-- 3D Stage -->
+    <div class="stage-container">
         
-        <!-- Blue Plate -->
-        <div class="plate"></div>
+        <!-- Wooden Table -->
+        <div class="table-surface">
+            <div class="wood-grain"></div>
+        </div>
 
-        <!-- Cake Group -->
-        <div class="cake-group" id="cake-group">
+        <!-- Floating Cake Container -->
+        <div class="cake-assembly" id="cake-assembly">
             
-            <!-- Chocolate Base Layer -->
-            <div class="cake-base">
-                <div class="crumb-texture"></div>
+            <!-- Porcelain Plate -->
+            <div class="plate-shadow"></div>
+            <div class="plate-body">
+                <div class="plate-reflection"></div>
             </div>
-            
-            <!-- White Icing Layer -->
-            <div class="cake-icing-body">
-                <div class="swirls-decor"></div>
-                <div class="text-container">
-                    <div class="text-label">My Babyyy</div>
+
+            <!-- The Realistic Cake -->
+            <div class="cake-body">
+                <!-- Chocolate Base -->
+                <div class="layer-base">
+                    <div class="sponge-texture"></div>
                 </div>
-                <div class="crumb-texture"></div>
-                <div class="scallop-mask"></div>
-            </div>
 
-            <!-- Top Surface -->
-            <div class="cake-top">
-                <div class="sprinkles-top"></div>
-                <div class="swirls-top"></div>
-            </div>
+                <!-- Cream Layer with Drips -->
+                <div class="layer-cream">
+                    <div class="icing-smooth"></div>
+                    <div class="drips-container">
+                        <!-- CSS Generated Drips -->
+                        <div class="drip d1"></div><div class="drip d2"></div><div class="drip d3"></div>
+                        <div class="drip d4"></div><div class="drip d5"></div><div class="drip d6"></div>
+                    </div>
+                    <!-- Name Label -->
+                    <div class="name-plaque">
+                        <h1>My Babyyy</h1>
+                    </div>
+                </div>
 
-            <!-- Decorations Container (Candles & Treats) -->
-            <div id="decorations-layer">
-                <!-- Injected by JS -->
-            </div>
-            
-            <!-- Plate Decorations -->
-            <div id="plate-decorations">
-                <!-- Injected by JS -->
+                <!-- Top Surface -->
+                <div class="layer-top">
+                    <div class="icing-texture"></div>
+                    <div class="frosting-rim"></div>
+                    
+                    <!-- Items Container -->
+                    <div id="decorations-container"></div>
+                </div>
             </div>
         </div>
 
-        <!-- Foreground Balloons -->
-        <div class="balloons-container">
-            <div class="balloon b-yellow"></div>
-            <div class="balloon b-red"></div>
-            <div class="balloon b-blue"></div>
+        <!-- Foreground Atmosphere -->
+        <div class="balloon-layer">
+            <div class="real-balloon red"></div>
+            <div class="real-balloon gold"></div>
+            <div class="real-balloon blue"></div>
         </div>
 
-        <!-- Success Message -->
-        <div id="message" class="hidden">
-            <h2>Happy Birthday!</h2>
-            <p>All wishes granted! ✨</p>
-            <button onclick="location.reload()" class="retry-btn">Play Again</button>
+        <!-- Win Message -->
+        <div id="win-message" class="hidden">
+            <div class="card">
+                <h2>Happy Birthday!</h2>
+                <p>May all your wishes come true ❤️</p>
+                <button onclick="location.reload()">Replay</button>
+            </div>
         </div>
     </div>
 
     <canvas id="confetti-canvas"></canvas>
-
     <script src="script.js"></script>
 </body>
 </html>
