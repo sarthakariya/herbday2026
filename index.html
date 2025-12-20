@@ -20,23 +20,19 @@
 </head>
 <body>
 
-    <!-- Dark Room Ambiance -->
-    <div class="room-vignette"></div>
+    <!-- Volumetric Light Beam -->
+    <div class="spotlight"></div>
 
     <!-- Realistic Curtains -->
     <div class="curtain-container">
-        <div class="curtain-panel left">
-            <div class="fold"></div><div class="fold"></div><div class="fold"></div><div class="fold"></div>
-        </div>
-        <div class="curtain-panel right">
-            <div class="fold"></div><div class="fold"></div><div class="fold"></div><div class="fold"></div>
-        </div>
+        <div class="curtain-panel left"></div>
+        <div class="curtain-panel right"></div>
     </div>
 
-    <!-- Bunting (Background) -->
-    <div class="bunting-layer" id="bunting-container"></div>
+    <!-- Background Bunting -->
+    <div id="bunting-container"></div>
 
-    <!-- UI: Mic & Hints -->
+    <!-- UI Layer -->
     <div id="ui-layer">
         <div id="mic-indicator" class="hidden">
             <span class="icon">🎙️</span>
@@ -45,69 +41,65 @@
         <div id="unlock-audio-layer">
             <div class="tap-hint-box">
                 <span class="sparkle-icon">✨</span>
-                Tap to Start the Magic
+                Tap anywhere to start
                 <span class="sparkle-icon">✨</span>
             </div>
         </div>
     </div>
 
-    <!-- 3D Stage -->
+    <!-- Main Stage -->
     <div class="stage-container">
         
-        <!-- Wooden Table -->
-        <div class="table-surface">
-            <div class="wood-grain"></div>
-        </div>
+        <!-- Table -->
+        <div class="table"></div>
 
-        <!-- Floating Cake Container -->
-        <div class="cake-assembly" id="cake-assembly">
+        <!-- New 2.5D Cake Structure -->
+        <div class="cake-container" id="cake-container">
             
-            <!-- Porcelain Plate -->
-            <div class="plate-shadow"></div>
-            <div class="plate-body">
-                <div class="plate-reflection"></div>
+            <!-- Plate -->
+            <div class="plate-layer">
+                <div class="plate-base"></div>
+                <div class="plate-inner"></div>
             </div>
 
-            <!-- The Realistic Cake -->
-            <div class="cake-body">
-                <!-- Chocolate Base -->
-                <div class="layer-base">
-                    <div class="sponge-texture"></div>
-                </div>
+            <!-- Bottom Cake Layer (Chocolate) -->
+            <div class="cake-layer bottom-layer">
+                <div class="side"></div>
+                <div class="lid"></div>
+            </div>
 
-                <!-- Cream Layer with Drips -->
-                <div class="layer-cream">
-                    <div class="icing-smooth"></div>
-                    <div class="drips-container">
-                        <!-- CSS Generated Drips -->
-                        <div class="drip d1"></div><div class="drip d2"></div><div class="drip d3"></div>
-                        <div class="drip d4"></div><div class="drip d5"></div><div class="drip d6"></div>
+            <!-- Top Cake Layer (Cream) -->
+            <div class="cake-layer top-layer">
+                <div class="side">
+                    <div class="drip-container">
+                        <div class="drip" style="left: 10%; height: 40px;"></div>
+                        <div class="drip" style="left: 30%; height: 60px;"></div>
+                        <div class="drip" style="left: 50%; height: 35px;"></div>
+                        <div class="drip" style="left: 70%; height: 50px;"></div>
+                        <div class="drip" style="left: 90%; height: 45px;"></div>
                     </div>
-                    <!-- Name Label -->
-                    <div class="name-plaque">
-                        <h1>My Babyyy</h1>
-                    </div>
+                    <div class="cake-text">My Babyyy</div>
                 </div>
-
-                <!-- Top Surface -->
-                <div class="layer-top">
-                    <div class="icing-texture"></div>
+                <div class="lid">
                     <div class="frosting-rim"></div>
-                    
-                    <!-- Items Container -->
-                    <div id="decorations-container"></div>
                 </div>
             </div>
+
+            <!-- Decorations anchored to top lid -->
+            <div id="candle-container"></div>
+            
+            <!-- Sparkles Container -->
+            <div id="sparkle-container"></div>
         </div>
 
-        <!-- Foreground Atmosphere -->
-        <div class="balloon-layer">
-            <div class="real-balloon red"></div>
-            <div class="real-balloon gold"></div>
-            <div class="real-balloon blue"></div>
+        <!-- Balloons -->
+        <div class="balloons">
+            <div class="balloon red"></div>
+            <div class="balloon gold"></div>
+            <div class="balloon blue"></div>
         </div>
 
-        <!-- Win Message -->
+        <!-- Win Card -->
         <div id="win-message" class="hidden">
             <div class="card">
                 <h2>Happy Birthday!</h2>
