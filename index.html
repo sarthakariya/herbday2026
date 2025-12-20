@@ -15,148 +15,128 @@
 <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react-confetti": "https://esm.sh/react-confetti@^6.4.0"
+    "react-confetti": "https://esm.sh/react-confetti@^6.4.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
   }
 }
 </script>
 </head>
-<body class="overflow-hidden bg-[#1a0509] font-['Montserrat'] selection:bg-rose-500 selection:text-white">
+<body class="overflow-hidden bg-[#050203] font-['Montserrat'] selection:bg-rose-500 selection:text-white">
 
     <!-- START SCREEN -->
-    <div id="start-overlay" class="fixed inset-0 z-[100] bg-[#fff0f5] flex flex-col items-center justify-center transition-opacity duration-1000">
-        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hearts.png')] opacity-20"></div>
+    <div id="start-overlay" class="fixed inset-0 z-[100] bg-[#1a0509] flex flex-col items-center justify-center transition-opacity duration-1000">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/hearts.png')] opacity-10"></div>
         
-        <button id="start-btn" class="group relative z-10 bg-gradient-to-r from-rose-500 to-pink-600 text-white px-16 py-6 rounded-full text-3xl font-serif font-bold shadow-[0_10px_40px_rgba(233,30,99,0.4)] border-4 border-white hover:scale-105 transition-transform flex items-center gap-4 cursor-pointer">
+        <button id="start-btn" class="group relative z-10 bg-gradient-to-r from-rose-600 to-pink-700 text-white px-16 py-6 rounded-full text-3xl font-serif font-bold shadow-[0_0_50px_rgba(233,30,99,0.6)] border-2 border-rose-400 hover:scale-105 transition-transform flex items-center gap-4 cursor-pointer">
             <span class="animate-pulse">❤️</span>
-            <span>Enter Room</span>
+            <span>Enter Surprise</span>
         </button>
-        <p class="mt-8 text-rose-400 tracking-[0.3em] uppercase text-sm font-bold bg-white/50 px-4 py-2 rounded-full backdrop-blur-sm">Enable Microphone 🎙️</p>
+        <p class="mt-8 text-rose-300 tracking-[0.3em] uppercase text-xs font-bold bg-black/40 px-6 py-3 rounded-full backdrop-blur-md border border-white/10">Allow Microphone Access 🎙️</p>
     </div>
 
     <!-- MAIN ROOM CONTAINER -->
-    <div id="room" class="relative w-full h-screen overflow-hidden perspective-1000 opacity-0 transition-opacity duration-1000 bg-gradient-to-b from-[#2b0a10] to-[#100305]">
+    <div id="room" class="relative w-full h-screen overflow-hidden perspective-1000 opacity-0 transition-opacity duration-1000 bg-gradient-to-b from-[#1a0509] to-[#000]">
         
-        <!-- WALLS -->
+        <!-- WALLS & FLOOR BACKGROUND -->
         <div class="absolute inset-0 z-0">
-            <!-- Wall Texture -->
-            <div class="absolute top-0 left-0 w-full h-[60%] bg-[url('https://www.transparenttextures.com/patterns/wall-4-light.png')] opacity-10"></div>
-            <!-- Floor Texture -->
-            <div class="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-[#000] to-[#2b1015] opacity-90"></div>
+            <!-- Wall -->
+            <div class="absolute top-0 left-0 w-full h-[60%] bg-[#2b0a10] bg-[url('https://www.transparenttextures.com/patterns/wall-4-light.png')] opacity-40"></div>
+            <!-- Floor -->
+            <div class="absolute bottom-0 left-0 w-full h-[45%] bg-gradient-to-t from-[#000] via-[#1a0509] to-[#2b0a10]"></div>
         </div>
 
-        <!-- RECTANGULAR WINDOW WITH CURTAINS -->
-        <div class="absolute top-[5%] left-1/2 -translate-x-1/2 w-[500px] h-[300px] z-0">
-            <!-- Window Frame & Sky -->
-            <div class="absolute inset-0 bg-[#0a0a1a] border-8 border-[#3e2723] shadow-[0_0_50px_rgba(0,0,0,0.8)] overflow-hidden">
-                <!-- Night Sky -->
-                <div class="absolute inset-0 bg-gradient-to-b from-[#020111] to-[#111133]">
-                    <div class="absolute top-6 right-10 w-16 h-16 bg-yellow-100 rounded-full blur-[2px] shadow-[0_0_30px_rgba(255,255,200,0.6)]"></div> <!-- Moon -->
-                    <div class="stars opacity-80"></div>
+        <!-- WINDOW WITH VIEW -->
+        <div class="absolute top-[5%] left-1/2 -translate-x-1/2 w-[600px] h-[350px] z-0">
+            <!-- Window Frame & Night Sky -->
+            <div class="absolute inset-0 bg-[#050510] border-8 border-[#2d1b16] shadow-[inset_0_0_80px_rgba(0,0,0,1)] overflow-hidden rounded-sm">
+                <!-- Night Sky Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-b from-[#020111] via-[#050520] to-[#111133]">
+                    <!-- Moon Peeking -->
+                    <div class="absolute top-[-20px] right-[-20px] w-32 h-32 bg-[#fffae0] rounded-full blur-[2px] shadow-[0_0_60px_rgba(255,250,224,0.4)] opacity-90"></div>
+                    <div class="stars opacity-60"></div>
                 </div>
                 <!-- Window Panes -->
-                <div class="absolute top-0 bottom-0 left-1/2 w-4 bg-[#3e2723] -translate-x-1/2"></div>
-                <div class="absolute top-1/2 left-0 right-0 h-4 bg-[#3e2723] -translate-y-1/2"></div>
+                <div class="absolute top-0 bottom-0 left-1/2 w-4 bg-[#2d1b16] -translate-x-1/2 shadow-xl"></div>
+                <div class="absolute top-[60%] left-0 right-0 h-4 bg-[#2d1b16] -translate-y-1/2 shadow-xl"></div>
             </div>
             
-            <!-- Window Curtains -->
-            <div class="absolute top-0 left-[-20px] h-[110%] w-[120px] bg-red-900 border-l-4 border-red-950 shadow-2xl transform origin-top-left rotate-2" style="border-radius: 0 0 60px 0;"></div>
-            <div class="absolute top-0 right-[-20px] h-[110%] w-[120px] bg-red-900 border-r-4 border-red-950 shadow-2xl transform origin-top-right -rotate-2" style="border-radius: 0 0 0 60px;"></div>
-            <!-- Valance (Top Curtain) -->
-            <div class="absolute top-[-10px] left-[-30px] right-[-30px] h-[60px] bg-red-800 rounded-b-[50%] shadow-lg z-10 border-b-4 border-yellow-500/30"></div>
+            <!-- Wavy Curtains -->
+            <div class="curtain-rod"></div>
+            <div class="curtain left-curtain"></div>
+            <div class="curtain right-curtain"></div>
+            <div class="curtain-valance"></div>
         </div>
 
         <!-- BANNERS -->
-        <div class="absolute top-[2%] left-0 w-full flex justify-center z-10 pointer-events-none">
-            <div class="banner-string">
-                <span class="banner-flag">H</span>
-                <span class="banner-flag">A</span>
-                <span class="banner-flag">P</span>
-                <span class="banner-flag">P</span>
-                <span class="banner-flag">Y</span>
+        <div class="absolute top-[8%] left-0 w-full flex justify-center z-10 pointer-events-none opacity-90">
+            <div class="banner-string" style="transform: rotate(-1deg);">
+                <span class="banner-flag">H</span><span class="banner-flag">A</span><span class="banner-flag">P</span><span class="banner-flag">P</span><span class="banner-flag">Y</span>
             </div>
         </div>
-        <div class="absolute top-[15%] left-0 w-full flex justify-center z-10 pointer-events-none">
-            <div class="banner-string" style="width: 600px; transform: rotate(2deg);">
-                <span class="banner-flag alt">B</span>
-                <span class="banner-flag alt">I</span>
-                <span class="banner-flag alt">R</span>
-                <span class="banner-flag alt">T</span>
-                <span class="banner-flag alt">H</span>
-                <span class="banner-flag alt">D</span>
-                <span class="banner-flag alt">A</span>
-                <span class="banner-flag alt">Y</span>
-            </div>
-        </div>
-
-        <!-- FAIRY LIGHTS -->
-        <div class="absolute top-0 left-0 w-full h-20 z-20 pointer-events-none flex justify-around">
-            <div class="light-bulb red"></div>
-            <div class="light-bulb yellow"></div>
-            <div class="light-bulb blue"></div>
-            <div class="light-bulb green"></div>
-            <div class="light-bulb red"></div>
-            <div class="light-bulb yellow"></div>
-            <div class="light-bulb blue"></div>
-            <div class="light-bulb green"></div>
-        </div>
-
-        <!-- BALLOONS -->
-        <div id="balloon-container" class="absolute inset-0 pointer-events-none z-10"></div>
-
-        <!-- MIC METER UI -->
-        <div class="absolute top-6 right-6 z-50 flex items-center gap-3 bg-black/60 backdrop-blur-md px-5 py-2 rounded-full border border-white/20 shadow-xl">
-            <div id="mic-icon" class="text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-            </div>
-            <div class="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div id="mic-level" class="h-full bg-gradient-to-r from-green-400 to-rose-500 w-0 transition-all duration-75"></div>
+        <div class="absolute top-[20%] left-0 w-full flex justify-center z-10 pointer-events-none opacity-90">
+            <div class="banner-string" style="width: 600px; transform: rotate(1deg);">
+                <span class="banner-flag alt">B</span><span class="banner-flag alt">I</span><span class="banner-flag alt">R</span><span class="banner-flag alt">T</span><span class="banner-flag alt">H</span><span class="banner-flag alt">D</span><span class="banner-flag alt">A</span><span class="banner-flag alt">Y</span>
             </div>
         </div>
 
         <!-- HEADER TEXT -->
         <div class="absolute top-[28%] z-30 text-center w-full pointer-events-none select-none">
-            <h1 id="header-text" class="font-['Great_Vibes'] text-6xl md:text-[6rem] leading-tight text-[#ffc107] drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-pulse">
+            <h1 id="header-text" class="font-['Great_Vibes'] text-6xl md:text-[5rem] leading-tight text-[#ffc107] drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)] animate-pulse transition-all duration-500">
                 Make a Wish...
             </h1>
         </div>
 
         <!-- 3D TABLE SCENE -->
-        <!-- Rotated 75deg to create a "floor" perspective, giving a side view of the cake -->
+        <!-- Rotate X 60deg gives a good side/top view balance -->
         <div class="absolute top-[55%] left-1/2 -translate-x-1/2 z-20" style="perspective: 1200px;">
-            <div class="scene-container relative" style="transform: rotateX(75deg);">
+            <div class="scene-container relative" style="transform: rotateX(60deg);">
                 
                 <!-- TABLE SURFACE -->
                 <div class="wood-table-surface">
                     <div class="table-reflection"></div>
                     
-                    <!-- FOOD & DECOR ON TABLE (Rotated to stand up) -->
+                    <!-- OBJECTS ON TABLE -->
+                    <!-- Note: Because scene is rotated X 60deg, objects standing up need rotateX(-60deg) -->
                     
-                    <!-- Gifts -->
-                    <div class="gift-box" style="--x: -280px; --z: 100px; --rot: 25deg; --color: #9c27b0;">
-                        <div class="gift-lid"></div>
-                        <div class="gift-ribbon"></div>
+                    <!-- Standalone Candle (Does NOT blow out) -->
+                    <div class="absolute" style="transform: translate3d(-350px, -150px, 0px);">
+                        <div class="standalone-candle-container">
+                             <div class="candlestick-base"></div>
+                             <div class="candlestick-stem"></div>
+                             <div class="candlestick-cup"></div>
+                             <div class="wax-candle">
+                                 <div class="eternal-wick"></div>
+                                 <div class="eternal-flame">
+                                     <div class="flame-part"></div>
+                                     <div class="flame-part"></div>
+                                 </div>
+                             </div>
+                        </div>
                     </div>
-                    <div class="gift-box" style="--x: 250px; --z: 60px; --rot: -15deg; --color: #e91e63;">
-                        <div class="gift-lid"></div>
-                        <div class="gift-ribbon"></div>
+
+                    <!-- Gift 1 -->
+                    <div class="gift-box" style="--x: -280px; --z: 100px; --rot: 25deg; --color: #7b1fa2; --ribbon: #ffeb3b;">
+                        <div class="gift-lid"></div><div class="gift-ribbon"></div>
+                    </div>
+                    <!-- Gift 2 -->
+                    <div class="gift-box" style="--x: 280px; --z: 50px; --rot: -15deg; --color: #c2185b; --ribbon: #fff;">
+                        <div class="gift-lid"></div><div class="gift-ribbon"></div>
                     </div>
 
                     <!-- Plate of Cookies -->
-                    <div class="absolute" style="transform: translate3d(-200px, -50px, 10px);">
-                         <div class="w-32 h-32 rounded-full bg-white shadow-lg border border-gray-200 flex items-center justify-center flex-wrap gap-1 p-4 relative">
-                             <!-- Cookies -->
+                    <div class="object-3d" style="transform: translate3d(-200px, 150px, 0px) rotateX(-60deg);">
+                         <div class="w-36 h-36 rounded-full bg-white shadow-xl border border-gray-200 flex items-center justify-center flex-wrap gap-2 p-5 relative" style="box-shadow: 0 10px 20px rgba(0,0,0,0.5);">
                              <div class="cookie"></div><div class="cookie"></div><div class="cookie"></div>
                              <div class="cookie"></div><div class="cookie"></div>
                          </div>
                     </div>
 
                     <!-- Box of Chocolates -->
-                    <div class="absolute" style="transform: translate3d(200px, -80px, 10px) rotate(10deg);">
-                         <div class="w-32 h-24 bg-[#3e2723] rounded-md shadow-xl border-2 border-[#5d4037] flex flex-wrap gap-2 p-2 justify-center content-center">
+                    <div class="object-3d" style="transform: translate3d(220px, 120px, 0px) rotateX(-60deg) rotateZ(10deg);">
+                         <div class="w-40 h-28 bg-[#3e2723] rounded-sm shadow-2xl border border-[#5d4037] p-2 grid grid-cols-3 gap-1 content-center">
                              <div class="choc round"></div><div class="choc square"></div><div class="choc round"></div>
                              <div class="choc square"></div><div class="choc round"></div><div class="choc square"></div>
                          </div>
@@ -167,17 +147,20 @@
                 <div class="cake-assembly">
                     <div class="plate"><div class="plate-inner"></div></div>
                     
-                    <!-- Cake Base -->
-                    <div class="cake-layer base-layer">
-                        <div class="layer-side"></div>
-                        <div class="layer-top"></div>
+                    <!-- New 2.5D Cake Structure -->
+                    <!-- Base Layer -->
+                    <div class="cake-tier base-tier">
+                        <div class="tier-body"></div> <!-- Side wall facing camera -->
+                        <div class="tier-top"></div>  <!-- Top surface -->
                     </div>
 
-                    <!-- Cake Top -->
-                    <div class="cake-layer top-layer">
-                        <div class="layer-side"><div class="frosting-drip"></div></div>
-                        <div class="layer-top">
-                             <!-- Panda (Counter-rotated to face camera) -->
+                    <!-- Top Layer -->
+                    <div class="cake-tier top-tier">
+                        <div class="tier-body"></div>
+                        <div class="tier-top">
+                             <div class="frosting-rim"></div>
+                             
+                             <!-- Panda (Standing up) -->
                              <div class="panda-container">
                                  <div class="panda-body">
                                      <div class="ear left"></div><div class="ear right"></div>
@@ -189,8 +172,10 @@
                                      </div>
                                  </div>
                              </div>
-                             <!-- Text (Counter-rotated) -->
+                             
+                             <!-- Text (Standing up) -->
                              <div class="cake-writing">My Babyyy</div>
+                             
                              <!-- Dynamic Elements -->
                              <div id="cherries-container"></div>
                              <div id="candles-container"></div>
@@ -203,61 +188,89 @@
 
         <!-- CONTROLS -->
         <div class="absolute bottom-10 left-0 w-full flex justify-center z-50 pointer-events-none">
-             <button id="open-card-btn" class="hidden pointer-events-auto bg-white text-rose-600 px-10 py-4 rounded-full font-bold shadow-[0_10px_40px_rgba(0,0,0,0.5)] hover:bg-rose-50 border-4 border-rose-200 transition-all animate-bounce flex items-center gap-2 transform hover:scale-105">
+             <button id="open-card-btn" class="hidden pointer-events-auto bg-[#fff] text-rose-600 px-10 py-4 rounded-full font-bold shadow-[0_0_40px_rgba(255,255,255,0.4)] hover:bg-rose-50 border-4 border-rose-100 transition-all animate-bounce flex items-center gap-2 transform hover:scale-105">
                 💌 Open Greeting Card
             </button>
-            <button id="replay-btn" class="hidden pointer-events-auto absolute -bottom-12 text-white/50 hover:text-white underline text-sm" onclick="location.reload()">
+            <button id="replay-btn" class="hidden pointer-events-auto absolute -bottom-16 text-white/40 hover:text-white underline text-sm transition-colors" onclick="location.reload()">
                 Start Over
             </button>
         </div>
 
+        <!-- MIC METER UI -->
+        <div class="absolute top-6 right-6 z-50 flex items-center gap-3 bg-black/60 backdrop-blur-md px-5 py-2 rounded-full border border-white/10 shadow-xl">
+            <div id="mic-icon" class="text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </div>
+            <div class="w-24 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div id="mic-level" class="h-full bg-gradient-to-r from-green-400 to-rose-500 w-0 transition-all duration-75"></div>
+            </div>
+        </div>
+
+        <!-- FAIRY LIGHTS (Top of screen) -->
+        <div class="absolute top-0 left-0 w-full h-12 z-40 pointer-events-none flex justify-between px-10">
+            <div class="wire absolute top-0 left-0 w-full h-4 border-b border-white/20 rounded-[50%]"></div>
+            <!-- Lights generated via CSS/JS or static here -->
+            <div class="light-bulb red" style="left: 10%"></div>
+            <div class="light-bulb yellow" style="left: 20%"></div>
+            <div class="light-bulb blue" style="left: 30%"></div>
+            <div class="light-bulb green" style="left: 40%"></div>
+            <div class="light-bulb red" style="left: 50%"></div>
+            <div class="light-bulb yellow" style="left: 60%"></div>
+            <div class="light-bulb blue" style="left: 70%"></div>
+            <div class="light-bulb green" style="left: 80%"></div>
+        </div>
+
+        <!-- BALLOONS -->
+        <div id="balloon-container" class="absolute inset-0 pointer-events-none z-10"></div>
     </div>
 
     <!-- BOOK STYLE GREETING CARD MODAL -->
     <div id="card-modal" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-500">
         
         <!-- Book Container -->
-        <div class="book-container relative w-[300px] h-[420px] md:w-[400px] md:h-[560px]">
+        <div class="book-container relative w-[320px] h-[440px] md:w-[420px] md:h-[580px]">
             <div class="book" id="book-element">
                 
                 <!-- Front Cover (Hinged) -->
                 <div class="cover">
                     <div class="front">
-                        <div class="border-4 border-yellow-400/50 w-full h-full flex flex-col items-center justify-center p-4">
-                            <div class="text-7xl mb-4">❤️</div>
-                            <h2 class="font-['Great_Vibes'] text-6xl text-white mb-2 text-center drop-shadow-md">To My Love</h2>
-                            <p class="text-pink-100 text-sm font-bold uppercase tracking-[0.3em] mt-8">Tap to Read</p>
+                        <div class="border-[3px] border-[#d4af37] w-[90%] h-[90%] flex flex-col items-center justify-center p-4 border-double">
+                            <div class="text-6xl mb-4 drop-shadow-md">❤️</div>
+                            <h2 class="font-['Great_Vibes'] text-5xl text-[#fff] mb-2 text-center drop-shadow-md">To My Love</h2>
+                            <p class="text-[#d4af37] text-xs font-bold uppercase tracking-[0.3em] mt-8">Open Here</p>
                         </div>
                     </div>
                     <div class="back">
-                        <!-- Inside Left (Back of cover) -->
-                        <div class="w-full h-full bg-white flex flex-col items-center justify-center p-8 border-r border-gray-200">
-                             <div class="text-4xl mb-4">📸</div>
-                             <p class="font-['Great_Vibes'] text-3xl text-gray-400 text-center">"Every moment with you is magic..."</p>
+                        <!-- Inside Left -->
+                        <div class="w-full h-full bg-[#f8f5e6] flex flex-col items-center justify-center p-8 border-r border-gray-300 shadow-inner">
+                             <div class="w-32 h-32 bg-gray-200 rounded-full mb-6 overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
+                                 <span class="text-4xl">📸</span>
+                             </div>
+                             <p class="font-['Great_Vibes'] text-2xl text-gray-500 text-center">"Collecting moments with you..."</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Inside Right (Static Page) -->
                 <div class="page-right">
-                    <div class="content flex flex-col items-center justify-center h-full p-8 text-center bg-[#fffbf0]">
-                        <h3 class="font-['Great_Vibes'] text-5xl text-rose-600 mb-6">Happy Birthday!</h3>
-                        <p class="font-['Montserrat'] text-gray-700 leading-loose text-lg mb-6">
+                    <div class="content flex flex-col items-center justify-center h-full p-8 text-center">
+                        <h3 class="font-['Great_Vibes'] text-5xl text-rose-600 mb-6 drop-shadow-sm">Happy Birthday!</h3>
+                        <p class="font-['Montserrat'] text-gray-800 leading-loose text-base md:text-lg mb-6 font-medium">
                             Happy Birthday my baby and many many happy returns of the day!
                             <br><br>
                             I hope your day is as sweet as the cake and as beautiful as you are.
                         </p>
-                        <p class="font-['Montserrat'] text-rose-500 font-bold text-xl">
-                            I love you so much! ❤️
+                        <p class="font-['Great_Vibes'] text-rose-500 text-3xl mt-2">
+                            I love you so much!
                         </p>
-                        <div class="mt-8 text-3xl flex gap-2">🎂 🍫 🎁 🎈</div>
+                        <div class="mt-8 text-2xl flex gap-3 opacity-80">🎂 🍫 🎁 🎈</div>
                     </div>
                 </div>
 
             </div>
         </div>
         
-        <button id="close-card-btn" class="absolute top-8 right-8 text-white bg-white/20 hover:bg-white/40 rounded-full p-3 transition-colors">
+        <button id="close-card-btn" class="absolute top-8 right-8 text-white bg-white/10 hover:bg-white/20 rounded-full p-3 transition-colors backdrop-blur-sm">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
     </div>
