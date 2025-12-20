@@ -232,7 +232,7 @@ function winSequence() {
     micLevelEl.style.width = '0%';
     
     // Header Change
-    headerText.innerHTML = "I Love You! ❤️";
+    headerText.innerHTML = "Happy Birthday to you My Babyyyyy ❤️";
     headerText.classList.add('text-pink-500');
     
     // Music

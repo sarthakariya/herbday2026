@@ -85,6 +85,34 @@ body {
 .knife-container:hover { transform: rotate(5deg); }
 .knife-svg { transform: rotate(-15deg); }
 
+/* --- TEXTURES & DECORATIONS --- */
+.cake-texture {
+    /* Base gradient */
+    background-color: currentColor;
+    /* 1. Crumbs (Noise) */
+    background-image: 
+        radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+        /* 2. Sprinkles */
+        radial-gradient(circle, #ffeb3b 2px, transparent 2.5px),
+        radial-gradient(circle, #ff4081 2px, transparent 2.5px),
+        radial-gradient(circle, #00e676 2px, transparent 2.5px),
+        radial-gradient(circle, #2979ff 2px, transparent 2.5px);
+    
+    background-size: 
+        4px 4px,      /* Crumbs density */
+        60px 50px,    /* Sprinkle 1 position/repeat */
+        70px 80px,    /* Sprinkle 2 position/repeat */
+        50px 60px,    /* Sprinkle 3 position/repeat */
+        90px 40px;    /* Sprinkle 4 position/repeat */
+        
+    background-position: 
+        0 0,
+        10px 10px,
+        40px 20px,
+        20px 45px,
+        60px 5px;
+}
+
 /* --- CAKE BASE (Bottom Tier) --- */
 .cake-base {
     position: absolute;
@@ -92,15 +120,24 @@ body {
     transform: translate(-50%, -60%);
     width: 80%; height: 80%;
     z-index: 10;
+    color: #5D4037; /* Base color for texture */
 }
 .cake-base-side {
     position: absolute; top: 15px; left: 0;
     width: 100%; height: 100%;
-    background: #3E2723;
-    background-image: linear-gradient(to right, #281915, #5D4037, #281915);
+    background-color: #3E2723;
     border-radius: 50%;
     box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    /* Apply Texture */
+    background-image: linear-gradient(to right, rgba(0,0,0,0.3), transparent, rgba(0,0,0,0.3)); /* Shade */
 }
+/* We overlay the texture via a pseudo element to mix with gradient */
+.cake-base-side::before {
+    content: ''; position: absolute; inset: 0; border-radius: 50%;
+    background: inherit; /* Inherits from parent, but parent doesn't have it yet. See HTML classes. */
+    opacity: 0.8;
+}
+
 .cake-base-top {
     position: absolute; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -117,16 +154,25 @@ body {
     width: 64%; height: 64%; /* Relative to base */
     z-index: 20;
     transform: translate(12%, -25%);
+    color: #F8BBD0; /* Pink base */
 }
 .cake-top-side {
     position: absolute; top: 12px; left: 0;
     width: 100%; height: 100%;
-    background: #F8BBD0;
-    background-image: linear-gradient(to right, #F48FB1, #FCE4EC, #F48FB1);
+    background-color: #F8BBD0;
     border-radius: 50%;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
     display: flex; align-items: center; justify-content: center;
 }
+/* Frosting Drip/Swirl decoration */
+.frosting-drip {
+    position: absolute; top: -5px; left: -1%; width: 102%; height: 25px;
+    background: radial-gradient(circle at 12px 0px, #FFF3E0 12px, transparent 13px) repeat-x top;
+    background-size: 24px 20px;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+    z-index: 2;
+}
+
 .cake-text {
     font-family: 'Great Vibes', cursive;
     font-size: 2.5rem;
@@ -144,11 +190,14 @@ body {
     box-shadow: inset 0 0 20px rgba(255,224,178,0.5);
     border: 1px solid #FFE0B2;
 }
-/* Frosting Rim */
+/* Frosting Swirl Top Ring */
 .cake-top-surface::after {
-    content: ''; position: absolute; inset: 0;
-    border: 8px solid rgba(255,255,255,0.9);
+    content: ''; position: absolute; inset: 2px;
+    border: 8px solid rgba(255,255,255,0.95);
     border-radius: 50%;
+    /* Create a rope/swirl effect on the border */
+    border-style: dashed; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 /* --- DECORATIONS --- */
@@ -177,15 +226,24 @@ body {
 .cherry {
     position: absolute;
     width: 24px; height: 24px;
-    background: radial-gradient(circle at 30% 30%, #ff1744, #b71c1c);
+    background: radial-gradient(circle at 35% 35%, #ff5252, #b71c1c);
     border-radius: 50%;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 2px 4px 6px rgba(0,0,0,0.3);
     z-index: 20;
     transform: translate(-50%, -50%);
 }
 .cherry::after {
-    content: ''; position: absolute; top: 3px; left: 4px;
-    width: 6px; height: 4px; background: rgba(255,255,255,0.4); border-radius: 50%;
+    content: ''; position: absolute; top: 4px; left: 5px;
+    width: 6px; height: 4px; background: rgba(255,255,255,0.5); border-radius: 50%;
+    filter: blur(1px);
+}
+/* Stem */
+.cherry::before {
+    content: ''; position: absolute; bottom: 80%; left: 50%;
+    width: 14px; height: 12px;
+    border-left: 2px solid #558b2f;
+    border-radius: 50%;
+    transform: rotate(-20deg);
 }
 
 .candle-wrapper {
@@ -204,20 +262,31 @@ body {
     position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
     width: 2px; height: 8px; background: #333;
 }
+
+/* REALISTIC FLAME ANIMATION */
 .flame {
     position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
     width: 16px; height: 32px;
-    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ff6d00 60%, transparent 100%);
+    background: radial-gradient(ellipse at bottom, #fff59d 0%, #ff9800 50%, transparent 100%);
     border-radius: 50% 50% 20% 20%;
-    filter: drop-shadow(0 0 5px #ffeb3b);
-    transform-origin: bottom center;
-    animation: flicker-real 1.5s infinite ease-in-out;
+    filter: drop-shadow(0 0 8px #ffeb3b);
+    transform-origin: center bottom;
+    animation: flicker-real 0.1s infinite alternate;
     transition: all 0.3s;
 }
 .flame-inner {
-    position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
-    width: 4px; height: 6px; background: blue; border-radius: 50%; opacity: 0.5;
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 12px; background: rgba(0,0,255,0.2); border-radius: 50%; filter: blur(2px);
 }
+
+@keyframes flicker-real {
+    0% { transform: translateX(-50%) scale(1) skewX(-2deg); opacity: 0.9; height: 32px; }
+    25% { transform: translateX(-50%) scale(1.05) skewX(2deg); opacity: 1; height: 33px; }
+    50% { transform: translateX(-50%) scale(0.95) skewX(-1deg); opacity: 0.85; height: 31px; }
+    75% { transform: translateX(-50%) scale(1.02) skewX(3deg); opacity: 0.95; height: 34px; }
+    100% { transform: translateX(-50%) scale(1) skewX(0deg); opacity: 0.9; height: 32px; }
+}
+
 .flame.extinguished {
     transform: translateX(-50%) scale(0);
     opacity: 0;
@@ -230,13 +299,6 @@ body {
     filter: blur(5px);
     animation: smoke-rise 1.5s forwards;
     pointer-events: none;
-}
-
-@keyframes flicker-real {
-    0%, 100% { transform: translateX(-50%) scale(1) skewX(0); }
-    25% { transform: translateX(-50%) scale(1.1) skewX(2deg); }
-    50% { transform: translateX(-50%) scale(0.9) skewX(-2deg); }
-    75% { transform: translateX(-50%) scale(1.05) skewX(1deg); }
 }
 
 @keyframes smoke-rise {
