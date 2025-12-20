@@ -12,6 +12,32 @@ body {
     background: #000;
 }
 
+/* --- Animations --- */
+
+/* Curtains opening */
+@keyframes openLeft {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
+@keyframes openRight {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(100%); }
+}
+
+/* Cake floating in */
+@keyframes cakeDropIn {
+    0% { transform: translateY(-120vh) scale(0.8); opacity: 0; }
+    60% { transform: translateY(30px) scale(1.05); opacity: 1; }
+    80% { transform: translateY(-10px) scale(0.95); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Cake Idle Float */
+@keyframes cakeFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
 /* --- Room Environment --- */
 .room {
     position: absolute;
@@ -23,7 +49,6 @@ body {
     height: 70%;
     width: 100%;
     background: radial-gradient(circle at center, #d88df0 0%, #b86ce0 100%);
-    /* Simple CSS Heart Pattern */
     background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 85 C20 60 5 45 5 30 C5 15 20 5 35 5 C43 5 50 15 50 15 C50 15 57 5 65 5 C80 5 95 15 95 30 C95 45 80 60 50 85' fill='%23a55bd0' opacity='0.2'/%3E%3C/svg%3E");
 }
 
@@ -37,79 +62,88 @@ body {
 .curtain {
     position: absolute;
     top: 0; bottom: 0;
-    width: 150px;
+    width: 50%; /* Cover half screen each */
     background: repeating-linear-gradient(90deg, #d32f2f, #b71c1c 20px, #d32f2f 40px);
     box-shadow: 10px 0 20px rgba(0,0,0,0.5);
-    z-index: 50;
+    z-index: 900;
+    transition: transform 3s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Animation triggers via class in JS or strictly CSS */
+    animation-duration: 3s;
+    animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+    animation-fill-mode: forwards;
+    animation-delay: 0.5s; /* Small delay before opening */
 }
-.curtain.left { left: 0; border-right: 2px solid #9a1010; }
-.curtain.right { right: 0; border-left: 2px solid #9a1010; }
+.curtain.left { 
+    left: 0; 
+    border-right: 2px solid #9a1010; 
+    transform-origin: left;
+    animation-name: openLeft;
+}
+.curtain.right { 
+    right: 0; 
+    border-left: 2px solid #9a1010; 
+    transform-origin: right;
+    animation-name: openRight;
+}
 
 .rope {
     position: absolute;
     top: 50%;
-    width: 20px;
-    height: 60px;
-    background: #e6c200; /* Gold */
-    border-radius: 10px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    width: 30px;
+    height: 100px;
+    background: #ffd700;
+    border-radius: 20px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
 }
-.curtain.left .rope { right: -10px; }
-.curtain.right .rope { left: -10px; }
+.curtain.left .rope { right: 20px; }
+.curtain.right .rope { left: 20px; }
 
 /* --- Bunting --- */
 .bunting {
     position: absolute;
-    top: 0; left: 150px; right: 150px;
-    height: 60px;
+    top: 0; left: 50px; right: 50px;
+    height: 80px;
     display: flex;
     justify-content: space-between;
     z-index: 40;
     pointer-events: none;
+    animation: cakeDropIn 2s 2.8s backwards; /* Enters after curtains */
 }
 .flag {
     width: 0; height: 0;
     border-left: 30px solid transparent;
     border-right: 30px solid transparent;
-    border-top: 50px solid var(--f-color);
-    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.1));
+    border-top: 60px solid var(--f-color);
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
     transform-origin: top center;
     animation: swing 3s ease-in-out infinite;
     animation-delay: var(--delay);
 }
-@keyframes swing { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes swing { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
 
-/* --- UI Overlays --- */
-#start-overlay {
-    position: fixed; inset: 0;
-    background: rgba(255,255,255,0.85);
-    z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.5s;
-}
-#start-overlay.hidden { opacity: 0; pointer-events: none; }
-.content { text-align: center; }
-#start-btn {
-    margin-top: 20px;
-    padding: 15px 40px;
-    font-size: 1.5rem;
-    background: #ff4081;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-family: 'Fredoka One', cursive;
+/* --- Interaction Layer --- */
+#unlock-audio-layer {
+    position: fixed; inset: 0; z-index: 800;
     cursor: pointer;
-    box-shadow: 0 5px 0 #c2185b;
-    transition: transform 0.1s;
+    display: flex; justify-content: center; align-items: flex-end;
+    padding-bottom: 50px;
 }
-#start-btn:active { transform: translateY(5px); box-shadow: 0 0 0 transparent; }
+.tap-hint {
+    color: rgba(255,255,255,0.8);
+    background: rgba(0,0,0,0.3);
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    animation: pulse 2s infinite;
+    opacity: 0;
+    animation: fadeIn 1s 3.5s forwards, pulse 2s infinite; /* Wait for curtains */
+}
+@keyframes fadeIn { to { opacity: 1; } }
+@keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
 
 #mic-indicator {
-    position: absolute; top: 80px; left: 50%;
-    transform: translateX(-50%);
-    background: white; padding: 8px 15px;
+    position: absolute; top: 20px; right: 20px;
+    background: rgba(255,255,255,0.9); padding: 8px 15px;
     border-radius: 20px;
     display: flex; gap: 10px; align-items: center;
     z-index: 200;
@@ -124,43 +158,53 @@ body {
     position: relative;
     width: 600px; height: 500px;
     z-index: 10;
-    margin-top: 100px;
-    /* Scale down for mobile */
+    margin-top: 80px;
+    /* Animation: Drop in, then float */
+    animation: cakeDropIn 2.5s 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both, cakeFloat 4s 5s ease-in-out infinite;
 }
 
 /* Plate */
 .plate {
     position: absolute;
     bottom: 20px; left: 50%;
-    width: 550px; height: 200px;
+    width: 580px; height: 220px;
     transform: translateX(-50%);
-    background: #4dd0e1;
+    background: linear-gradient(to right, #4dd0e1, #26c6da);
     border-radius: 50%;
-    box-shadow: 0 10px 0 #0097a7, 0 20px 20px rgba(0,0,0,0.2);
+    box-shadow: 0 15px 0 #0097a7, 0 30px 40px rgba(0,0,0,0.3);
     z-index: 1;
 }
 
 .cake-group {
     position: absolute;
-    bottom: 60px; left: 50%;
-    width: 440px; height: 250px;
+    bottom: 70px; left: 50%;
+    width: 440px; height: 260px;
     transform: translateX(-50%);
     z-index: 2;
+}
+
+/* Texture Class */
+.crumb-texture {
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 8px 8px;
+    opacity: 0.6;
+    pointer-events: none;
+    border-radius: inherit;
 }
 
 /* Chocolate Base */
 .cake-base {
     position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 120px;
-    background: #8b5a2b; /* Chocolate */
-    border-radius: 50% 50% 50% 50% / 0% 0% 30% 30%; /* Curved bottom */
-    box-shadow: inset -10px 0 20px rgba(0,0,0,0.3);
+    bottom: 0; left: 0; width: 100%; height: 130px;
+    background: #795548; /* Darker Chocolate */
+    border-radius: 50% 50% 50% 50% / 0% 0% 30% 30%;
+    box-shadow: inset -20px 0 30px rgba(0,0,0,0.4);
     z-index: 2;
 }
-/* This pseudo element makes the bottom 3D thickness */
 .cake-base::after {
     content: ''; position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 60px;
+    bottom: 0; left: 0; width: 100%; height: 70px;
     background: inherit;
     border-radius: 50%;
     z-index: -1;
@@ -169,158 +213,206 @@ body {
 /* White Icing Body */
 .cake-icing-body {
     position: absolute;
-    top: 20px; left: 0; width: 100%; height: 160px;
-    background: #fff8e7; /* Creamy white */
-    border-radius: 50%; /* Just curve sides initially */
+    top: 20px; left: 0; width: 100%; height: 170px;
+    background: #fff8e1; /* Richer Cream */
+    border-radius: 50%;
     z-index: 3;
     display: flex; justify-content: center; align-items: center;
+    box-shadow: inset -10px 0 20px rgba(0,0,0,0.05);
 }
 
-/* The Wavy Bottom Effect */
+/* Decorative Swirls on Side */
+.swirls-decor {
+    position: absolute;
+    top: 30%; left: 0; width: 100%; height: 20px;
+    background: radial-gradient(circle, #ffe0b2 40%, transparent 50%);
+    background-size: 40px 40px;
+    opacity: 0.5;
+}
+
+/* Wavy Bottom */
 .scallop-mask {
     position: absolute;
-    bottom: -15px; left: 0; width: 100%; height: 40px;
-    background: radial-gradient(circle at 50% 100%, #fff8e7 65%, transparent 66%);
-    background-size: 88px 40px; /* Adjust size for wave count */
+    bottom: -18px; left: 0; width: 100%; height: 45px;
+    background: radial-gradient(circle at 50% 100%, #fff8e1 65%, transparent 66%);
+    background-size: 88px 45px;
     background-repeat: repeat-x;
-    transform: rotate(180deg); /* Flip to make scallop point down */
+    transform: rotate(180deg);
 }
 
 /* Text on Cake */
+.text-container {
+    z-index: 10;
+    margin-top: 30px;
+    transform: rotateX(10deg);
+    background: rgba(255,255,255,0.4);
+    padding: 5px 20px;
+    border-radius: 50px;
+    backdrop-filter: blur(2px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
 .text-label {
     font-family: 'Fredoka One', cursive;
-    font-size: 3rem;
-    color: #3f51b5; /* Blue text */
-    z-index: 10;
-    margin-top: 40px;
-    transform: rotateX(10deg); /* Perspective fix */
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
-    letter-spacing: 1px;
+    font-size: 3.2rem;
+    color: #880e4f; /* Deep Pink/Red for visibility */
+    text-shadow: 2px 2px 0px white, 4px 4px 5px rgba(0,0,0,0.2);
+    letter-spacing: 2px;
 }
 
 /* Top Surface */
 .cake-top {
     position: absolute;
     top: 20px; left: 0; width: 100%; height: 110px;
-    background: #fffbf0;
+    background: #fffdeb;
     border-radius: 50%;
-    border: 1px solid #f0ebdb;
+    border: 1px solid #f0f4c3;
     z-index: 5;
-    box-shadow: inset 0 0 30px rgba(0,0,0,0.05);
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.1);
 }
 
-/* Top Sprinkles */
+/* Top Swirls */
+.swirls-top {
+    position: absolute; inset: 10px;
+    border: 5px solid #ffe0b2;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
 .sprinkles-top {
     width: 100%; height: 100%;
-    background-image: radial-gradient(#8b5a2b 1.5px, transparent 1.5px);
-    background-size: 15px 15px;
+    background-image: radial-gradient(#795548 2px, transparent 2px);
+    background-size: 20px 20px;
     border-radius: 50%;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 /* --- Decorations --- */
 .candle {
     position: absolute;
-    width: 10px; height: 70px;
-    background: repeating-linear-gradient(45deg, var(--c1), var(--c1) 5px, var(--c2) 5px, var(--c2) 10px);
-    border-radius: 3px;
-    box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+    width: 12px; height: 80px;
+    background: repeating-linear-gradient(-45deg, var(--c1), var(--c1) 8px, var(--c2) 8px, var(--c2) 16px);
+    border-radius: 4px;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
     z-index: 20;
     transform-origin: bottom center;
 }
 .flame {
-    position: absolute; top: -15px; left: 50%;
-    width: 10px; height: 15px;
-    background: #ff9800;
+    position: absolute; top: -18px; left: 50%;
+    width: 12px; height: 20px;
+    background: radial-gradient(circle at 50% 80%, #ffeb3b, #ff9800, transparent);
     border-radius: 50% 50% 20% 20%;
     transform: translateX(-50%);
-    box-shadow: 0 0 10px #ffeb3b;
+    box-shadow: 0 0 15px #ffeb3b, 0 0 30px #ff9800;
     animation: flicker 0.1s infinite alternate;
+    filter: blur(0.5px);
 }
 .flame.out { display: none; }
-@keyframes flicker { 0% { transform: translateX(-50%) scale(1); } 100% { transform: translateX(-50%) scale(0.9, 1.1); } }
+@keyframes flicker { 
+    0% { transform: translateX(-50%) scale(1) skewX(0deg); opacity: 1; }
+    25% { transform: translateX(-50%) scale(1.1, 0.9) skewX(2deg); opacity: 0.8; }
+    50% { transform: translateX(-50%) scale(0.9, 1.1) skewX(-2deg); opacity: 1; }
+    75% { transform: translateX(-50%) scale(1.05, 0.95) skewX(1deg); opacity: 0.9; }
+    100% { transform: translateX(-50%) scale(1) skewX(0deg); opacity: 1; }
+}
 
 .smoke {
-    position: absolute; top: -20px; left: 50%;
-    width: 5px; height: 5px; background: #aaa;
+    position: absolute; top: -25px; left: 50%;
+    width: 8px; height: 8px; 
+    background: rgba(200, 200, 200, 0.8);
     border-radius: 50%;
-    animation: smoke 1s forwards;
+    animation: puff 1.2s ease-out forwards;
 }
-@keyframes smoke { to { transform: translate(-50%, -30px) scale(3); opacity: 0; } }
+@keyframes puff { 
+    0% { transform: translate(-50%, 0) scale(1); opacity: 0.8; }
+    100% { transform: translate(-50%, -60px) scale(4); opacity: 0; }
+}
 
 .truffle {
     position: absolute;
-    width: 30px; height: 26px;
+    width: 34px; height: 30px;
     border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #5d4037, #3e2723);
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    background: radial-gradient(circle at 30% 30%, #6d4c41, #3e2723);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.4);
     z-index: 15;
 }
-.truffle.white {
-    background: radial-gradient(circle at 30% 30%, #fffde7, #f57f17); /* Yellowish/White */
-}
-/* Drizzle CSS */
-.truffle::after {
-    content: ''; position: absolute; top: 2px; left: 5px;
-    width: 20px; height: 10px;
-    border-top: 2px solid rgba(255,255,255,0.5);
+.truffle::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,255,255,0.2) 5px, rgba(255,255,255,0.2) 7px);
     border-radius: 50%;
-    transform: rotate(-10deg);
+}
+.truffle.white {
+    background: radial-gradient(circle at 30% 30%, #fff9c4, #fbc02d);
 }
 
 .macaron {
     position: absolute;
-    width: 35px; height: 20px;
+    width: 40px; height: 24px;
     background: var(--mc);
-    border-radius: 10px;
+    border-radius: 12px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    border-bottom: 3px solid rgba(0,0,0,0.1); /* Filling look */
+    border-bottom: 4px solid rgba(0,0,0,0.15); /* Filling */
     z-index: 15;
 }
 
 /* --- Balloons --- */
 .balloons-container {
     position: absolute;
-    bottom: -20px; width: 100%;
+    bottom: -30px; width: 100%;
     display: flex; justify-content: space-between;
     pointer-events: none;
     z-index: 30;
     padding: 0 50px;
+    animation: cakeDropIn 2s 2.9s backwards;
 }
 .balloon {
-    width: 60px; height: 75px;
+    width: 70px; height: 85px;
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-    box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
+    box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1);
     position: relative;
-    opacity: 0.9;
+    opacity: 0.95;
+    animation: floatBalloon 4s ease-in-out infinite;
 }
+.balloon:nth-child(2) { animation-delay: 1s; }
+.balloon:nth-child(3) { animation-delay: 2s; }
+
+@keyframes floatBalloon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
 .balloon::after {
-    content: ''; position: absolute; bottom: -5px; left: 50%;
+    content: ''; position: absolute; bottom: -6px; left: 50%;
     transform: translateX(-50%);
     width: 0; height: 0;
-    border-left: 5px solid transparent; border-right: 5px solid transparent;
-    border-top: 8px solid inherit;
+    border-left: 6px solid transparent; border-right: 6px solid transparent;
+    border-top: 10px solid inherit;
 }
-.b-yellow { background: #ffd54f; top: -20px; border-top-color: #ffd54f; }
-.b-red { background: #e57373; top: 40px; border-top-color: #e57373; }
-.b-blue { background: #64b5f6; top: -10px; border-top-color: #64b5f6; }
+.b-yellow { background: #ffd54f; border-top-color: #ffd54f; }
+.b-red { background: #ef5350; border-top-color: #ef5350; }
+.b-blue { background: #42a5f5; border-top-color: #42a5f5; }
 
 /* Message */
 #message {
     position: absolute; top: 40%; left: 50%;
     transform: translate(-50%, -50%);
-    background: white; padding: 20px;
-    border-radius: 10px;
+    background: rgba(255,255,255,0.95); padding: 30px 50px;
+    border-radius: 20px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 100;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    z-index: 1000;
+    border: 4px solid #fce4ec;
 }
 #message.hidden { display: none; }
-#message h2 { color: #d81b60; font-family: 'Fredoka One'; font-size: 2.5rem; }
+#message h2 { color: #d81b60; font-family: 'Fredoka One'; font-size: 3rem; margin-bottom: 10px; }
+.retry-btn {
+    margin-top: 15px; padding: 10px 25px;
+    background: #d81b60; color: white; border: none;
+    border-radius: 20px; font-size: 1.2rem; cursor: pointer;
+}
 
-#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 200; }
+#confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 2000; }
 
 @media (max-width: 600px) {
-    .stage { transform: scale(0.6); margin-top: 0; }
-    .curtain { width: 60px; }
+    .stage { transform: scale(0.55); margin-top: 20px; }
+    .curtain { width: 51%; }
 }

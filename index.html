@@ -9,11 +9,11 @@
 <script type="importmap">
 {
   "imports": {
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
     "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react-confetti": "https://esm.sh/react-confetti@^6.4.0"
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react-confetti": "https://esm.sh/react-confetti@^6.4.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
   }
 }
 </script>
@@ -22,7 +22,7 @@
 
     <!-- Room Background -->
     <div class="room">
-        <div class="wall"></div> <!-- Heart pattern handled in CSS -->
+        <div class="wall"></div> 
         <div class="floor"></div>
     </div>
 
@@ -35,23 +35,17 @@
     </div>
 
     <!-- Bunting Flags -->
-    <div class="bunting" id="bunting-container">
-        <!-- Flags injected by JS -->
-    </div>
+    <div class="bunting" id="bunting-container"></div>
 
-    <!-- Start Overlay -->
-    <div id="start-overlay">
-        <div class="content">
-            <h1>Ready to Celebrate?</h1>
-            <p>Allow microphone access to blow out the candles!</p>
-            <button id="start-btn">Start the Party 🎉</button>
-        </div>
-    </div>
-
-    <!-- Mic Indicator -->
+    <!-- Mic Indicator (Hidden initially) -->
     <div id="mic-indicator" class="hidden">
         <span>🎤</span>
         <div class="bar-bg"><div id="mic-level-bar"></div></div>
+    </div>
+
+    <!-- Invisible Interaction Layer to unlock Audio -->
+    <div id="unlock-audio-layer">
+        <p class="tap-hint">Tap anywhere to enable magic ✨</p>
     </div>
 
     <!-- Main Cake Scene -->
@@ -64,17 +58,24 @@
         <div class="cake-group" id="cake-group">
             
             <!-- Chocolate Base Layer -->
-            <div class="cake-base"></div>
+            <div class="cake-base">
+                <div class="crumb-texture"></div>
+            </div>
             
-            <!-- White Icing Layer with Wavy Bottom -->
+            <!-- White Icing Layer -->
             <div class="cake-icing-body">
-                <div class="text-label">My Babyyy</div>
+                <div class="swirls-decor"></div>
+                <div class="text-container">
+                    <div class="text-label">My Babyyy</div>
+                </div>
+                <div class="crumb-texture"></div>
                 <div class="scallop-mask"></div>
             </div>
 
             <!-- Top Surface -->
             <div class="cake-top">
                 <div class="sprinkles-top"></div>
+                <div class="swirls-top"></div>
             </div>
 
             <!-- Decorations Container (Candles & Treats) -->
