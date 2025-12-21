@@ -150,6 +150,48 @@ body.open .curtain.right { transform: scaleX(0); }
     filter: blur(80px); mix-blend-mode: soft-light;
 }
 
+/* BALLOONS - EXPANDED */
+.balloon {
+    position: absolute; width: 40px; height: 50px;
+    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+    z-index: 20; opacity: 0;
+    box-shadow: inset -5px -5px 10px rgba(0,0,0,0.1);
+}
+.balloon::after {
+    content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 40px; background: rgba(255,255,255,0.6);
+}
+body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s forwards 1.5s; }
+
+/* Existing Balloons */
+.b1 { top: 15%; left: 5%; background: #ef5350; animation-delay: 0s, 1.5s; }
+.b2 { top: 20%; left: 15%; background: #ab47bc; animation-delay: 1s, 1.6s; }
+.b3 { top: 10%; right: 10%; background: #29b6f6; animation-delay: 2s, 1.7s; }
+.b4 { top: 25%; right: 5%; background: #66bb6a; animation-delay: 0.5s, 1.8s; }
+.b5 { top: 35%; left: 8%; background: #ffa726; animation-delay: 1.5s, 1.9s; }
+.b6 { top: 12%; left: 25%; background: #f06292; animation-delay: 2.5s, 2.0s; }
+
+/* New Balloons for Immersive Atmosphere */
+.b7 { top: 18%; right: 20%; background: #ffca28; width: 35px; height: 45px; animation-delay: 0.8s, 2.1s; }
+.b8 { top: 40%; right: 15%; background: #8d6e63; width: 45px; height: 55px; animation-delay: 1.2s, 2.2s; }
+.b9 { top: 8%; left: 35%; background: #7e57c2; width: 30px; height: 38px; animation-delay: 3s, 2.3s; }
+.b10 { top: 30%; right: 30%; background: #26a69a; width: 42px; height: 52px; animation-delay: 1.8s, 2.4s; }
+.b11 { top: 50%; left: 2%; background: #ec407a; width: 50px; height: 60px; animation-delay: 0.2s, 2.5s; }
+.b12 { top: 45%; right: 2%; background: #42a5f5; width: 48px; height: 58px; animation-delay: 2.2s, 2.6s; }
+
+.heart-b {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: #ff1744;
+}
+.heart-b::before, .heart-b::after {
+    content: ''; position: absolute; width: 40px; height: 40px; background: inherit; border-radius: 50%;
+}
+.heart-b::before { top: -20px; left: 0; }
+.heart-b::after { top: 0; left: 20px; }
+.h1 { top: 25%; left: 80%; transform: rotate(-15deg) scale(0.6); animation-delay: 1.2s, 2.5s; }
+.h2 { top: 40%; left: 10%; transform: rotate(10deg) scale(0.5); animation-delay: 2.2s, 2.6s; }
+
+
 /* MAGIC DUST */
 #magic-dust {
     position: absolute; inset: 0; pointer-events: none; z-index: 5;
@@ -500,12 +542,30 @@ body.open .easel-container { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32
 .book.open .right-page { z-index: 1; }
 
 .photo-border {
+    position: relative;
     padding: 10px; background: #fff;
     border: 1px dashed #ec407a;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transform: rotate(-3deg);
     width: 100%; height: auto;
+    transition: transform 0.3s;
 }
+.photo-border.loved-theme-photo {
+    border: 3px double #ff4081;
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.3);
+}
+.photo-border.loved-theme-photo::after {
+    content: ''; position: absolute; inset: -5px; 
+    border: 1px dashed #f48fb1; pointer-events: none;
+}
+.corner-heart {
+    position: absolute; font-size: 1.5rem;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+    animation: beat 1.5s infinite;
+}
+.corner-heart.top-left { top: -15px; left: -10px; transform: rotate(-15deg); }
+.corner-heart.bottom-right { bottom: -15px; right: -10px; transform: rotate(15deg); }
+
 .card-photo { width: 100%; height: auto; display: block; border-radius: 2px; }
 
 .book-page h3 { font-family: 'Great Vibes', cursive; font-size: 2.2rem; margin-bottom: 15px; border-bottom: 2px solid #f8bbd0; padding-bottom: 10px; }
