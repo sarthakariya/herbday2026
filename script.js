@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 10, // Lowered from 15 for better sensitivity
+    micThreshold: 10,
 };
 
 const state = {
@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const el = document.createElement('div');
         el.className = 'candle';
-        // Position and Depth Sorting
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.zIndex = Math.floor(y + 100);
 
@@ -40,7 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const flame = document.createElement('div');
         flame.className = 'flame';
         
-        // Random animation delay for organic look
         const delay = Math.random() * 2 + 's';
         flame.style.setProperty('--delay', delay);
         flame.style.animationDelay = delay;
@@ -54,12 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Scatter Chocolates
     const chocoContainer = document.getElementById('chocolates-container');
-    for(let i=0; i<12; i++) { // Increased count for bigger table
+    for(let i=0; i<12; i++) {
         const choco = document.createElement('div');
         choco.className = 'chocolate';
-        // Random pos on table (Full Width)
-        const top = 20 + Math.random() * 100; // px from top of table cloth
-        const left = 5 + Math.random() * 90; // percent across screen
+        const top = 20 + Math.random() * 100;
+        const left = 5 + Math.random() * 90;
         const size = 10 + Math.random() * 10;
         const rot = Math.random() * 360;
         
@@ -73,10 +70,44 @@ document.addEventListener('DOMContentLoaded', () => {
         chocoContainer.appendChild(choco);
     }
 
-    // 3. Generate Fairy Lights
+    // 3. Scatter Petals (New Decoration)
+    const petalsContainer = document.getElementById('petals-container');
+    if(petalsContainer) {
+        for(let i=0; i<15; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            const top = Math.random() * 120;
+            const left = Math.random() * 100;
+            const rot = Math.random() * 360;
+            
+            petal.style.top = top + 'px';
+            petal.style.left = left + '%';
+            petal.style.transform = `rotate(${rot}deg)`;
+            
+            // Random petal colors (pinks/reds)
+            const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
+            petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
+            
+            petalsContainer.appendChild(petal);
+        }
+    }
+
+    // 4. Magic Dust (New Decoration)
+    const dustContainer = document.getElementById('magic-dust');
+    if(dustContainer) {
+        for(let i=0; i<30; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'dust-particle';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 5 + 's';
+            dustContainer.appendChild(particle);
+        }
+    }
+
+    // 5. Generate Fairy Lights
     const lightsContainer = document.getElementById('fairy-lights');
     if(lightsContainer) {
-        // Create wire SVG
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
         svg.setAttribute("width", "100%");
@@ -86,15 +117,13 @@ document.addEventListener('DOMContentLoaded', () => {
         svg.style.left = "0";
         
         const path = document.createElementNS(svgNS, "path");
-        // A simple drape curve
-        path.setAttribute("d", "M0,0 Q500,150 1000,0"); // Assuming standard width approx, percentages work better in CSS but this is a simple visual
+        path.setAttribute("d", "M0,0 Q500,150 1000,0");
         path.setAttribute("fill", "none");
-        path.setAttribute("stroke", "#a1887f"); // Lighter Copper/Brown wire
+        path.setAttribute("stroke", "#a1887f");
         path.setAttribute("stroke-width", "2");
         svg.appendChild(path);
         lightsContainer.appendChild(svg);
 
-        // Add Bulbs along the curve
         const bulbCount = 20;
         for(let i=1; i<bulbCount; i++) {
             const bulb = document.createElement('div');
@@ -102,10 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const pct = i * (100 / bulbCount);
             bulb.style.left = pct + '%';
             
-            // Approximate y position on a Quadratic curve y = 4*h*(x/w)*(1-x/w) roughly
-            // Curve goes from 0 to 150px down at center
             const x = i / bulbCount;
-            const y = 150 * (1 - Math.pow(2*x - 1, 2)); // Parabola approx
+            const y = 150 * (1 - Math.pow(2*x - 1, 2));
             
             bulb.style.top = y + 'px';
             bulb.style.animationDelay = Math.random() + 's';
@@ -113,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Start Button
+    // 6. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
         initAudio();
         
@@ -121,10 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
         screen.style.opacity = 0;
         setTimeout(() => screen.remove(), 1000);
 
-        document.body.classList.add('open'); // Open Curtains
+        document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Play simple magical chime at start
         setTimeout(playChime, 800);
 
         loop();
@@ -175,8 +201,6 @@ function playChime() {
     });
 }
 
-// "Happy Birthday" Song: G G A G C B | G G A G D C | G G G^ E C B A | F F E C D C
-// Simplified freq map for C major
 const NOTE = {
     G3: 196, A3: 220, B3: 246.9,
     C4: 261.6, D4: 293.6, E4: 329.6, F4: 349.2, G4: 392, A4: 440, B4: 493.8, C5: 523.2
@@ -218,15 +242,14 @@ function playPuff() {
     const t = state.audioCtx.currentTime;
     const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for(let i=0; i<data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5; // Reduce volume slightly
+    for(let i=0; i<data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
     
     const src = state.audioCtx.createBufferSource();
     src.buffer = buffer;
     const g = state.audioCtx.createGain();
     
-    // Clap envelope
     g.gain.setValueAtTime(0.5, t);
-    g.gain.exponentialRampToValueAtTime(0.01, t + 0.08); // Sharp decay
+    g.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
     
     src.connect(g);
     g.connect(state.audioCtx.destination);
@@ -235,7 +258,6 @@ function playPuff() {
 
 function playClapping() {
     if(!state.audioCtx) return;
-    // Create dense applause by firing many claps with slight random delays
     for(let i=0; i<80; i++) {
         setTimeout(playPuff, Math.random() * 2500);
     }
@@ -248,7 +270,6 @@ function loop() {
         state.analyser.getByteFrequencyData(data);
         const avg = data.reduce((a,b)=>a+b) / data.length;
 
-        // HUD
         document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
 
         if(avg > CONFIG.micThreshold) {
@@ -267,7 +288,7 @@ function blowCandle() {
     target.active = false;
     target.el.classList.add('out');
     
-    playPuff(); // Single puff for blowing out
+    playPuff();
     state.extinguished++;
     
     if(state.extinguished === CONFIG.candleCount) {
@@ -278,14 +299,11 @@ function blowCandle() {
 function win() {
     state.listening = false;
     
-    // 1. Clapping & Confetti immediately
     playClapping();
     confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
     
-    // 2. Play Song after slight pause
     setTimeout(playBirthdaySong, 1000);
 
-    // 3. Show Card after 4 seconds (User Request)
     setTimeout(() => {
         document.getElementById('card-modal').classList.remove('hidden');
     }, 4000);
