@@ -5,148 +5,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday My Love</title>
     <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- START SCREEN OVERLAY -->
+    <!-- START SCREEN -->
     <div id="start-screen">
         <div class="content">
             <h1 class="title-text">For My Love</h1>
             <p class="subtitle">Please enable Sound & Microphone 🎙️</p>
             <button id="start-btn">
-                <span>❤️ Open Surprise</span>
+                <span>❤️ Enter Room</span>
             </button>
         </div>
-        <div class="bg-hearts"></div>
     </div>
 
-    <!-- UI: MICROPHONE METER -->
+    <!-- HUD -->
     <div id="hud" class="hidden">
-        <div class="mic-container">
-            <span class="mic-icon">🎙️</span>
-            <div class="mic-bar-bg">
-                <div id="mic-level"></div>
-            </div>
-        </div>
+        <div class="mic-icon">🎙️</div>
+        <div class="mic-bar"><div id="mic-level"></div></div>
     </div>
 
-    <!-- MAIN 3D SCENE -->
-    <div id="scene-container">
+    <!-- MAIN SCENE (2.5D LAYERS) -->
+    <div id="scene">
         
-        <!-- CURTAINS -->
-        <div class="curtain-panel left" id="curtain-left"></div>
-        <div class="curtain-panel right" id="curtain-right"></div>
+        <!-- LAYER 1: ROOM BACKGROUND -->
+        <div class="room-bg">
+            <div class="spotlight"></div>
+            <div class="wall-banner">Happy Birthday</div>
+        </div>
 
-        <!-- 3D ROOM -->
-        <div id="room">
-            <!-- WALLS -->
-            <div class="wall back">
-                <div class="banner-container">
-                    <h1 id="main-title">Happy Birthday</h1>
-                </div>
+        <!-- LAYER 2: TABLE -->
+        <div class="table-container">
+            <!-- Table Legs (Visual) -->
+            <div class="table-leg"></div>
+            <div class="table-shadow"></div>
+            
+            <!-- Table Cloth Body (Vertical part) -->
+            <div class="cloth-body"></div>
+            <!-- Table Top (Oval Surface) -->
+            <div class="cloth-top">
+                <div class="lace-pattern"></div>
             </div>
-            <div class="wall left-wall">
-                <div class="window">
-                    <div class="moon"></div>
-                    <div class="stars"></div>
-                    <div class="window-frame"></div>
-                </div>
-                <div class="moon-beam"></div>
+
+            <!-- PROPS -->
+            <div class="prop gift-box">
+                <div class="ribbon-horz"></div>
+                <div class="ribbon-vert"></div>
             </div>
-            <div class="floor"></div>
-
-            <!-- TABLE GROUP -->
-            <div id="table-group">
-                <!-- Table Base/Legs -->
-                <div class="table-leg"></div>
-                <div class="table-base-shadow"></div>
-
-                <!-- Table Top -->
-                <div class="table-surface">
-                    <div class="lace-overlay"></div>
-                    <div class="table-ruffle"></div>
-                    <div class="cloth-drape"></div>
-                </div>
-
-                <!-- PROPS ON TABLE -->
-                <div class="prop gift-box purple">
-                    <div class="lid"></div>
-                    <div class="ribbon-x"></div>
-                    <div class="ribbon-y"></div>
-                </div>
-                <div class="prop gift-box red">
-                     <div class="lid"></div>
-                     <div class="ribbon-x"></div>
-                </div>
-                <div class="prop chocolate choco-1"></div>
-                <div class="prop chocolate choco-2"></div>
-                <div class="prop chocolate choco-3"></div>
-
-                <!-- CAKE CONTAINER -->
-                <div id="cake-container">
-                    <div class="plate">
-                        <div class="plate-inner"></div>
-                    </div>
-                    
-                    <!-- BOTTOM TIER -->
-                    <div class="tier bottom-tier">
-                        <div class="tier-side"></div>
-                        <div class="tier-top">
-                             <div class="frosting-ring"></div>
-                        </div>
-                    </div>
-
-                    <!-- TOP TIER -->
-                    <div class="tier top-tier">
-                        <div class="tier-side"></div>
-                        <div class="tier-top">
-                            <div class="frosting-ring-small"></div>
-                            <div class="cake-text">
-                                Happy Birthday<br><span class="baby-text">My Baby</span>
-                            </div>
-                            <!-- PANDA TOPPER -->
-                            <div class="panda">
-                                <div class="ear left"></div>
-                                <div class="ear right"></div>
-                                <div class="face">
-                                    <div class="eye left"><div class="pupil"></div></div>
-                                    <div class="eye right"><div class="pupil"></div></div>
-                                    <div class="nose"></div>
-                                    <div class="blush left"></div>
-                                    <div class="blush right"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- CANDLES CONTAINER (Populated by JS) -->
-                    <div id="candles-holder"></div>
-                </div>
+            <div class="prop letter">
+                <div class="heart-seal">❤️</div>
             </div>
         </div>
+
+        <!-- LAYER 3: CAKE (Centered on Table) -->
+        <div class="cake-container">
+            <div class="cake-plate"></div>
+            
+            <!-- BOTTOM TIER -->
+            <div class="tier bottom-tier">
+                <div class="tier-body"></div>
+                <div class="tier-top"></div>
+            </div>
+
+            <!-- TOP TIER -->
+            <div class="tier top-tier">
+                <div class="tier-body"></div>
+                <div class="tier-top">
+                    <!-- Text on top of cake -->
+                    <div class="cake-msg">
+                        Happy Birthday<br><span>My Baby</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CANDLES CONTAINER -->
+            <div id="candles-container"></div>
+        </div>
+
     </div>
 
     <!-- CARD MODAL -->
     <div id="card-modal" class="hidden">
-        <div class="card-3d-wrapper" id="card-wrapper">
-            <div class="card-cover">
-                <div class="card-front-content">
-                    <div class="heart-icon">❤️</div>
-                    <h2>For You</h2>
-                    <p>TAP TO OPEN</p>
-                </div>
+        <div class="card" id="card-wrapper">
+            <div class="card-front">
+                <h2>For You</h2>
+                <div class="heart">❤️</div>
+                <p class="click-hint">(Tap to open)</p>
             </div>
-            <div class="card-inside">
-                <h3 class="script-font">My Dearest Love,</h3>
-                <p>Wishing you a day as beautiful as your smile and a year as lovely as your heart. You are my everything.</p>
-                <div class="signature">
-                    <strong>Forever Yours,</strong>
-                    <span>❤️</span>
-                </div>
+            <div class="card-inner">
+                <h3>My Dearest Love,</h3>
+                <p>
+                    Every moment with you is a gift.<br>
+                    May your day be as sweet as this cake<br>
+                    and as bright as your smile.<br><br>
+                    I love you.
+                </p>
+                <div class="sig">Forever Yours ❤️</div>
             </div>
         </div>
     </div>

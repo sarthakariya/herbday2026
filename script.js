@@ -1,229 +1,141 @@
-/* 
- * MAIN SCRIPT - VANILLA JS 
- * No React, No Build Tools. Works everywhere.
- */
+/* MAIN SCRIPT */
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 20,
-    blowCooldown: 100
+    micThreshold: 15,
 };
 
 const state = {
-    isListening: false,
+    listening: false,
     audioCtx: null,
     analyser: null,
-    candlesExtinguished: 0,
+    extinguished: 0,
     candles: []
 };
 
-// --- INIT ---
 document.addEventListener('DOMContentLoaded', () => {
-    generateCandles();
-    
-    // Start Button
-    document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio();
-        startExperience();
-    });
-
-    // Card Interaction
-    document.getElementById('card-wrapper').addEventListener('click', function() {
-        this.classList.toggle('open');
-    });
-});
-
-// --- SCENE SETUP ---
-function generateCandles() {
-    const holder = document.getElementById('candles-holder');
-    // Radius adjusted for larger cake top tier (Width 240px -> Radius ~120px visually, but perspective scales it)
-    // 80px seems right for placement on the 240px wide top tier
-    const radius = 80; 
+    // 1. Generate Candles on the Top Tier Oval
+    // Top tier is width 180px, height 60px (in CSS).
+    // So visual radii are: rx = 70 (padding), ry = 20 (padding)
+    const holder = document.getElementById('candles-container');
+    const rx = 60; 
+    const ry = 20;
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
-        const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius;
+        // Basic Ellipse math
+        const x = Math.cos(angle) * rx;
+        const y = Math.sin(angle) * ry;
 
         const el = document.createElement('div');
         el.className = 'candle';
-        
-        // Adjust transform to sit on the top tier surface
-        // The container is tilted.
-        // We translate Y up (negative) to sit on top of the tier.
-        el.style.transform = `translateX(${x}px) translateZ(${z}px) translateY(-50px)`;
-        
-        // Colors
+        // Position relative to center. 
+        // Note: Y in CSS is down, but for 2.5D stacking, "back" is negative Y visually on the oval.
+        // We use standard left/top positioning or transform.
+        el.style.transform = `translate(${x}px, ${y}px)`;
+        // Z-index sorting: candles in "front" (higher y) should be on top of candles in "back"
+        el.style.zIndex = Math.floor(y + 100);
+
+        // Random color
         const hue = (i * 40) % 360;
         el.style.background = `linear-gradient(to right, #fff, hsl(${hue}, 70%, 80%), #eee)`;
 
         const wick = document.createElement('div');
         wick.className = 'wick';
-        
         const flame = document.createElement('div');
         flame.className = 'flame';
-        flame.id = `flame-${i}`;
-
+        
         el.appendChild(wick);
         el.appendChild(flame);
         holder.appendChild(el);
 
-        state.candles.push({ id: i, active: true, el: flame });
+        state.candles.push({ el: flame, active: true });
     }
-}
 
-function startExperience() {
-    // Hide Start Screen
-    const startScreen = document.getElementById('start-screen');
-    startScreen.style.opacity = '0';
-    setTimeout(() => startScreen.style.display = 'none', 1000);
+    // 2. Event Listeners
+    document.getElementById('start-btn').addEventListener('click', () => {
+        initAudio();
+        document.getElementById('start-screen').style.opacity = 0;
+        setTimeout(() => document.getElementById('start-screen').remove(), 1000);
+        document.getElementById('hud').classList.remove('hidden');
+        loop();
+    });
 
-    // Show HUD
-    document.getElementById('hud').classList.remove('hidden');
+    const card = document.getElementById('card-wrapper');
+    card.addEventListener('click', () => card.classList.toggle('open'));
+});
 
-    // Open Curtains after delay
-    setTimeout(() => {
-        document.body.classList.add('curtains-open');
-        playMusic();
-    }, 500);
-
-    // Start Loop
-    loop();
-}
-
-// --- AUDIO ENGINE ---
+// --- AUDIO ---
 async function initAudio() {
     try {
         state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (state.audioCtx.state === 'suspended') await state.audioCtx.resume();
-
+        await state.audioCtx.resume();
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const source = state.audioCtx.createMediaStreamSource(stream);
         state.analyser = state.audioCtx.createAnalyser();
         state.analyser.fftSize = 256;
         
-        // Low pass filter for "blowing" sound (wind noise is low freq)
+        // Filter for "blowing" (low freq noise)
         const filter = state.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 800;
+        filter.frequency.value = 600;
         
         source.connect(filter);
         filter.connect(state.analyser);
-        
-        state.isListening = true;
-    } catch (e) {
-        console.error("Mic Error", e);
-        alert("Please allow microphone access to blow out candles! 🎂");
+        state.listening = true;
+    } catch(e) {
+        alert("Microphone needed to blow out candles!");
     }
 }
 
-function playMusic() {
-    if(!state.audioCtx) return;
-    // Simple synthesized intro tune
-    const now = state.audioCtx.currentTime;
-    [261.6, 261.6, 293.6, 261.6, 349.2, 329.6].forEach((freq, i) => {
-        const osc = state.audioCtx.createOscillator();
-        const g = state.audioCtx.createGain();
-        osc.frequency.value = freq;
-        g.gain.setValueAtTime(0.05, now + i*0.4);
-        g.gain.exponentialRampToValueAtTime(0.001, now + i*0.4 + 0.3);
-        osc.connect(g);
-        g.connect(state.audioCtx.destination);
-        osc.start(now + i*0.4);
-        osc.stop(now + i*0.4 + 0.4);
-    });
-}
-
-// --- LOGIC LOOP ---
 function loop() {
-    if(!state.isListening) {
-        requestAnimationFrame(loop);
-        return;
+    if(state.listening && state.analyser) {
+        const data = new Uint8Array(state.analyser.frequencyBinCount);
+        state.analyser.getByteFrequencyData(data);
+        
+        // Calculate average volume
+        let sum = 0;
+        for(let i=0; i<data.length; i++) sum += data[i];
+        const avg = sum / data.length;
+
+        // Visual Meter
+        const pct = Math.min(avg * 4, 100);
+        document.getElementById('mic-level').style.width = pct + "%";
+
+        // Threshold check
+        if(avg > CONFIG.micThreshold) {
+            blowOutCandle();
+        }
     }
-
-    const data = new Uint8Array(state.analyser.frequencyBinCount);
-    state.analyser.getByteFrequencyData(data);
-    
-    // Average volume
-    let sum = 0;
-    for(let i=0; i<data.length; i++) sum += data[i];
-    const avg = sum / data.length;
-
-    // Update HUD
-    const level = Math.min(avg * 3, 100);
-    document.getElementById('mic-level').style.width = level + '%';
-
-    // Blow Detection
-    // Threshold tweaked for typical mic input
-    if(avg > CONFIG.micThreshold) {
-        blowCandles();
-    }
-
     requestAnimationFrame(loop);
 }
 
-function blowCandles() {
+function blowOutCandle() {
+    // Find active candles
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
-    // Blow 1 at a time for realism
+    // Pick random one
     const idx = Math.floor(Math.random() * active.length);
     const target = active[idx];
     
     target.active = false;
     target.el.classList.add('out');
-    state.candlesExtinguished++;
+    state.extinguished++;
     
-    // Sound fx
-    playPuff();
-
-    if(state.candlesExtinguished >= CONFIG.candleCount) {
-        triggerWin();
+    // Check Win
+    if(state.extinguished === CONFIG.candleCount) {
+        win();
     }
 }
 
-function playPuff() {
-    if(!state.audioCtx) return;
-    const t = state.audioCtx.currentTime;
-    const osc = state.audioCtx.createBufferSource();
-    const b = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
-    const d = b.getChannelData(0);
-    for(let i=0; i<b.length; i++) d[i] = Math.random() * 2 - 1;
-    osc.buffer = b;
-    const g = state.audioCtx.createGain();
-    g.gain.setValueAtTime(0.3, t);
-    g.gain.exponentialRampToValueAtTime(0.01, t+0.1);
-    osc.connect(g);
-    g.connect(state.audioCtx.destination);
-    osc.start();
-}
-
-function triggerWin() {
-    state.isListening = false;
-    document.getElementById('main-title').innerText = "Happy Birthday!";
+function win() {
+    state.listening = false;
+    document.querySelector('.wall-banner').innerText = "Hooray!";
     
-    // Sound
-    playClapping();
-
-    // Confetti
-    const duration = 3000;
-    const end = Date.now() + duration;
-    (function frame() {
-        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
-        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
-        if (Date.now() < end) requestAnimationFrame(frame);
-    }());
-
-    // Show Card after 2s
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    
     setTimeout(() => {
         document.getElementById('card-modal').classList.remove('hidden');
-    }, 2000);
-}
-
-function playClapping() {
-    // Simple noise burst loop
-    if(!state.audioCtx) return;
-    for(let i=0; i<20; i++) {
-        setTimeout(playPuff, i * 100);
-    }
+    }, 1500);
 }
