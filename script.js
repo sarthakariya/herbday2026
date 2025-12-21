@@ -15,25 +15,18 @@ const state = {
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles on the Top Tier Oval
-    // Top tier is width 180px, height 60px (in CSS).
-    // So visual radii are: rx = 70 (padding), ry = 20 (padding)
     const holder = document.getElementById('candles-container');
     const rx = 60; 
     const ry = 20;
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
-        // Basic Ellipse math
         const x = Math.cos(angle) * rx;
         const y = Math.sin(angle) * ry;
 
         const el = document.createElement('div');
         el.className = 'candle';
-        // Position relative to center. 
-        // Note: Y in CSS is down, but for 2.5D stacking, "back" is negative Y visually on the oval.
-        // We use standard left/top positioning or transform.
         el.style.transform = `translate(${x}px, ${y}px)`;
-        // Z-index sorting: candles in "front" (higher y) should be on top of candles in "back"
         el.style.zIndex = Math.floor(y + 100);
 
         // Random color
@@ -52,12 +45,24 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, active: true });
     }
 
-    // 2. Event Listeners
+    // 2. Start Interaction
     document.getElementById('start-btn').addEventListener('click', () => {
         initAudio();
+        
+        // Hide Start text
         document.getElementById('start-screen').style.opacity = 0;
         setTimeout(() => document.getElementById('start-screen').remove(), 1000);
+
+        // Open Curtains
+        document.body.classList.add('open');
+        
+        // Show HUD
         document.getElementById('hud').classList.remove('hidden');
+        
+        // Play Music
+        setTimeout(playBirthdayTune, 500);
+
+        // Start Mic
         loop();
     });
 
@@ -65,11 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
     card.addEventListener('click', () => card.classList.toggle('open'));
 });
 
-// --- AUDIO ---
+// --- AUDIO SYSTEM ---
 async function initAudio() {
     try {
         state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        await state.audioCtx.resume();
+        if(state.audioCtx.state === 'suspended') await state.audioCtx.resume();
+        
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const source = state.audioCtx.createMediaStreamSource(stream);
         state.analyser = state.audioCtx.createAnalyser();
@@ -84,16 +90,73 @@ async function initAudio() {
         filter.connect(state.analyser);
         state.listening = true;
     } catch(e) {
-        alert("Microphone needed to blow out candles!");
+        console.log("Mic Error: ", e);
+        alert("Microphone needed to blow out candles! 🎂");
     }
 }
 
+function playBirthdayTune() {
+    if(!state.audioCtx) return;
+    const now = state.audioCtx.currentTime;
+    // "Happy Birthday" Notes (approx freq)
+    // C4, C4, D4, C4, F4, E4
+    const notes = [261.6, 261.6, 293.6, 261.6, 349.2, 329.6];
+    const timings = [0, 0.4, 0.8, 1.6, 2.4, 3.2];
+
+    notes.forEach((freq, i) => {
+        const osc = state.audioCtx.createOscillator();
+        const gain = state.audioCtx.createGain();
+        osc.frequency.value = freq;
+        osc.type = 'sine';
+        
+        gain.gain.setValueAtTime(0.1, now + timings[i]);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + timings[i] + 0.6);
+        
+        osc.connect(gain);
+        gain.connect(state.audioCtx.destination);
+        
+        osc.start(now + timings[i]);
+        osc.stop(now + timings[i] + 0.7);
+    });
+}
+
+function playPuffSound() {
+    if(!state.audioCtx) return;
+    const t = state.audioCtx.currentTime;
+    const bufferSize = state.audioCtx.sampleRate * 0.1; // 0.1 sec
+    const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1; // White noise
+    }
+
+    const noise = state.audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    
+    const gain = state.audioCtx.createGain();
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+
+    noise.connect(gain);
+    gain.connect(state.audioCtx.destination);
+    noise.start();
+}
+
+function playApplause() {
+    if(!state.audioCtx) return;
+    // Simulate clapping by playing multiple random puffs rapidly
+    for(let i=0; i<30; i++) {
+        setTimeout(playPuffSound, Math.random() * 2000);
+    }
+}
+
+// --- LOGIC ---
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
         state.analyser.getByteFrequencyData(data);
         
-        // Calculate average volume
         let sum = 0;
         for(let i=0; i<data.length; i++) sum += data[i];
         const avg = sum / data.length;
@@ -102,7 +165,6 @@ function loop() {
         const pct = Math.min(avg * 4, 100);
         document.getElementById('mic-level').style.width = pct + "%";
 
-        // Threshold check
         if(avg > CONFIG.micThreshold) {
             blowOutCandle();
         }
@@ -111,19 +173,18 @@ function loop() {
 }
 
 function blowOutCandle() {
-    // Find active candles
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
-    // Pick random one
+    // Pick random candle to extinguish
     const idx = Math.floor(Math.random() * active.length);
     const target = active[idx];
     
     target.active = false;
     target.el.classList.add('out');
+    playPuffSound();
     state.extinguished++;
     
-    // Check Win
     if(state.extinguished === CONFIG.candleCount) {
         win();
     }
@@ -131,8 +192,9 @@ function blowOutCandle() {
 
 function win() {
     state.listening = false;
-    document.querySelector('.wall-banner').innerText = "Hooray!";
+    playApplause();
     
+    // Confetti
     confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
     
     setTimeout(() => {

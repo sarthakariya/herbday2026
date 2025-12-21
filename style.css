@@ -15,7 +15,7 @@ body {
 
 /* --- START SCREEN --- */
 #start-screen {
-    position: fixed; inset: 0; z-index: 100;
+    position: fixed; inset: 0; z-index: 1000;
     background: radial-gradient(circle at center, #4a1220 0%, #000 100%);
     display: flex; align-items: center; justify-content: center;
     transition: opacity 1s;
@@ -38,7 +38,7 @@ body {
 
 /* --- HUD --- */
 #hud {
-    position: fixed; top: 20px; right: 20px; z-index: 50;
+    position: fixed; top: 20px; right: 20px; z-index: 500;
     background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 20px;
     display: flex; align-items: center; gap: 10px;
     border: 1px solid #333;
@@ -50,8 +50,21 @@ body {
 #scene {
     position: relative;
     width: 100%; height: 100%;
-    /* No perspective on container to avoid distortion */
 }
+
+/* CURTAINS */
+.curtain {
+    position: absolute; top: 0; width: 50%; height: 100%;
+    background: linear-gradient(90deg, #880e4f, #560027);
+    z-index: 800;
+    transition: transform 3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    box-shadow: 0 0 50px rgba(0,0,0,0.8);
+}
+.curtain.left { left: 0; transform-origin: left; border-right: 2px solid #3e0015; }
+.curtain.right { right: 0; transform-origin: right; border-left: 2px solid #3e0015; }
+
+body.open .curtain.left { transform: scaleX(0); }
+body.open .curtain.right { transform: scaleX(0); }
 
 /* 1. ROOM BACKGROUND */
 .room-bg {
@@ -63,42 +76,89 @@ body {
     background: linear-gradient(to bottom, rgba(255,255,255,0.05), transparent);
     filter: blur(50px);
 }
-.wall-banner {
-    position: absolute; top: 10%; width: 100%;
-    text-align: center;
-    font-family: 'Great Vibes', cursive;
-    font-size: 6rem;
-    color: #ffd700;
-    text-shadow: 0 0 20px #ff6f00, 0 0 5px white;
-    animation: float 3s ease-in-out infinite;
+
+/* BALLOONS */
+.balloon {
+    position: absolute; width: 60px; height: 70px;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: floatBalloon 5s ease-in-out infinite;
 }
+.balloon::after {
+    content: ''; position: absolute; bottom: -10px; left: 29px;
+    width: 2px; height: 30px; background: rgba(255,255,255,0.3);
+}
+.b1 { background: red; top: 20%; left: 10%; animation-delay: 0s; }
+.b2 { background: purple; top: 15%; right: 15%; animation-delay: 1s; }
+.b3 { background: gold; top: 30%; left: 20%; width: 40px; height: 50px; animation-delay: 2s; }
+.b4 { background: blue; top: 25%; right: 25%; width: 40px; height: 50px; animation-delay: 3s; }
+
+@keyframes floatBalloon {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+/* BUNTING BANNER */
+.bunting-container {
+    position: absolute; top: 5%; left: 0; width: 100%;
+    display: flex; justify-content: center; gap: 5px;
+    padding-top: 20px;
+    filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));
+}
+.string {
+    position: absolute; top: 0; left: -10%; width: 120%; height: 30px;
+    border-bottom: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 0;
+}
+.flag {
+    position: relative; width: 40px; height: 50px;
+    background: red;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    z-index: 1;
+    display: flex; justify-content: center; padding-top: 5px;
+    font-weight: bold; font-size: 1.2rem;
+    transform-origin: top center;
+    animation: sway 3s ease-in-out infinite alternate;
+}
+.flag:nth-child(even) { animation-delay: 0.5s; }
+.spacer { width: 30px; }
+.flag.red { background: #ff5252; }
+.flag.blue { background: #448aff; }
+.flag.yellow { background: #ffd740; color: #333; }
+.flag.green { background: #69f0ae; color: #333; }
+.flag.purple { background: #e040fb; }
+
+@keyframes sway {
+    from { transform: rotate(5deg); }
+    to { transform: rotate(-5deg); }
+}
+
 
 /* 2. TABLE (Geometric Construction) */
 .table-container {
     position: absolute;
-    bottom: -10%; /* Move down so we look down at it */
+    bottom: -10%; 
     left: 50%;
     transform: translateX(-50%);
-    width: 1200px; /* Big wide table */
+    width: 1200px;
     height: 600px;
     z-index: 10;
 }
 
-/* The shadow on the floor */
 .table-shadow {
     position: absolute; bottom: 50px; left: 10%; width: 80%; height: 100px;
     background: black; border-radius: 50%; filter: blur(30px); opacity: 0.8;
 }
 
-/* The Table Top (Oval) */
 .cloth-top {
     position: absolute; top: 100px; left: 0;
     width: 100%; height: 400px;
     background: #f8bbd0;
     border-radius: 50%;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    z-index: 2; /* On top of body */
-    overflow: hidden; /* Crop lace */
+    z-index: 2;
+    overflow: hidden;
 }
 .lace-pattern {
     position: absolute; inset: 0;
@@ -107,16 +167,15 @@ body {
     opacity: 0.5;
 }
 
-/* The Table Body (Thickness/Drape) */
 .cloth-body {
-    position: absolute; top: 300px; left: 5%; /* Starts halfway down the top oval */
+    position: absolute; top: 300px; left: 5%;
     width: 90%; height: 200px;
     background: linear-gradient(to bottom, #ec407a, #880e4f);
-    border-radius: 0 0 50% 50%; /* Curved bottom */
+    border-radius: 0 0 50% 50%;
     z-index: 1;
 }
 
-/* Props on Table */
+/* Props */
 .prop { position: absolute; z-index: 5; }
 .gift-box {
     top: 250px; left: 200px;
@@ -124,7 +183,7 @@ body {
     background: #7b1fa2;
     box-shadow: 5px 10px 15px rgba(0,0,0,0.4);
 }
-.gift-box::before { /* Lid */
+.gift-box::before { 
     content: ''; position: absolute; top: -10px; left: -5px;
     width: 110px; height: 20px; background: #9c27b0;
 }
@@ -142,10 +201,9 @@ body {
 .heart-seal { font-size: 2rem; color: red; }
 
 
-/* 3. CAKE (Geometric Stack) */
+/* 3. CAKE */
 .cake-container {
     position: absolute;
-    /* Center visually on the table oval */
     top: 150px; left: 50%;
     transform: translateX(-50%);
     width: 300px; height: 300px;
@@ -158,17 +216,16 @@ body {
     box-shadow: 0 5px 15px rgba(0,0,0,0.4);
 }
 
-/* Tiers - Cylinder Construction: Body Rectangle + Top Oval */
 .tier { position: absolute; left: 50%; transform: translateX(-50%); }
 
 .bottom-tier { bottom: 20px; width: 260px; height: 120px; }
 .bottom-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 80px;
-    background: linear-gradient(to right, #3e2723, #5d4037, #3e2723); /* Chocolate cylinder */
-    border-radius: 0 0 130px 130px; /* Half oval bottom */
+    background: linear-gradient(to right, #3e2723, #5d4037, #3e2723);
+    border-radius: 0 0 130px 130px;
 }
 .bottom-tier .tier-top {
-    position: absolute; top: 0; width: 100%; height: 80px; /* Oval height */
+    position: absolute; top: 0; width: 100%; height: 80px;
     background: #4e342e;
     border-radius: 50%;
     border: 5px solid #3e2723;
@@ -177,7 +234,7 @@ body {
 .top-tier { bottom: 90px; width: 180px; height: 100px; }
 .top-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 70px;
-    background: linear-gradient(to right, #d81b60, #f06292, #d81b60); /* Pink cylinder */
+    background: linear-gradient(to right, #d81b60, #f06292, #d81b60);
     border-radius: 0 0 90px 90px;
 }
 .top-tier .tier-top {
@@ -188,7 +245,6 @@ body {
     display: flex; align-items: center; justify-content: center;
 }
 
-/* Text on cake surface */
 .cake-msg {
     position: absolute; top: -40px;
     width: 200%; text-align: center;
@@ -203,14 +259,13 @@ body {
 /* 4. CANDLES */
 #candles-container {
     position: absolute;
-    /* Position container exactly on top of the top tier oval */
     bottom: 160px; left: 50%;
     width: 0; height: 0;
     z-index: 30;
 }
 
 .candle {
-    position: absolute; bottom: 0; /* Anchor at bottom */
+    position: absolute; bottom: 0;
     width: 8px; height: 45px;
     background: linear-gradient(to right, #fff, #ffd54f, #eee);
     border-radius: 2px;
@@ -234,14 +289,9 @@ body {
     to { transform: scale(1.1); opacity: 1; }
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-15px); }
-}
-
 /* CARD MODAL */
 #card-modal {
-    position: fixed; inset: 0; z-index: 200;
+    position: fixed; inset: 0; z-index: 2000;
     background: rgba(0,0,0,0.8);
     display: flex; align-items: center; justify-content: center;
     perspective: 1000px;
