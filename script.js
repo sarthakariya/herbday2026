@@ -54,12 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 2. Scatter Chocolates
     const chocoContainer = document.getElementById('chocolates-container');
-    for(let i=0; i<8; i++) {
+    for(let i=0; i<12; i++) { // Increased count for bigger table
         const choco = document.createElement('div');
         choco.className = 'chocolate';
-        // Random pos on table
-        const top = 150 + Math.random() * 200;
-        const left = 20 + Math.random() * 80; // percent
+        // Random pos on table (Full Width)
+        const top = 20 + Math.random() * 100; // px from top of table cloth
+        const left = 5 + Math.random() * 90; // percent across screen
         const size = 10 + Math.random() * 10;
         const rot = Math.random() * 360;
         
