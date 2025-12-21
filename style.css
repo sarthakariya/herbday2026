@@ -1,199 +1,305 @@
-/* --- GLOBAL RESET --- */
+/* --- RESET & BASE --- */
+* { box-sizing: border-box; }
 body {
-    margin: 0;
+    margin: 0; padding: 0;
     overflow: hidden;
-    background: #000;
+    background-color: #0f050a;
+    font-family: 'Cinzel', serif;
+    color: white;
 }
 
-/* --- UTILITIES --- */
-.perspective-1000 { perspective: 1000px; }
-.perspective-1500 { perspective: 1500px; }
-.preserve-3d { transform-style: preserve-3d; }
-
-/* --- STARS GENERATION --- */
-.stars {
-    width: 1px; height: 1px;
-    background: transparent;
-    box-shadow: 10px 10px #FFF, 50px 80px #FFF, 120px 20px #FFF, 200px 150px #FFF, 80px 200px #FFF;
-    opacity: 0.8;
-    animation: twinkle 3s infinite;
+/* --- START SCREEN --- */
+#start-screen {
+    position: fixed; inset: 0; z-index: 1000;
+    background: radial-gradient(circle at center, #2a0a14, #000);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 1s ease;
 }
-@keyframes twinkle { 0%, 100% { opacity: 0.8; } 50% { opacity: 0.4; } }
+.heart-bg {
+    position: absolute; inset: 0; opacity: 0.1;
+    background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
+    animation: pulse-bg 4s infinite;
+}
+#start-btn {
+    padding: 15px 40px; font-size: 1.5rem;
+    background: linear-gradient(45deg, #d32f2f, #c2185b);
+    color: white; border: 2px solid #ff80ab; border-radius: 50px;
+    cursor: pointer; box-shadow: 0 0 30px rgba(255, 20, 100, 0.5);
+    transition: transform 0.2s;
+    font-family: 'Cinzel', serif;
+    z-index: 10;
+}
+#start-btn:hover { transform: scale(1.1); }
+.instructions { text-align: center; margin-bottom: 30px; color: #ffcdd2; font-family: sans-serif; }
+#mic-status { margin-top: 15px; color: #aaa; font-size: 0.8rem; }
 
-/* --- CURTAINS --- */
-.curtain-open-left { transform: translateX(-100%); }
-.curtain-open-right { transform: translateX(100%); }
+/* --- 3D ENGINE --- */
+#viewport {
+    width: 100vw; height: 100vh;
+    perspective: 1200px; /* Camera distance */
+    perspective-origin: 50% 50%; /* Eye level */
+    overflow: hidden;
+}
 
-/* --- TABLE SURFACE --- */
-.wood-table {
-    position: absolute; top: 50%; left: 50%;
-    width: 1200px; height: 1200px;
-    background: #3e2723 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+#camera {
+    position: relative;
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transform: translateZ(-200px) rotateX(10deg); /* Slight tilt to see table surface */
+    transition: transform 1s ease-out;
+}
+
+/* --- ROOM --- */
+.room-wall {
+    position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: linear-gradient(to bottom, #1a0509 0%, #0f0505 100%);
+    transform: translateZ(-800px);
+}
+
+/* Window */
+.window {
+    position: absolute; top: 30%; left: 20%; width: 300px; height: 400px;
+    background: #000; border: 10px solid #3e2723;
+    overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,1);
+}
+.night-sky {
+    width: 100%; height: 100%;
+    background: linear-gradient(to bottom, #020111, #191d3a);
+}
+.moon {
+    position: absolute; top: 30px; right: 30px; width: 60px; height: 60px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 40px #fff;
+}
+.frame, .frame-mid { background: #3e2723; position: absolute; }
+.frame { top: 50%; left: 0; width: 100%; height: 10px; }
+.frame-mid { top: 0; left: 50%; width: 10px; height: 100%; }
+
+/* Curtains */
+.curtain {
+    position: absolute; top: 20%; height: 600px; width: 200px;
+    background: #880e4f;
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.5);
+    border-radius: 0 0 20px 20px;
+    transition: transform 1.5s ease-in-out;
+}
+.curtain.left { left: 15%; transform-origin: top left; transform: skewX(5deg); }
+.curtain.right { left: 45%; transform-origin: top right; transform: skewX(-5deg); }
+.curtains-open .curtain.left { transform: translateX(-150px) scaleX(0.5); }
+.curtains-open .curtain.right { transform: translateX(150px) scaleX(0.5); }
+
+/* --- TABLE (3D Box) --- */
+.table-group {
+    position: absolute; top: 60%; left: 50%;
+    width: 800px; height: 800px;
+    transform-style: preserve-3d;
+    transform: translate(-50%, -50%) rotateX(15deg); /* Flattens the view */
+}
+.table-top {
+    position: absolute; width: 100%; height: 100%;
+    background: #2b1b17 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
     border-radius: 50%;
-    transform: translate(-50%, -50%) translateZ(-100px);
-    box-shadow: 0 50px 100px rgba(0,0,0,0.9), inset 0 0 200px rgba(0,0,0,0.9);
-    border: 20px solid #271c19;
+    transform: rotateX(90deg) translateZ(50px); /* Lays flat */
+    box-shadow: 0 0 100px rgba(0,0,0,0.8);
 }
 .reflection {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 500px; height: 500px;
-    background: radial-gradient(rgba(255,255,255,0.1), transparent 70%);
-    filter: blur(40px);
-    animation: shimmer 5s infinite ease-in-out;
+    position: absolute; top: 20%; left: 20%; width: 60%; height: 60%;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
+    filter: blur(20px);
 }
-@keyframes shimmer { 0%, 100% { opacity: 0.3; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.5; transform: translate(-50%,-50%) scale(1.1); } }
+.petal {
+    position: absolute; width: 15px; height: 15px; background: #d32f2f;
+    border-radius: 50% 0 50% 0; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+.p1 { top: 40%; left: 30%; transform: rotate(45deg); }
+.p2 { top: 60%; left: 70%; transform: rotate(15deg); }
+.p3 { top: 75%; left: 40%; transform: rotate(80deg); }
 
-/* --- 3D CAKE ARCHITECTURE --- */
-.cake-container {
-    position: relative; width: 300px; height: 300px;
-    margin: 0 auto;
+/* --- CAKE (Volumetric Stacking) --- */
+.cake-group {
+    position: absolute; top: 50%; left: 50%;
+    width: 0; height: 0;
     transform-style: preserve-3d;
-    transform: translateY(-50px);
+    transform: translateY(-100px); /* Lift up from table center */
 }
 
+/* Plate */
 .plate {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(-5px);
-    width: 130%; height: 130%;
-    background: #f5f5f5; border-radius: 50%;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    border: 1px solid #ddd;
+    position: absolute; width: 400px; height: 400px;
+    background: #fff; border-radius: 50%;
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(52px); /* Sit on table */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
 }
 
-/* Tier Common Styles */
-.tier { position: absolute; top: 50%; left: 50%; transform-style: preserve-3d; }
-.tier-side {
-    position: absolute; top: 50%; left: 50%; width: 100%;
-    /* Create the cylinder side look */
-    border-radius: 0 0 50% 50% / 0 0 20px 20px; 
-    box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+/* 3D Tier Construction (Approximated Cylinder using rotation) */
+.tier {
+    position: absolute; left: 50%; top: 50%;
+    transform-style: preserve-3d;
 }
-.tier-top {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    border-radius: 50%;
-    transform: translateZ(1px); /* Sit on top */
+.bottom { transform: translate(-50%, -50%) translateY(140px); }
+.top { transform: translate(-50%, -50%) translateY(60px); }
+
+/* Creating sides of cylinder */
+.tier-face {
+    position: absolute; width: 300px; height: 80px;
+    background: linear-gradient(to bottom, #5d4037, #3e2723);
+    backface-visibility: hidden;
+}
+/* We create a 'box' that looks cylindrical from the front */
+.bottom .tier-face { width: 300px; }
+.bottom .front { transform: translate(-50%, -50%) translateZ(150px); }
+.bottom .back { transform: translate(-50%, -50%) rotateY(180deg) translateZ(150px); }
+.bottom .left { width: 300px; transform: translate(-50%, -50%) rotateY(-90deg) translateZ(150px); }
+.bottom .right { width: 300px; transform: translate(-50%, -50%) rotateY(90deg) translateZ(150px); }
+.bottom .tier-top {
+    position: absolute; width: 300px; height: 300px;
+    background: radial-gradient(#6d4c41, #3e2723);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(40px);
+    border-radius: 10px; /* Soften edges */
 }
 
-/* Bottom Tier (Chocolate) */
-.bottom-tier { width: 100%; height: 100%; transform: translate(-50%, -50%) translateZ(10px); }
-.bottom-tier .tier-side {
-    height: 80px; /* Thickness */
-    transform: translate(-50%, -15px); /* Push down slightly to align with perspective */
-    background: linear-gradient(90deg, #3e2723, #5d4037 25%, #6d4c41 50%, #5d4037 75%, #3e2723);
-}
-.bottom-tier .tier-top {
-    background: radial-gradient(circle, #5d4037 30%, #3e2723 100%);
-    border: 1px solid #3e2723;
-    transform: translateZ(65px); /* Move to top of 'side' height approx */
-}
-
-/* Top Tier (Vanilla) */
-.top-tier { width: 75%; height: 75%; transform: translate(-50%, -50%) translateZ(80px); }
-.top-tier .tier-side {
-    height: 70px;
-    transform: translate(-50%, -20px);
-    background: linear-gradient(90deg, #f06292, #f48fb1 25%, #f8bbd0 50%, #f48fb1 75%, #f06292);
-}
-.top-tier .tier-top {
-    background: radial-gradient(circle at 30% 30%, #fffde7, #fff9c4);
-    transform: translateZ(50px);
-    box-shadow: inset 0 0 20px rgba(255,200,0,0.2);
-    border: 1px solid #fff59d;
-    display: flex; justify-content: center; align-items: center;
+.top .tier-face { height: 70px; background: linear-gradient(to bottom, #f48fb1, #ad1457); }
+.top .front { width: 220px; transform: translate(-50%, -50%) translateZ(110px); }
+.top .back { width: 220px; transform: translate(-50%, -50%) rotateY(180deg) translateZ(110px); }
+.top .left { width: 220px; transform: translate(-50%, -50%) rotateY(-90deg) translateZ(110px); }
+.top .right { width: 220px; transform: translate(-50%, -50%) rotateY(90deg) translateZ(110px); }
+.top .tier-top {
+    position: absolute; width: 220px; height: 220px;
+    background: radial-gradient(#f8bbd0, #f06292);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(35px);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* Cake Decorations */
-.frosting-circle {
-    position: absolute; inset: -5px; border-radius: 50%;
-    border: 5px dashed #fff; opacity: 0.8;
-}
-.cake-text {
-    position: absolute; transform: translateY(-40px) translateZ(30px) rotateX(-20deg);
-    font-family: 'Great Vibes', cursive; font-size: 3rem; color: #ad1457;
-    text-shadow: 1px 1px 0 #fff; white-space: nowrap; pointer-events: none;
+.text-3d {
+    position: absolute; transform: rotateX(-90deg) translateZ(10px) translateY(-50px);
+    font-size: 2rem; color: #880e4f; text-shadow: 1px 1px 0 #fff;
+    white-space: nowrap; font-family: 'Great Vibes', cursive;
 }
 
-/* Panda */
-.panda {
-    position: absolute; transform: translateY(-10px) translateZ(20px) rotateX(-20deg);
-    z-index: 50;
-    animation: bounce 2s infinite ease-in-out;
+/* --- TRUE 3D CANDLES --- */
+#candle-placement {
+    position: absolute; width: 100%; height: 100%;
+    transform-style: preserve-3d;
 }
-.panda-head {
-    width: 50px; height: 44px; background: #fff; border-radius: 45% 45% 40% 40%;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); position: relative; border: 1px solid #eee;
+.candle-obj {
+    position: absolute; width: 10px; height: 10px;
+    transform-style: preserve-3d;
 }
-.ear { position: absolute; top: -8px; width: 16px; height: 16px; background: #222; border-radius: 50%; z-index: -1; }
-.ear.left { left: 0; } .ear.right { right: 0; }
-.eye { position: absolute; top: 12px; width: 12px; height: 12px; background: #222; border-radius: 50%; overflow: hidden; }
-.eye.left { left: 10px; } .eye.right { right: 10px; }
-.pupil { width: 4px; height: 4px; background: #fff; border-radius: 50%; margin: 2px; animation: blink 4s infinite; }
-.nose { position: absolute; top: 26px; left: 50%; transform: translateX(-50%); width: 8px; height: 5px; background: #222; border-radius: 40%; }
-@keyframes bounce { 0%, 100% { transform: translateY(-10px) translateZ(20px) rotateX(-20deg); } 50% { transform: translateY(-13px) translateZ(20px) rotateX(-20deg); } }
-@keyframes blink { 0%, 95% { transform: scaleY(1); } 98% { transform: scaleY(0.1); } }
+.c-side {
+    position: absolute; width: 10px; height: 50px;
+    background: linear-gradient(to right, #fff, #eee);
+    transform-origin: bottom center;
+}
+.c-front { transform: translateZ(5px); }
+.c-back { transform: rotateY(180deg) translateZ(5px); }
+.c-left { transform: rotateY(-90deg) translateZ(5px); }
+.c-right { transform: rotateY(90deg) translateZ(5px); }
 
-/* --- CANDLES --- */
-.candle-wrapper {
-    position: absolute; transform-origin: bottom center;
-    transform: translate(-50%, 0) rotateX(-20deg); /* Counteract scene rotation */
-}
-.candle-stick {
-    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 6px; height: 45px;
-    border-radius: 2px;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-}
 .wick {
-    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
-    width: 2px; height: 6px; background: #333;
+    position: absolute; width: 2px; height: 8px; background: #222;
+    top: -58px; left: 4px; transform: translateZ(0);
 }
-/* Realistic Flame */
-.flame-real {
-    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
-    width: 12px; height: 24px;
-    transition: transform 0.2s, opacity 0.2s;
-}
-.flame-real.out { transform: translateX(-50%) scale(0); opacity: 0; }
-.flame-inner {
-    position: absolute; bottom: 0; left: 2px; width: 8px; height: 24px;
-    background: radial-gradient(ellipse at bottom, #fff 10%, #ffeb3b 40%, #ff5722 80%, transparent 100%);
+
+/* --- FLAME ANIMATION --- */
+.flame {
+    position: absolute; top: -80px; left: -2px; width: 14px; height: 25px;
+    background: radial-gradient(ellipse at bottom, #fff 20%, #ffeb3b 50%, #ff5722 90%);
     border-radius: 50% 50% 20% 20%;
-    filter: blur(0.5px);
+    transform: rotateY(0deg); /* Always face camera roughly */
     animation: flicker 0.1s infinite alternate;
+    box-shadow: 0 0 10px #ff9800;
 }
 @keyframes flicker {
     0% { transform: scale(1); opacity: 0.9; }
     100% { transform: scale(1.1) skewX(2deg); opacity: 1; }
 }
-@keyframes smoke-puff {
-    0% { transform: translate(-50%, 0) scale(0.5); opacity: 0.5; }
-    100% { transform: translate(-50%, -40px) scale(2); opacity: 0; }
-}
+.flame.out { display: none; }
+
+/* Smoke */
 .smoke {
-    position: absolute; bottom: 100%; left: 50%; width: 10px; height: 10px;
-    background: rgba(200,200,200,0.6); border-radius: 50%;
-    filter: blur(3px);
-    animation: smoke-puff 1.5s ease-out forwards;
+    position: absolute; top: -60px; left: 0; width: 10px; height: 10px;
+    background: rgba(255,255,255,0.5); border-radius: 50%;
+    filter: blur(4px);
+    animation: rise 2s forwards;
+}
+@keyframes rise {
+    0% { opacity: 0.5; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-50px) scale(3); }
 }
 
-/* Sparkles */
-.sparkle {
-    position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%;
-    box-shadow: 0 0 5px #fff;
-    animation: sparkle-anim 2s infinite;
+/* --- UI --- */
+#ui-layer {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 500;
 }
-@keyframes sparkle-anim { 0%, 100% { opacity: 0; transform: scale(0); } 50% { opacity: 1; transform: scale(1); } }
-
-/* --- BALLOONS --- */
-.balloon {
-    position: absolute; bottom: -100px;
-    width: 50px; height: 65px;
-    background: radial-gradient(circle at 30% 30%, #fff, var(--color));
-    border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
-    opacity: 0.7;
-    animation: floatUp var(--duration) linear infinite;
-    animation-delay: var(--delay);
+.mic-meter {
+    position: absolute; top: 20px; right: 20px;
+    background: rgba(0,0,0,0.7); padding: 10px; border-radius: 20px;
+    display: flex; align-items: center; gap: 10px;
+    border: 1px solid #444;
 }
-@keyframes floatUp { to { transform: translateY(-120vh); } }
+.bar-bg { width: 100px; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
+#mic-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #4caf50, #f44336); transition: width 0.1s; }
 
-/* --- CARD FLIP --- */
-.book.open .cover { transform: rotateY(-180deg); }
+#message-container {
+    position: absolute; top: 20%; width: 100%; text-align: center;
+    pointer-events: auto;
+}
+.glow-text {
+    font-size: 4rem; color: #ffd700;
+    text-shadow: 0 0 20px #ff6f00;
+    animation: pulse 2s infinite;
+}
+#card-btn {
+    margin-top: 20px; padding: 15px 30px;
+    font-size: 1.5rem; background: white; color: #d81b60;
+    border: none; border-radius: 30px; cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    pointer-events: auto;
+}
+
+/* --- CARD MODAL --- */
+#card-modal {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(0,0,0,0.8);
+    display: flex; align-items: center; justify-content: center;
+}
+.hidden { display: none !important; }
+.card-wrapper { perspective: 1000px; }
+.card-3d {
+    width: 300px; height: 400px;
+    position: relative; transform-style: preserve-3d;
+    transition: transform 1s;
+    cursor: pointer;
+}
+.card-3d.open { transform: rotateY(-180deg); }
+.card-front, .card-inside-right {
+    position: absolute; width: 100%; height: 100%;
+    backface-visibility: hidden; border-radius: 5px;
+}
+.card-front {
+    background: #880e4f; color: white;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2; transform-origin: left;
+}
+.card-inside-left {
+    position: absolute; width: 100%; height: 100%;
+    background: #f8bbd0; transform: rotateY(180deg);
+    backface-visibility: hidden; border-radius: 5px; z-index: 1;
+}
+.card-inside-right {
+    background: white; color: #333;
+    padding: 20px; text-align: center;
+    z-index: 0;
+}
+.photo-frame {
+    margin: 50px auto; width: 150px; height: 150px;
+    background: #ccc; display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; border: 5px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+#close-card {
+    position: absolute; top: 20px; right: 20px;
+    padding: 10px 20px; background: transparent; border: 1px solid white; color: white;
+    cursor: pointer;
+}
