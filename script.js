@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chocoContainer.appendChild(choco);
     }
 
-    // 3. Scatter Petals (New Decoration)
+    // 3. Scatter Petals
     const petalsContainer = document.getElementById('petals-container');
     if(petalsContainer) {
         for(let i=0; i<15; i++) {
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Magic Dust (New Decoration)
+    // 4. Magic Dust
     const dustContainer = document.getElementById('magic-dust');
     if(dustContainer) {
         for(let i=0; i<30; i++) {
@@ -152,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('hud').classList.remove('hidden');
         
         setTimeout(playChime, 800);
+        
+        // Start Continuous Falling Confetti
+        setInterval(spawnFallingBit, 800);
 
         loop();
     });
@@ -160,6 +163,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', () => card.classList.toggle('open'));
 });
+
+// CONTINUOUS FALLING CONFETTI/LEAVES
+function spawnFallingBit() {
+    const container = document.getElementById('continuous-confetti');
+    if(!container) return;
+    
+    const bit = document.createElement('div');
+    bit.className = 'falling-bit';
+    
+    // Random visual properties
+    bit.style.left = Math.random() * 100 + '%';
+    bit.style.animationDuration = (5 + Math.random() * 5) + 's';
+    
+    // Random color (Gold, Pink, Green for leaves)
+    const type = Math.random();
+    if(type < 0.3) {
+        bit.style.background = '#ffd700'; // Gold
+        bit.style.borderRadius = '50%';
+    } else if (type < 0.6) {
+        bit.style.background = '#f06292'; // Pink
+        bit.style.width = '8px';
+        bit.style.height = '8px';
+        bit.style.transform = 'rotate(45deg)';
+    } else {
+        bit.style.background = '#81c784'; // Green (Leaf)
+        bit.style.borderRadius = '0 50% 0 50%';
+        bit.style.height = '12px';
+    }
+
+    container.appendChild(bit);
+
+    // Cleanup
+    setTimeout(() => {
+        bit.remove();
+    }, 10000);
+}
+
 
 // --- AUDIO ---
 async function initAudio() {
