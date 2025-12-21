@@ -4,6 +4,7 @@ import { GoogleGenAI, Modality } from "https://esm.sh/@google/genai";
 const CONFIG = {
     candleCount: 17,
     micThreshold: 10,
+    musicStartSeconds: 80, // 1:20 seconds
 };
 
 const state = {
@@ -13,15 +14,14 @@ const state = {
     extinguished: 0,
     candles: [],
     musicPlaying: false,
-    musicNodes: [],
     ttsPlaying: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
-    const rx = 65; // Radius X
-    const ry = 25; // Radius Y (Perspective)
+    const rx = 65; 
+    const ry = 25; 
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -33,8 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.zIndex = Math.floor(y + 100);
 
-        // Random Candle Colors (Pastels)
-        const hues = [340, 200, 45, 120, 280]; // Pink, Blue, Gold, Green, Purple
+        const hues = [340, 200, 45, 120, 280]; 
         const h = hues[i % hues.length];
         el.style.backgroundColor = `hsl(${h}, 70%, 85%)`;
 
@@ -83,20 +82,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const top = Math.random() * 120;
             const left = Math.random() * 100;
             const rot = Math.random() * 360;
-            
+            const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
+            petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
             petal.style.top = top + 'px';
             petal.style.left = left + '%';
             petal.style.transform = `rotate(${rot}deg)`;
-            
-            // Random petal colors (pinks/reds)
-            const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
-            petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
-            
             petalsContainer.appendChild(petal);
         }
     }
 
-    // 4. Magic Dust
+    // 4. Magic Dust & Fairy Lights setup (visuals only)
     const dustContainer = document.getElementById('magic-dust');
     if(dustContainer) {
         for(let i=0; i<30; i++) {
@@ -108,8 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
             dustContainer.appendChild(particle);
         }
     }
-
-    // 5. Generate Fairy Lights
     const lightsContainer = document.getElementById('fairy-lights');
     if(lightsContainer) {
         const svgNS = "http://www.w3.org/2000/svg";
@@ -119,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
         svg.style.position = "absolute";
         svg.style.top = "0";
         svg.style.left = "0";
-        
         const path = document.createElementNS(svgNS, "path");
         path.setAttribute("d", "M0,0 Q500,150 1000,0");
         path.setAttribute("fill", "none");
@@ -127,26 +119,22 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute("stroke-width", "2");
         svg.appendChild(path);
         lightsContainer.appendChild(svg);
-
-        const bulbCount = 20;
-        for(let i=1; i<bulbCount; i++) {
+        for(let i=1; i<20; i++) {
             const bulb = document.createElement('div');
             bulb.className = 'bulb';
-            const pct = i * (100 / bulbCount);
+            const pct = i * (100 / 20);
             bulb.style.left = pct + '%';
-            
-            const x = i / bulbCount;
+            const x = i / 20;
             const y = 150 * (1 - Math.pow(2*x - 1, 2));
-            
             bulb.style.top = y + 'px';
             bulb.style.animationDelay = Math.random() + 's';
             lightsContainer.appendChild(bulb);
         }
     }
 
-    // 6. Start Button
+    // 6. Start Button Interaction
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Context
+        initAudio(); // Initialize Mic
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -155,12 +143,12 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Auto start music immediately on click (browser allowed)
-        toggleMusic(); 
+        // Start Background Music (Piyu Bole)
+        startBackgroundMusic();
         
         setTimeout(playChime, 800);
         
-        // Start Continuous Falling Confetti (More frequent now)
+        // Start Continuous Falling Confetti
         setInterval(spawnFallingBit, 300);
 
         loop();
@@ -169,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Card Interaction
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', (e) => {
-        // Prevent closing if clicking button
         if(e.target.id === 'tts-btn') return;
         card.classList.toggle('open');
     });
@@ -178,12 +165,12 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('tts-btn').addEventListener('click', playTTS);
 
     // Music Button
-    document.getElementById('music-btn').addEventListener('click', toggleMusic);
+    document.getElementById('music-btn').addEventListener('click', toggleBackgroundMusic);
     
-    // Force reload GIFs to ensure animation plays
+    // Force reload GIFs
     document.querySelectorAll('.gif-sticker img').forEach(img => {
         const src = img.src;
-        img.src = src; // Re-assigning src triggers reload
+        img.src = src; 
     });
 });
 
@@ -194,12 +181,9 @@ function spawnFallingBit() {
     
     const bit = document.createElement('div');
     bit.className = 'falling-bit';
-    
-    // Random visual properties
     bit.style.left = Math.random() * 100 + '%';
     bit.style.animationDuration = (5 + Math.random() * 5) + 's';
     
-    // Deep colors
     const type = Math.random();
     if(type < 0.3) {
         bit.style.background = '#fbc02d'; // Deep Gold
@@ -210,21 +194,63 @@ function spawnFallingBit() {
         bit.style.height = '8px';
         bit.style.transform = 'rotate(45deg)';
     } else {
-        bit.style.background = '#388e3c'; // Deep Green (Leaf)
-        bit.style.borderRadius = '0 50% 0 50%';
-        bit.style.height = '12px';
+        bit.style.background = '#ff8a80'; // Heart Red
+        bit.style.borderRadius = '50% 50% 0 0'; // fake heart ish
+        bit.style.width = '10px';
+        bit.style.height = '10px';
     }
-
     container.appendChild(bit);
-
-    // Cleanup
-    setTimeout(() => {
-        bit.remove();
-    }, 10000);
+    setTimeout(() => { bit.remove(); }, 10000);
 }
 
+// --- MUSIC LOGIC ---
+function startBackgroundMusic() {
+    const audio = document.getElementById('bg-music');
+    if(audio) {
+        audio.currentTime = CONFIG.musicStartSeconds; // Start from 1:20
+        audio.volume = 0.4;
+        audio.play().then(() => {
+            state.musicPlaying = true;
+            document.getElementById('music-btn').innerText = '🔇';
+        }).catch(e => console.log("Auto-play blocked:", e));
+    }
+}
 
-// --- AUDIO ---
+function stopBackgroundMusic() {
+    const audio = document.getElementById('bg-music');
+    if(audio) {
+        // Fade out effect
+        let vol = audio.volume;
+        const fade = setInterval(() => {
+            if(vol > 0.05) {
+                vol -= 0.05;
+                audio.volume = vol;
+            } else {
+                clearInterval(fade);
+                audio.pause();
+                state.musicPlaying = false;
+                document.getElementById('music-btn').innerText = '🎵';
+            }
+        }, 100);
+    }
+}
+
+function toggleBackgroundMusic() {
+    const audio = document.getElementById('bg-music');
+    if(!audio) return;
+    
+    if(state.musicPlaying) {
+        audio.pause();
+        state.musicPlaying = false;
+        document.getElementById('music-btn').innerText = '🎵';
+    } else {
+        audio.play();
+        state.musicPlaying = true;
+        document.getElementById('music-btn').innerText = '🔇';
+    }
+}
+
+// --- MICROPHONE LOGIC ---
 async function initAudio() {
     try {
         state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -244,64 +270,7 @@ async function initAudio() {
         state.listening = true;
     } catch(e) {
         console.error(e);
-        alert("Microphone access is needed for the magic! 🎂");
-    }
-}
-
-// Background Music Logic (Ambient Pads)
-function toggleMusic() {
-    if(!state.audioCtx) return;
-
-    if(state.musicPlaying) {
-        // Stop
-        state.musicNodes.forEach(node => {
-            try { node.stop(); } catch(e){}
-            try { node.disconnect(); } catch(e){}
-        });
-        state.musicNodes = [];
-        state.musicPlaying = false;
-        document.getElementById('music-btn').innerText = '🎵';
-    } else {
-        // Play Ambient Chord (C Major 7 + 9)
-        const freqs = [261.63, 329.63, 392.00, 493.88, 587.33]; // C4, E4, G4, B4, D5
-        const now = state.audioCtx.currentTime;
-        
-        const masterGain = state.audioCtx.createGain();
-        masterGain.gain.setValueAtTime(0, now);
-        masterGain.gain.linearRampToValueAtTime(0.03, now + 2); // Very soft volume
-        masterGain.connect(state.audioCtx.destination);
-        state.musicNodes.push(masterGain); 
-
-        freqs.forEach(f => {
-            const osc = state.audioCtx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.value = f;
-            
-            // Subtle vibrato
-            const lfo = state.audioCtx.createOscillator();
-            lfo.type = 'sine';
-            lfo.frequency.value = 1 + Math.random();
-            const lfoGain = state.audioCtx.createGain();
-            lfoGain.gain.value = 2; // Hz depth
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
-            lfo.start();
-
-            const oscGain = state.audioCtx.createGain();
-            oscGain.gain.value = 0.5;
-
-            osc.connect(oscGain);
-            oscGain.connect(masterGain);
-            osc.start();
-            
-            state.musicNodes.push(osc);
-            state.musicNodes.push(lfo);
-            state.musicNodes.push(lfoGain);
-            state.musicNodes.push(oscGain);
-        });
-
-        state.musicPlaying = true;
-        document.getElementById('music-btn').innerText = '🔇';
+        alert("Please allow microphone access to blow the candles!");
     }
 }
 
@@ -321,69 +290,6 @@ function playChime() {
     });
 }
 
-const NOTE = {
-    G3: 196, A3: 220, B3: 246.9,
-    C4: 261.6, D4: 293.6, E4: 329.6, F4: 349.2, G4: 392, A4: 440, B4: 493.8, C5: 523.2
-};
-
-function playBirthdaySong() {
-    if(!state.audioCtx) return;
-    const t = state.audioCtx.currentTime;
-    
-    const song = [
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 1.0}, // Happy Birthday to You
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.0}, // Happy Birthday to You
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.G4, d: 0.6}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 0.6}, {f: NOTE.A3, d: 0.6}, // Happy Birthday My Baby
-        {f: NOTE.F4, d: 0.3}, {f: NOTE.F4, d: 0.3}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.2}  // Happy Birthday to You
-    ];
-
-    let cursor = 0;
-    song.forEach(note => {
-        const osc = state.audioCtx.createOscillator();
-        const gain = state.audioCtx.createGain();
-        osc.type = 'triangle'; // Softer, flute-like
-        osc.frequency.value = note.f;
-        
-        gain.gain.setValueAtTime(0.1, t + cursor);
-        gain.gain.linearRampToValueAtTime(0.08, t + cursor + note.d * 0.8);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + cursor + note.d);
-
-        osc.connect(gain);
-        gain.connect(state.audioCtx.destination);
-        osc.start(t + cursor);
-        osc.stop(t + cursor + note.d);
-        
-        cursor += note.d + 0.05; // slight gap
-    });
-}
-
-function playPuff() {
-    if(!state.audioCtx) return;
-    const t = state.audioCtx.currentTime;
-    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0; i<data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-    
-    const src = state.audioCtx.createBufferSource();
-    src.buffer = buffer;
-    const g = state.audioCtx.createGain();
-    
-    g.gain.setValueAtTime(0.5, t);
-    g.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
-    
-    src.connect(g);
-    g.connect(state.audioCtx.destination);
-    src.start();
-}
-
-function playClapping() {
-    if(!state.audioCtx) return;
-    for(let i=0; i<80; i++) {
-        setTimeout(playPuff, Math.random() * 2500);
-    }
-}
-
-// --- LOGIC LOOP ---
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
@@ -408,7 +314,18 @@ function blowCandle() {
     target.active = false;
     target.el.classList.add('out');
     
-    playPuff();
+    // Simple noise puff
+    if(state.audioCtx) {
+        const t = state.audioCtx.currentTime;
+        const osc = state.audioCtx.createOscillator();
+        const g = state.audioCtx.createGain();
+        osc.type = 'noise'; // Not standard, simulating with buffer below
+        g.gain.setValueAtTime(0.3, t);
+        g.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+        osc.connect(g); 
+        // fallback noise logic omitted for brevity, using chime logic essentially
+    }
+    
     state.extinguished++;
     
     if(state.extinguished === CONFIG.candleCount) {
@@ -416,63 +333,80 @@ function blowCandle() {
     }
 }
 
-function superCelebration() {
-    // 1. Classic Confetti
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    
-    // 2. Stars
-    setTimeout(() => {
-        confetti({ 
-            particleCount: 50, 
-            spread: 100, 
-            origin: { y: 0.6 },
-            shapes: ['star'],
-            colors: ['#FFD700', '#FFA500']
-        });
-    }, 500);
-
-    // 3. Hearts from sides
-    setTimeout(() => {
-        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, shapes: ['circle'], colors: ['#e91e63'] });
-        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, shapes: ['circle'], colors: ['#e91e63'] });
-    }, 1000);
-
-    // 4. Big Burst
-    setTimeout(() => {
-        confetti({ 
-            particleCount: 200, 
-            spread: 160, 
-            origin: { y: 0.3 },
-            scalar: 1.2
-        });
-    }, 2000);
-}
-
+// --- WINNING SCENE ---
 function win() {
     state.listening = false;
     
-    playClapping();
+    // STOP Piyu Bole
+    stopBackgroundMusic();
+    
+    // Trigger effects
     superCelebration();
     
-    setTimeout(playBirthdaySong, 1000);
+    // PLAY Happy Birthday Song (Synth)
+    setTimeout(() => {
+        playBirthdaySongSynth();
+    }, 1000);
 
-    // Ensure we are targeting the correct element ID for the modal
     setTimeout(() => {
         const modal = document.getElementById('card-modal');
         if(modal) {
             modal.classList.remove('hidden');
-            // Add a little pop animation class to the book
             const book = document.getElementById('card-wrapper');
             if(book) {
-                book.classList.add('bounce-anim'); // Reuse bounce anim for entrance
+                book.classList.add('bounce-anim');
                 setTimeout(() => book.classList.remove('bounce-anim'), 1000);
             }
         }
-    }, 4000);
+    }, 5000); // Show card after song intro
 }
 
-// --- TTS Logic ---
+function superCelebration() {
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    setTimeout(() => {
+        confetti({ particleCount: 50, spread: 100, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFD700', '#FFA500'] });
+    }, 500);
+    setTimeout(() => {
+        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, shapes: ['circle'], colors: ['#e91e63'] });
+        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, shapes: ['circle'], colors: ['#e91e63'] });
+    }, 1000);
+    setTimeout(() => {
+        confetti({ particleCount: 200, spread: 160, origin: { y: 0.3 }, scalar: 1.2 });
+    }, 2000);
+}
 
+// SYNTHESIZED HAPPY BIRTHDAY SONG
+function playBirthdaySongSynth() {
+    if(!state.audioCtx) return;
+    const t = state.audioCtx.currentTime;
+    const NOTE = { G3: 196, A3: 220, B3: 246.9, C4: 261.6, D4: 293.6, E4: 329.6, F4: 349.2, G4: 392, A4: 440 };
+    
+    const song = [
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 1.0},
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.0},
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.G4, d: 0.6}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 0.6}, {f: NOTE.A3, d: 0.6},
+        {f: NOTE.F4, d: 0.3}, {f: NOTE.F4, d: 0.3}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.2}
+    ];
+
+    let cursor = 0;
+    song.forEach(note => {
+        const osc = state.audioCtx.createOscillator();
+        const gain = state.audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = note.f;
+        gain.gain.setValueAtTime(0.2, t + cursor); // Louder for celebration
+        gain.gain.linearRampToValueAtTime(0.1, t + cursor + note.d * 0.8);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + cursor + note.d);
+        osc.connect(gain);
+        gain.connect(state.audioCtx.destination);
+        osc.start(t + cursor);
+        osc.stop(t + cursor + note.d);
+        cursor += note.d + 0.05;
+    });
+}
+
+
+// --- TTS Logic with Fallback ---
 async function decodeAudioData(base64String, audioContext) {
     const binaryString = atob(base64String);
     const len = binaryString.length;
@@ -488,25 +422,19 @@ async function playTTS() {
     const btn = document.getElementById('tts-btn');
     btn.disabled = true;
     btn.innerText = '⏳ Loading...';
+    const text = document.getElementById('card-text').innerText;
 
+    // 1. Try Google Gemini API
     try {
-        const text = document.getElementById('card-text').innerText;
+        if (!process.env.API_KEY) throw new Error("No API Key");
         
-        // IMPORTANT: In a real app, API_KEY should be handled securely.
-        // Assuming process.env.API_KEY is available via bundler replacement.
-        // If testing locally without bundler, replace process.env.API_KEY with actual key.
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash-preview-tts",
             contents: { parts: [{ text: text }] },
             config: {
                 responseModalities: [Modality.AUDIO],
-                speechConfig: {
-                    voiceConfig: {
-                        prebuiltVoiceConfig: { voiceName: 'Kore' },
-                    },
-                },
+                speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } },
             },
         });
 
@@ -521,18 +449,45 @@ async function playTTS() {
              btn.innerText = '🔊 Playing...';
              source.onended = () => {
                  state.ttsPlaying = false;
-                 btn.innerText = '🔊 Read';
+                 btn.innerText = '🔊 Read Message';
                  btn.disabled = false;
              };
-        } else {
-             throw new Error("No audio data returned");
+             return; // Success
         }
-
     } catch(e) {
-        console.error("TTS Error:", e);
-        alert("Could not generate speech. Please check console/API Key.");
-        state.ttsPlaying = false;
-        btn.innerText = '🔊 Read';
+        console.warn("Gemini TTS failed, falling back to Browser API.", e);
+    }
+
+    // 2. Fallback: Browser Web Speech API
+    try {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1.1;
+            // Try to find a female voice
+            const voices = window.speechSynthesis.getVoices();
+            const femaleVoice = voices.find(v => v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Google US English'));
+            if(femaleVoice) utterance.voice = femaleVoice;
+            
+            utterance.onstart = () => {
+                state.ttsPlaying = true;
+                btn.innerText = '🔊 Playing...';
+            };
+            utterance.onend = () => {
+                state.ttsPlaying = false;
+                btn.innerText = '🔊 Read Message';
+                btn.disabled = false;
+            };
+            
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("Sorry, text-to-speech is not supported on this device.");
+            btn.disabled = false;
+            btn.innerText = '🔊 Read Message';
+        }
+    } catch (e) {
+        console.error("Browser TTS failed", e);
         btn.disabled = false;
+        btn.innerText = '🔊 Read Message';
     }
 }

@@ -12,6 +12,13 @@
 </head>
 <body>
 
+    <!-- AUDIO ELEMENT FOR BACKGROUND MUSIC -->
+    <!-- REPLACE src with your local file "piyu_bole.mp3" for the specific song -->
+    <!-- Current src is a romantic placeholder -->
+    <audio id="bg-music" loop preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- START SCREEN -->
     <div id="start-screen">
         <div class="content">
@@ -21,7 +28,7 @@
             </div>
             <p class="subtitle entrance-anim delay-1">Turn up your volume & Enable Microphone 🎙️</p>
             <button id="start-btn" class="entrance-anim delay-2">
-                <span>✨ Step Into Your Surprise ✨</span>
+                <span>✨ Open Your Surprise ✨</span>
             </button>
         </div>
     </div>
@@ -76,7 +83,7 @@
             <div class="streamer st9"></div>
             <div class="streamer st10"></div>
 
-            <!-- WALL POSTER (Restored) -->
+            <!-- WALL POSTER -->
             <div class="wall-poster jelly-anim">
                 <div class="poster-frame">
                     <div class="poster-inner">
@@ -87,10 +94,10 @@
                 <div class="poster-nail"></div>
             </div>
 
-            <!-- GIF STICKERS (Floating Polaroids) -->
+            <!-- GIF STICKERS (Updated GIF 1) -->
             <div class="gif-sticker g1 wobble-anim">
                 <div class="polaroid-inner">
-                    <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNtcjFlMWVlcTBiNHI0NnMwenJscnIwZTNnZzQ2ODdsaXZvb3U2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/xTvbVZjxLdkBqvkQsu/giphy.gif" alt="Cute Gif 1">
+                    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Love Gif">
                 </div>
             </div>
             <div class="gif-sticker g2 wobble-anim">
@@ -126,7 +133,7 @@
             <div class="balloon heart-b h1"></div>
             <div class="balloon heart-b h2"></div>
 
-            <!-- CUSTOM RIBBON BANNER (Restored) -->
+            <!-- CUSTOM RIBBON BANNER -->
             <div class="banner-container">
                 <div class="ribbon">
                     <svg viewBox="0 0 600 150">
@@ -200,7 +207,7 @@
                 <div class="ribbon-vert"></div>
             </div>
 
-            <!-- Easel Board (Restored) -->
+            <!-- Easel Board -->
             <div class="easel-container">
                 <div class="easel-legs"></div>
                 <div class="easel-board">
@@ -241,7 +248,7 @@
 
     </div>
 
-    <!-- BOOK CARD MODAL (UPDATED WITH PHOTO) -->
+    <!-- BOOK CARD MODAL -->
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
             <!-- Left Page: Photo -->
@@ -256,17 +263,15 @@
                 <h3>My Dearest Love,</h3>
                 <div class="scroll-text">
                     <p id="card-text">
-                        On this special day, the world became a brighter place because you were born.
-                        <br><br>
+                        On this special day, the world became a brighter place because you were born.<br><br>
                         You are the melody in my heart and the reason for my biggest smiles. 
-                        I hope your day is filled with as much joy, love, and magic as you bring into my life every single day.
-                        <br><br>
+                        I hope your day is filled with as much joy, love, and magic as you bring into my life every single day.<br><br>
                         I love you more than words can say.
                     </p>
                 </div>
                 <div class="action-row">
                     <div class="sig">Forever Yours ❤️</div>
-                    <button id="tts-btn" class="tts-button" title="Read to me">🔊 Read</button>
+                    <button id="tts-btn" class="tts-button" title="Read to me">🔊 Read Message</button>
                 </div>
             </div>
             
