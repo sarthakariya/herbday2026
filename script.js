@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 15,
+    micThreshold: 10, // Lowered from 15 for better sensitivity
 };
 
 const state = {
