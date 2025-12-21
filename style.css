@@ -4,40 +4,43 @@ body {
     margin: 0; padding: 0;
     overflow: hidden;
     background-color: #0f050a;
-    font-family: 'Cinzel', serif;
+    font-family: 'Montserrat', sans-serif; /* Versatile font */
     color: white;
+    -webkit-tap-highlight-color: transparent; /* Mobile interaction fix */
 }
 
 /* --- START SCREEN --- */
 #start-screen {
-    position: fixed; inset: 0; z-index: 1000;
-    background: radial-gradient(circle at center, #2a0a14, #000);
+    position: fixed; inset: 0; z-index: 9999; /* Max Z-index */
+    background: radial-gradient(circle at center, #4a1a24, #000);
     display: flex; flex-direction: column; align-items: center; justify-content: center;
     transition: opacity 1s ease;
+    touch-action: none;
 }
 .heart-bg {
-    position: absolute; inset: 0; opacity: 0.1;
+    position: absolute; inset: 0; opacity: 0.15;
     background-image: url('https://www.transparenttextures.com/patterns/hearts.png');
     animation: pulse-bg 4s infinite;
 }
 #start-btn {
-    padding: 15px 40px; font-size: 1.5rem;
-    background: linear-gradient(45deg, #d32f2f, #c2185b);
-    color: white; border: 2px solid #ff80ab; border-radius: 50px;
-    cursor: pointer; box-shadow: 0 0 30px rgba(255, 20, 100, 0.5);
-    transition: transform 0.2s;
+    padding: 20px 50px; font-size: 1.5rem;
+    background: linear-gradient(45deg, #ec407a, #d81b60);
+    color: white; border: 3px solid #ffc107; border-radius: 50px;
+    cursor: pointer; box-shadow: 0 0 40px rgba(236, 64, 122, 0.6);
+    transition: transform 0.2s, box-shadow 0.2s;
     font-family: 'Cinzel', serif;
-    z-index: 10;
+    z-index: 10000; /* Ensure clickable */
+    position: relative;
+    text-transform: uppercase; letter-spacing: 2px;
 }
-#start-btn:hover { transform: scale(1.1); }
-.instructions { text-align: center; margin-bottom: 30px; color: #ffcdd2; font-family: sans-serif; }
-#mic-status { margin-top: 15px; color: #aaa; font-size: 0.8rem; }
+#start-btn:active { transform: scale(0.95); }
+.instructions { text-align: center; margin-bottom: 30px; color: #f8bbd0; font-family: 'Montserrat', sans-serif; font-weight: 500; line-height: 1.8; }
 
 /* --- 3D ENGINE --- */
 #viewport {
     width: 100vw; height: 100vh;
-    perspective: 1200px; /* Camera distance */
-    perspective-origin: 50% 50%; /* Eye level */
+    perspective: 1200px;
+    perspective-origin: 50% 50%;
     overflow: hidden;
 }
 
@@ -45,261 +48,264 @@ body {
     position: relative;
     width: 100%; height: 100%;
     transform-style: preserve-3d;
-    transform: translateZ(-200px) rotateX(10deg); /* Slight tilt to see table surface */
-    transition: transform 1s ease-out;
+    transform: translateZ(-200px) rotateX(10deg);
+    transition: transform 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* --- ROOM --- */
+/* --- ROOM & LIGHTING --- */
 .room-wall {
     position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-    background: linear-gradient(to bottom, #1a0509 0%, #0f0505 100%);
+    background: linear-gradient(to bottom, #2b0b14 0%, #1a0509 100%);
     transform: translateZ(-800px);
+}
+.wall-banner {
+    position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
+    font-family: 'Sacramento', cursive;
+    font-size: 5rem; color: #ffeb3b;
+    text-shadow: 0 0 20px #ff6f00, 2px 2px 0 #d81b60;
+    z-index: 10; width: 100%; text-align: center;
+    animation: float 3s ease-in-out infinite;
 }
 
 /* Window */
 .window {
     position: absolute; top: 30%; left: 20%; width: 300px; height: 400px;
-    background: #000; border: 10px solid #3e2723;
-    overflow: hidden; box-shadow: 0 0 50px rgba(0,0,0,1);
+    background: #000; border: 12px solid #5d4037;
+    overflow: hidden; box-shadow: 0 0 80px rgba(0,0,0,0.8);
 }
 .night-sky {
     width: 100%; height: 100%;
-    background: linear-gradient(to bottom, #020111, #191d3a);
+    background: linear-gradient(to bottom, #0d47a1, #1565c0);
 }
 .moon {
-    position: absolute; top: 30px; right: 30px; width: 60px; height: 60px;
-    background: #fff; border-radius: 50%;
-    box-shadow: 0 0 40px #fff;
+    position: absolute; top: 30px; right: 30px; width: 70px; height: 70px;
+    background: #fff9c4; border-radius: 50%;
+    box-shadow: 0 0 60px #fff59d;
 }
-.frame, .frame-mid { background: #3e2723; position: absolute; }
-.frame { top: 50%; left: 0; width: 100%; height: 10px; }
-.frame-mid { top: 0; left: 50%; width: 10px; height: 100%; }
+.light-beam {
+    position: absolute; top: 0; right: 0; width: 200%; height: 200%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 40%);
+    pointer-events: none; mix-blend-mode: overlay;
+    transform-origin: top right; transform: rotate(-20deg);
+}
 
 /* Curtains */
 .curtain {
     position: absolute; top: 20%; height: 600px; width: 200px;
-    background: #880e4f;
-    box-shadow: 5px 5px 20px rgba(0,0,0,0.5);
+    background: repeating-linear-gradient(90deg, #880e4f 0px, #ad1457 20px, #880e4f 40px);
+    box-shadow: 10px 10px 30px rgba(0,0,0,0.6);
     border-radius: 0 0 20px 20px;
     transition: transform 1.5s ease-in-out;
 }
 .curtain.left { left: 15%; transform-origin: top left; transform: skewX(5deg); }
 .curtain.right { left: 45%; transform-origin: top right; transform: skewX(-5deg); }
-.curtains-open .curtain.left { transform: translateX(-150px) scaleX(0.5); }
-.curtains-open .curtain.right { transform: translateX(150px) scaleX(0.5); }
+.curtains-open .curtain.left { transform: translateX(-180px) scaleX(0.4); }
+.curtains-open .curtain.right { transform: translateX(180px) scaleX(0.4); }
 
-/* --- TABLE (3D Box) --- */
+/* --- TABLE (Pink/White/Yellow Gingham) --- */
 .table-group {
     position: absolute; top: 60%; left: 50%;
     width: 800px; height: 800px;
     transform-style: preserve-3d;
-    transform: translate(-50%, -50%) rotateX(15deg); /* Flattens the view */
+    transform: translate(-50%, -50%) rotateX(15deg);
+    transition: transform 0.5s; /* Smooth scaling on resize */
 }
+
+/* Mobile Scaling */
+@media (max-width: 800px) {
+    .table-group { transform: translate(-50%, -50%) rotateX(15deg) scale(0.65); }
+    .wall-banner { font-size: 3rem; top: 20%; }
+    .window { left: 50%; transform: translateX(-50%) scale(0.8); top: 10%; }
+    .curtain { display: none; } /* Hide curtains on small mobile to save space */
+}
+@media (max-width: 400px) {
+    .table-group { transform: translate(-50%, -50%) rotateX(15deg) scale(0.5); }
+}
+
 .table-top {
     position: absolute; width: 100%; height: 100%;
-    background: #2b1b17 url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+    /* Gingham Pattern */
+    background-color: #f8bbd0;
+    background-image: 
+        linear-gradient(90deg, rgba(255,255,255,.5) 50%, transparent 50%),
+        linear-gradient(rgba(255,255,255,.5) 50%, transparent 50%);
+    background-size: 100px 100px;
     border-radius: 50%;
-    transform: rotateX(90deg) translateZ(50px); /* Lays flat */
+    transform: rotateX(90deg) translateZ(50px);
     box-shadow: 0 0 100px rgba(0,0,0,0.8);
+    overflow: hidden; /* Crop petals */
 }
-.reflection {
-    position: absolute; top: 20%; left: 20%; width: 60%; height: 60%;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, transparent 70%);
-    filter: blur(20px);
+.cloth-pattern {
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(45deg, rgba(255, 235, 59, 0.2) 0, rgba(255, 235, 59, 0.2) 20px, transparent 20px, transparent 40px);
+    mix-blend-mode: multiply;
 }
-.petal {
-    position: absolute; width: 15px; height: 15px; background: #d32f2f;
-    border-radius: 50% 0 50% 0; box-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+.table-side {
+    position: absolute; top: 50%; left: 50%; width: 800px; height: 800px;
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(50px);
+    pointer-events: none;
 }
-.p1 { top: 40%; left: 30%; transform: rotate(45deg); }
-.p2 { top: 60%; left: 70%; transform: rotate(15deg); }
-.p3 { top: 75%; left: 40%; transform: rotate(80deg); }
+.cloth-ruffle {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    border-radius: 50%;
+    border: 20px dashed #f48fb1; /* Simulate ruffles */
+    box-shadow: 0 0 0 10px #f8bbd0;
+}
 
-/* --- CAKE (Volumetric Stacking) --- */
+/* GIFTS */
+.gift { position: absolute; transform-style: preserve-3d; animation: bob 3s infinite ease-in-out; }
+.g1 { top: 30%; left: 20%; width: 80px; height: 80px; transform: rotateZ(30deg); animation-delay: 0s; }
+.g2 { top: 70%; right: 25%; width: 100px; height: 100px; transform: rotateZ(-15deg); animation-delay: 1.5s; }
+
+.gift-face { position: absolute; background: #9c27b0; border: 1px solid #7b1fa2; opacity: 0.9; }
+.g1 .gift-face { width: 80px; height: 80px; background: #ab47bc; }
+.g2 .gift-face { width: 100px; height: 100px; background: #ef5350; }
+
+.g1 .g-front { transform: translateZ(40px); }
+.g1 .g-back { transform: rotateY(180deg) translateZ(40px); }
+.g1 .g-left { transform: rotateY(-90deg) translateZ(40px); }
+.g1 .g-right { transform: rotateY(90deg) translateZ(40px); }
+.g1 .g-top { transform: rotateX(90deg) translateZ(40px); background: #ba68c8; }
+
+.g2 .g-front { transform: translateZ(50px); }
+.g2 .g-back { transform: rotateY(180deg) translateZ(50px); }
+.g2 .g-left { transform: rotateY(-90deg) translateZ(50px); }
+.g2 .g-right { transform: rotateY(90deg) translateZ(50px); }
+.g2 .g-top { transform: rotateX(90deg) translateZ(50px); background: #ef9a9a; }
+
+.ribbon-v { position: absolute; top: 0; left: 50%; width: 15px; height: 100%; background: #ffeb3b; transform: translateX(-50%); }
+.ribbon-h { position: absolute; top: 50%; left: 0; width: 100%; height: 15px; background: #ffeb3b; transform: translateY(-50%); }
+
+/* --- CAKE --- */
 .cake-group {
     position: absolute; top: 50%; left: 50%;
     width: 0; height: 0;
     transform-style: preserve-3d;
-    transform: translateY(-100px); /* Lift up from table center */
+    transform: translateY(-120px);
 }
-
-/* Plate */
 .plate {
-    position: absolute; width: 400px; height: 400px;
+    position: absolute; width: 420px; height: 420px;
     background: #fff; border-radius: 50%;
-    transform: translate(-50%, -50%) rotateX(90deg) translateZ(52px); /* Sit on table */
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(52px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    border: 8px solid #ffd700;
 }
-
-/* 3D Tier Construction (Approximated Cylinder using rotation) */
-.tier {
-    position: absolute; left: 50%; top: 50%;
-    transform-style: preserve-3d;
-}
+.tier { position: absolute; left: 50%; top: 50%; transform-style: preserve-3d; }
 .bottom { transform: translate(-50%, -50%) translateY(140px); }
 .top { transform: translate(-50%, -50%) translateY(60px); }
 
-/* Creating sides of cylinder */
-.tier-face {
-    position: absolute; width: 300px; height: 80px;
-    background: linear-gradient(to bottom, #5d4037, #3e2723);
-    backface-visibility: hidden;
-}
-/* We create a 'box' that looks cylindrical from the front */
-.bottom .tier-face { width: 300px; }
+.tier-face { position: absolute; background: linear-gradient(to bottom, #5d4037, #3e2723); backface-visibility: hidden; }
+.bottom .tier-face { width: 300px; height: 90px; }
 .bottom .front { transform: translate(-50%, -50%) translateZ(150px); }
 .bottom .back { transform: translate(-50%, -50%) rotateY(180deg) translateZ(150px); }
-.bottom .left { width: 300px; transform: translate(-50%, -50%) rotateY(-90deg) translateZ(150px); }
-.bottom .right { width: 300px; transform: translate(-50%, -50%) rotateY(90deg) translateZ(150px); }
+.bottom .left { transform: translate(-50%, -50%) rotateY(-90deg) translateZ(150px); }
+.bottom .right { transform: translate(-50%, -50%) rotateY(90deg) translateZ(150px); }
 .bottom .tier-top {
     position: absolute; width: 300px; height: 300px;
-    background: radial-gradient(#6d4c41, #3e2723);
-    transform: translate(-50%, -50%) rotateX(90deg) translateZ(40px);
-    border-radius: 10px; /* Soften edges */
+    background: radial-gradient(#8d6e63, #4e342e);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(45px);
+    border-radius: 20px;
 }
 
-.top .tier-face { height: 70px; background: linear-gradient(to bottom, #f48fb1, #ad1457); }
-.top .front { width: 220px; transform: translate(-50%, -50%) translateZ(110px); }
-.top .back { width: 220px; transform: translate(-50%, -50%) rotateY(180deg) translateZ(110px); }
-.top .left { width: 220px; transform: translate(-50%, -50%) rotateY(-90deg) translateZ(110px); }
-.top .right { width: 220px; transform: translate(-50%, -50%) rotateY(90deg) translateZ(110px); }
+.top .tier-face { width: 220px; height: 80px; background: linear-gradient(to bottom, #f48fb1, #ad1457); }
+.top .front { transform: translate(-50%, -50%) translateZ(110px); }
+.top .back { transform: translate(-50%, -50%) rotateY(180deg) translateZ(110px); }
+.top .left { transform: translate(-50%, -50%) rotateY(-90deg) translateZ(110px); }
+.top .right { transform: translate(-50%, -50%) rotateY(90deg) translateZ(110px); }
 .top .tier-top {
     position: absolute; width: 220px; height: 220px;
-    background: radial-gradient(#f8bbd0, #f06292);
-    transform: translate(-50%, -50%) rotateX(90deg) translateZ(35px);
+    background: radial-gradient(circle at 30% 30%, #fce4ec, #f8bbd0);
+    transform: translate(-50%, -50%) rotateX(90deg) translateZ(40px);
     display: flex; align-items: center; justify-content: center;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    border: 4px dotted #fff;
 }
 
 .text-3d {
-    position: absolute; transform: rotateX(-90deg) translateZ(10px) translateY(-50px);
-    font-size: 2rem; color: #880e4f; text-shadow: 1px 1px 0 #fff;
-    white-space: nowrap; font-family: 'Great Vibes', cursive;
+    position: absolute; transform: rotateX(-90deg) translateZ(20px) translateY(-50px);
+    font-size: 2.5rem; color: #880e4f; text-shadow: 2px 2px 0 #fff;
+    white-space: nowrap; font-family: 'Great Vibes', cursive; z-index: 50;
+    background: rgba(255,255,255,0.8); padding: 5px 20px; border-radius: 20px;
 }
 
-/* --- TRUE 3D CANDLES --- */
-#candle-placement {
-    position: absolute; width: 100%; height: 100%;
-    transform-style: preserve-3d;
-}
-.candle-obj {
-    position: absolute; width: 10px; height: 10px;
-    transform-style: preserve-3d;
-}
+/* --- HIGH DEF CANDLES --- */
+#candle-placement { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; }
+.candle-obj { position: absolute; width: 12px; height: 12px; transform-style: preserve-3d; }
 .c-side {
-    position: absolute; width: 10px; height: 50px;
-    background: linear-gradient(to right, #fff, #eee);
+    position: absolute; width: 12px; height: 50px;
+    background: linear-gradient(to right, #ffffff, #ffebee, #ffcdd2); /* Wax texture */
     transform-origin: bottom center;
+    box-shadow: inset 0 0 2px rgba(0,0,0,0.1);
 }
-.c-front { transform: translateZ(5px); }
-.c-back { transform: rotateY(180deg) translateZ(5px); }
-.c-left { transform: rotateY(-90deg) translateZ(5px); }
-.c-right { transform: rotateY(90deg) translateZ(5px); }
+.c-front { transform: translateZ(6px); }
+.c-back { transform: rotateY(180deg) translateZ(6px); }
+.c-left { transform: rotateY(-90deg) translateZ(6px); }
+.c-right { transform: rotateY(90deg) translateZ(6px); }
 
 .wick {
-    position: absolute; width: 2px; height: 8px; background: #222;
-    top: -58px; left: 4px; transform: translateZ(0);
+    position: absolute; width: 2px; height: 10px; 
+    background: linear-gradient(to bottom, #000, #555);
+    top: -60px; left: 5px; transform: translateZ(0);
 }
 
-/* --- FLAME ANIMATION --- */
+/* HD Flame */
 .flame {
-    position: absolute; top: -80px; left: -2px; width: 14px; height: 25px;
-    background: radial-gradient(ellipse at bottom, #fff 20%, #ffeb3b 50%, #ff5722 90%);
+    position: absolute; top: -85px; left: -1px; width: 14px; height: 28px;
+    background: radial-gradient(ellipse at bottom, rgba(255,255,255,1) 10%, rgba(255,255,0,0.8) 40%, rgba(255,100,0,0.6) 80%, rgba(255,0,0,0) 100%);
     border-radius: 50% 50% 20% 20%;
-    transform: rotateY(0deg); /* Always face camera roughly */
-    animation: flicker 0.1s infinite alternate;
-    box-shadow: 0 0 10px #ff9800;
+    transform-origin: center bottom;
+    animation: flicker-complex 0.15s infinite alternate ease-in-out;
+    filter: drop-shadow(0 0 8px rgba(255, 160, 0, 0.8));
+    mix-blend-mode: screen;
 }
-@keyframes flicker {
-    0% { transform: scale(1); opacity: 0.9; }
-    100% { transform: scale(1.1) skewX(2deg); opacity: 1; }
+@keyframes flicker-complex {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.9; height: 28px; }
+    25% { transform: scale(1.1) rotate(1deg); opacity: 1; height: 30px; }
+    50% { transform: scale(0.95) rotate(-1deg); opacity: 0.85; height: 27px; }
+    75% { transform: scale(1.05) rotate(2deg); opacity: 1; height: 29px; }
+    100% { transform: scale(1) rotate(0deg); opacity: 0.9; height: 28px; }
 }
-.flame.out { display: none; }
+.flame.out { transition: all 0.3s; transform: scale(0); opacity: 0; }
 
 /* Smoke */
 .smoke {
-    position: absolute; top: -60px; left: 0; width: 10px; height: 10px;
-    background: rgba(255,255,255,0.5); border-radius: 50%;
-    filter: blur(4px);
+    position: absolute; top: -65px; left: 2px; width: 8px; height: 8px;
+    background: rgba(200,200,200,0.4); border-radius: 50%;
+    filter: blur(3px);
     animation: rise 2s forwards;
+    pointer-events: none;
 }
 @keyframes rise {
-    0% { opacity: 0.5; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-50px) scale(3); }
+    0% { opacity: 0.6; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(4); }
 }
 
 /* --- UI --- */
-#ui-layer {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 500;
-}
+#ui-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 500; }
 .mic-meter {
     position: absolute; top: 20px; right: 20px;
-    background: rgba(0,0,0,0.7); padding: 10px; border-radius: 20px;
-    display: flex; align-items: center; gap: 10px;
-    border: 1px solid #444;
+    background: rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 30px;
+    display: flex; align-items: center; gap: 8px;
+    border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(5px);
 }
-.bar-bg { width: 100px; height: 10px; background: #333; border-radius: 5px; overflow: hidden; }
-#mic-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #4caf50, #f44336); transition: width 0.1s; }
+.bar-bg { width: 80px; height: 8px; background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; }
+#mic-bar { width: 0%; height: 100%; background: #00e676; transition: width 0.1s; }
 
-#message-container {
-    position: absolute; top: 20%; width: 100%; text-align: center;
-    pointer-events: auto;
-}
+#message-container { position: absolute; top: 30%; width: 100%; text-align: center; pointer-events: auto; }
 .glow-text {
-    font-size: 4rem; color: #ffd700;
-    text-shadow: 0 0 20px #ff6f00;
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem; color: #ffeb3b;
+    text-shadow: 0 0 20px #e65100;
     animation: pulse 2s infinite;
 }
 #card-btn {
-    margin-top: 20px; padding: 15px 30px;
-    font-size: 1.5rem; background: white; color: #d81b60;
-    border: none; border-radius: 30px; cursor: pointer;
-    box-shadow: 0 0 20px rgba(255,255,255,0.5);
-    pointer-events: auto;
+    margin-top: 20px; padding: 15px 40px;
+    font-size: 1.2rem; background: white; color: #c2185b;
+    border: none; border-radius: 50px; cursor: pointer;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    font-weight: bold; font-family: 'Montserrat', sans-serif;
 }
 
-/* --- CARD MODAL --- */
-#card-modal {
-    position: fixed; inset: 0; z-index: 2000;
-    background: rgba(0,0,0,0.8);
-    display: flex; align-items: center; justify-content: center;
-}
-.hidden { display: none !important; }
-.card-wrapper { perspective: 1000px; }
-.card-3d {
-    width: 300px; height: 400px;
-    position: relative; transform-style: preserve-3d;
-    transition: transform 1s;
-    cursor: pointer;
-}
-.card-3d.open { transform: rotateY(-180deg); }
-.card-front, .card-inside-right {
-    position: absolute; width: 100%; height: 100%;
-    backface-visibility: hidden; border-radius: 5px;
-}
-.card-front {
-    background: #880e4f; color: white;
-    display: flex; align-items: center; justify-content: center;
-    z-index: 2; transform-origin: left;
-}
-.card-inside-left {
-    position: absolute; width: 100%; height: 100%;
-    background: #f8bbd0; transform: rotateY(180deg);
-    backface-visibility: hidden; border-radius: 5px; z-index: 1;
-}
-.card-inside-right {
-    background: white; color: #333;
-    padding: 20px; text-align: center;
-    z-index: 0;
-}
-.photo-frame {
-    margin: 50px auto; width: 150px; height: 150px;
-    background: #ccc; display: flex; align-items: center; justify-content: center;
-    font-size: 3rem; border: 5px solid white; box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
-#close-card {
-    position: absolute; top: 20px; right: 20px;
-    padding: 10px 20px; background: transparent; border: 1px solid white; color: white;
-    cursor: pointer;
-}
+/* Animations */
+@keyframes pulse-bg { 0%, 100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.2; transform: scale(1.05); } }
+@keyframes float { 0%, 100% { transform: translate(-50%, 0); } 50% { transform: translate(-50%, -10px); } }
+@keyframes bob { 0%, 100% { transform: translateY(0) rotateZ(30deg); } 50% { transform: translateY(-5px) rotateZ(30deg); } }

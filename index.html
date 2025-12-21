@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday My Love</title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Versatile Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@700&family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@400;600&family=Sacramento&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 <script type="importmap">
@@ -21,7 +22,7 @@
 </head>
 <body>
 
-    <!-- OVERLAY: START SCREEN -->
+    <!-- OVERLAY: START SCREEN (Z-Index fixed for interaction) -->
     <div id="start-screen">
         <div class="heart-bg"></div>
         <div class="content">
@@ -31,8 +32,9 @@
                 <p>2. Turn up your volume 🔊</p>
                 <p>3. Blow on the screen to put out candles 🎂</p>
             </div>
-            <button id="start-btn">Enter Surprise ❤️</button>
-            <p id="mic-status">Waiting for interaction...</p>
+            <!-- Added touch-action manipulation for better mobile tapping -->
+            <button id="start-btn" style="touch-action: manipulation;">Enter Surprise ❤️</button>
+            <p id="mic-status">Waiting for you...</p>
         </div>
     </div>
 
@@ -42,6 +44,11 @@
             
             <!-- BACKGROUND ROOM -->
             <div class="room-wall">
+                <!-- Happy Birthday Banner -->
+                <div class="wall-banner">
+                    <span>Happy Birthday</span>
+                </div>
+
                 <div class="window">
                     <div class="night-sky">
                         <div class="moon"></div>
@@ -49,6 +56,8 @@
                     </div>
                     <div class="frame"></div>
                     <div class="frame-mid"></div>
+                    <!-- Volumetric Light Beam -->
+                    <div class="light-beam"></div>
                 </div>
                 <!-- Curtains -->
                 <div class="curtain left"></div>
@@ -57,13 +66,34 @@
 
             <!-- 3D TABLE -->
             <div class="table-group">
+                <!-- Table Cloth Physics -->
                 <div class="table-top">
+                    <div class="cloth-pattern"></div>
                     <div class="reflection"></div>
-                    <!-- Rose Petals on Table -->
+                    
+                    <!-- Rose Petals -->
                     <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
                     <div class="petal p4"></div><div class="petal p5"></div>
+
+                    <!-- 3D GIFTS -->
+                    <div class="gift g1">
+                        <div class="gift-face g-front"></div><div class="gift-face g-back"></div>
+                        <div class="gift-face g-left"></div><div class="gift-face g-right"></div>
+                        <div class="gift-face g-top"></div>
+                        <div class="ribbon-h"></div><div class="ribbon-v"></div>
+                    </div>
+                    <div class="gift g2">
+                         <div class="gift-face g-front"></div><div class="gift-face g-back"></div>
+                         <div class="gift-face g-left"></div><div class="gift-face g-right"></div>
+                         <div class="gift-face g-top"></div>
+                         <div class="ribbon-h"></div><div class="ribbon-v"></div>
+                    </div>
                 </div>
-                <div class="table-side"></div>
+                
+                <!-- Table Skirt -->
+                <div class="table-side">
+                    <div class="cloth-ruffle"></div>
+                </div>
                 
                 <!-- 3D CAKE CONTAINER -->
                 <div class="cake-group">
@@ -87,7 +117,7 @@
                         <div class="tier-face left"></div>
                         <div class="tier-face right"></div>
                         <div class="tier-top">
-                            <div class="text-3d">My Baby</div>
+                            <div class="text-3d">Myyy Babyyy</div>
                             <div id="candle-placement"></div>
                         </div>
                     </div>
@@ -125,7 +155,7 @@
                 </div>
                 <div class="card-inside-right">
                     <h3>My Dearest,</h3>
-                    <p>May your day be filled with as much joy and magic as you bring into my life. I love you more than words can say.</p>
+                    <p>May your day be filled with magic, love, and all the sweetness you bring into my life.</p>
                     <p class="sign">Yours Forever</p>
                 </div>
             </div>
