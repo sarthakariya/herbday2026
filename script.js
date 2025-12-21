@@ -36,7 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- SCENE SETUP ---
 function generateCandles() {
     const holder = document.getElementById('candles-holder');
-    const radius = 60; // Radius on top tier
+    // Radius adjusted for larger cake top tier (Width 240px -> Radius ~120px visually, but perspective scales it)
+    // 80px seems right for placement on the 240px wide top tier
+    const radius = 80; 
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -45,10 +47,11 @@ function generateCandles() {
 
         const el = document.createElement('div');
         el.className = 'candle';
+        
         // Adjust transform to sit on the top tier surface
-        // The container is tilted, so we just translate x/z (which maps to visual circle)
-        // Note: The z-index trickery in CSS 3D is hard, so we just place them.
-        el.style.transform = `translateX(${x}px) translateZ(${z}px) translateY(-40px)`;
+        // The container is tilted.
+        // We translate Y up (negative) to sit on top of the tier.
+        el.style.transform = `translateX(${x}px) translateZ(${z}px) translateY(-50px)`;
         
         // Colors
         const hue = (i * 40) % 360;
@@ -99,7 +102,7 @@ async function initAudio() {
         state.analyser = state.audioCtx.createAnalyser();
         state.analyser.fftSize = 256;
         
-        // Low pass filter for "blowing" sound
+        // Low pass filter for "blowing" sound (wind noise is low freq)
         const filter = state.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.value = 800;
@@ -151,6 +154,7 @@ function loop() {
     document.getElementById('mic-level').style.width = level + '%';
 
     // Blow Detection
+    // Threshold tweaked for typical mic input
     if(avg > CONFIG.micThreshold) {
         blowCandles();
     }
