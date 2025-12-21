@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // A simple drape curve
         path.setAttribute("d", "M0,0 Q500,150 1000,0"); // Assuming standard width approx, percentages work better in CSS but this is a simple visual
         path.setAttribute("fill", "none");
-        path.setAttribute("stroke", "#555");
+        path.setAttribute("stroke", "#a1887f"); // Lighter Copper/Brown wire
         path.setAttribute("stroke-width", "2");
         svg.appendChild(path);
         lightsContainer.appendChild(svg);
