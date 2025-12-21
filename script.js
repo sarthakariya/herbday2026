@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio();
+        initAudio(); // Initialize Context
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -155,16 +155,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        setTimeout(playChime, 800);
-        setTimeout(toggleMusic, 2000); // Auto start music softly
+        // Auto start music immediately on click (browser allowed)
+        toggleMusic(); 
         
-        // Trigger Gift Animations after delay
-        setTimeout(() => {
-            document.querySelectorAll('.gift-box').forEach(g => g.classList.add('animated'));
-        }, 3000);
-
+        setTimeout(playChime, 800);
+        
         // Start Continuous Falling Confetti (More frequent now)
-        setInterval(spawnFallingBit, 400);
+        setInterval(spawnFallingBit, 300);
 
         loop();
     });
@@ -182,6 +179,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Music Button
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
+    
+    // Force reload GIFs to ensure animation plays
+    document.querySelectorAll('.gif-sticker img').forEach(img => {
+        const src = img.src;
+        img.src = src; // Re-assigning src triggers reload
+    });
 });
 
 // CONTINUOUS FALLING CONFETTI/LEAVES
@@ -267,7 +270,7 @@ function toggleMusic() {
         masterGain.gain.setValueAtTime(0, now);
         masterGain.gain.linearRampToValueAtTime(0.03, now + 2); // Very soft volume
         masterGain.connect(state.audioCtx.destination);
-        state.musicNodes.push(masterGain); // Tracking primarily for disconnect, though gain doesn't have stop()
+        state.musicNodes.push(masterGain); 
 
         freqs.forEach(f => {
             const osc = state.audioCtx.createOscillator();
@@ -326,9 +329,6 @@ const NOTE = {
 function playBirthdaySong() {
     if(!state.audioCtx) return;
     const t = state.audioCtx.currentTime;
-    
-    // Stop background music temporarily to focus on birthday song if desired, 
-    // but user asked for background music "throughout". We'll keep it as a bed.
     
     const song = [
         {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 1.0}, // Happy Birthday to You
@@ -416,16 +416,58 @@ function blowCandle() {
     }
 }
 
+function superCelebration() {
+    // 1. Classic Confetti
+    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+    
+    // 2. Stars
+    setTimeout(() => {
+        confetti({ 
+            particleCount: 50, 
+            spread: 100, 
+            origin: { y: 0.6 },
+            shapes: ['star'],
+            colors: ['#FFD700', '#FFA500']
+        });
+    }, 500);
+
+    // 3. Hearts from sides
+    setTimeout(() => {
+        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, shapes: ['circle'], colors: ['#e91e63'] });
+        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, shapes: ['circle'], colors: ['#e91e63'] });
+    }, 1000);
+
+    // 4. Big Burst
+    setTimeout(() => {
+        confetti({ 
+            particleCount: 200, 
+            spread: 160, 
+            origin: { y: 0.3 },
+            scalar: 1.2
+        });
+    }, 2000);
+}
+
 function win() {
     state.listening = false;
     
     playClapping();
-    confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+    superCelebration();
     
     setTimeout(playBirthdaySong, 1000);
 
+    // Ensure we are targeting the correct element ID for the modal
     setTimeout(() => {
-        document.getElementById('card-modal').classList.remove('hidden');
+        const modal = document.getElementById('card-modal');
+        if(modal) {
+            modal.classList.remove('hidden');
+            // Add a little pop animation class to the book
+            const book = document.getElementById('card-wrapper');
+            if(book) {
+                book.classList.add('bounce-anim'); // Reuse bounce anim for entrance
+                setTimeout(() => book.classList.remove('bounce-anim'), 1000);
+            }
+        }
     }, 4000);
 }
 

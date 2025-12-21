@@ -15,10 +15,13 @@
     <!-- START SCREEN -->
     <div id="start-screen">
         <div class="content">
-            <h1 class="title-text entrance-anim">For My Love</h1>
-            <p class="subtitle entrance-anim delay-1">Please enable Sound & Microphone 🎙️</p>
+            <h1 class="title-text entrance-anim">To My Everything...</h1>
+            <div class="floating-hearts">
+                <span>❤️</span><span>💖</span><span>💕</span>
+            </div>
+            <p class="subtitle entrance-anim delay-1">Turn up your volume & Enable Microphone 🎙️</p>
             <button id="start-btn" class="entrance-anim delay-2">
-                <span>❤️ Enter Room</span>
+                <span>✨ Step Into Your Surprise ✨</span>
             </button>
         </div>
     </div>
@@ -46,6 +49,8 @@
 
         <!-- LAYER 1: ROOM BACKGROUND -->
         <div class="room-bg">
+            <div class="wall-texture"></div>
+            
             <!-- Magic Dust Container -->
             <div id="magic-dust"></div>
 
@@ -71,11 +76,11 @@
             <div class="streamer st9"></div>
             <div class="streamer st10"></div>
 
-            <!-- WALL POSTER -->
-            <div class="wall-poster">
+            <!-- WALL POSTER (Restored) -->
+            <div class="wall-poster jelly-anim">
                 <div class="poster-frame">
                     <div class="poster-inner">
-                        <p>Blow out the candles<br>to celebrate! 🎂</p>
+                        <p>Make a Wish &<br>Blow the Candles! 🎂</p>
                     </div>
                 </div>
                 <div class="poster-string"></div>
@@ -83,22 +88,22 @@
             </div>
 
             <!-- GIF STICKERS (Floating Polaroids) -->
-            <div class="gif-sticker g1">
+            <div class="gif-sticker g1 wobble-anim">
                 <div class="polaroid-inner">
                     <img src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGNtcjFlMWVlcTBiNHI0NnMwenJscnIwZTNnZzQ2ODdsaXZvb3U2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/xTvbVZjxLdkBqvkQsu/giphy.gif" alt="Cute Gif 1">
                 </div>
             </div>
-            <div class="gif-sticker g2">
+            <div class="gif-sticker g2 wobble-anim">
                 <div class="polaroid-inner">
                     <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Zmdjlkam9zZzI2N3ExNWNmazluZmRscnlyYzZubGlmN290bDB3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SwUqpdM8i6NH2asVn2/giphy.gif" alt="Cute Gif 2">
                 </div>
             </div>
-            <div class="gif-sticker g3">
+            <div class="gif-sticker g3 wobble-anim">
                 <div class="polaroid-inner">
                     <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWIxdnNzNTFlYTAzdmMzZzM1OHVvZzMwMTU3enBkaGQ1NXNoZG9hYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/i9BkTMFxW7eBJ9ZOqP/giphy.gif" alt="Cute Gif 3">
                 </div>
             </div>
-            <div class="gif-sticker g4">
+            <div class="gif-sticker g4 wobble-anim">
                 <div class="polaroid-inner">
                     <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3J1YnJvbG85aWd2bWxiaDM2ODk2cDEwMDh3ZWI1cHg5eHZjdjE0eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/4Ka9hpRXpjXJzW2PRi/giphy.gif" alt="Cute Gif 4">
                 </div>
@@ -121,14 +126,14 @@
             <div class="balloon heart-b h1"></div>
             <div class="balloon heart-b h2"></div>
 
-            <!-- CUSTOM RIBBON BANNER -->
+            <!-- CUSTOM RIBBON BANNER (Restored) -->
             <div class="banner-container">
                 <div class="ribbon">
                     <svg viewBox="0 0 600 150">
                         <path id="curve" d="M30,120 Q300,-10 570,120" fill="none"/>
                         <text width="600">
                             <textPath xlink:href="#curve" href="#curve" startOffset="50%" text-anchor="middle">
-                                Happy Birthday to you My Baby
+                                Happy Birthday My Baby
                             </textPath>
                         </text>
                     </svg>
@@ -147,9 +152,6 @@
             </div>
             <!-- Table Top -->
             <div class="cloth-top">
-                <!-- Fancy Table Runner (Removed to show off checkered cloth better) -->
-                <!-- <div class="table-runner"></div> -->
-
                 <!-- Scattered Petals Container -->
                 <div id="petals-container"></div>
                 
@@ -160,7 +162,7 @@
             <!-- PROPS -->
             
             <!-- Bouquet -->
-            <div class="prop bouquet-container">
+            <div class="prop bouquet-container bounce-anim">
                 <div class="vase-shadow"></div>
                 <div class="vase"></div>
                 <div class="roses">
@@ -174,7 +176,7 @@
             </div>
 
             <!-- Macarons Plate -->
-            <div class="prop macaron-plate">
+            <div class="prop macaron-plate bounce-anim">
                 <div class="plate-shadow"></div>
                 <div class="plate-base"></div>
                 <div class="macaron m1"></div>
@@ -184,7 +186,7 @@
 
             <!-- Left Gift -->
             <div class="gift-shadow left-shadow"></div>
-            <div class="prop gift-box gift-left">
+            <div class="prop gift-box gift-left jelly-anim">
                 <div class="lid"></div>
                 <div class="ribbon-horz"></div>
                 <div class="ribbon-vert"></div>
@@ -192,18 +194,18 @@
             
             <!-- Right Gift -->
             <div class="gift-shadow right-shadow"></div>
-            <div class="prop gift-box gift-right">
+            <div class="prop gift-box gift-right jelly-anim">
                 <div class="lid"></div>
                 <div class="ribbon-horz"></div>
                 <div class="ribbon-vert"></div>
             </div>
 
-            <!-- Easel Board -->
+            <!-- Easel Board (Restored) -->
             <div class="easel-container">
                 <div class="easel-legs"></div>
                 <div class="easel-board">
                     <div class="board-content">
-                        Happy Birthday<br><span class="highlight-text">My Baby</span>
+                        Happy Birthday<br><span class="highlight-text">My Love</span>
                         <div class="small-heart">❤️</div>
                     </div>
                 </div>
@@ -239,22 +241,35 @@
 
     </div>
 
-    <!-- BOOK CARD MODAL -->
+    <!-- BOOK CARD MODAL (UPDATED WITH PHOTO) -->
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
+            <!-- Left Page: Photo -->
+            <div class="book-page left-page">
+                <div class="photo-border">
+                    <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                </div>
+            </div>
+
+            <!-- Right Page: Text -->
             <div class="book-page right-page">
                 <h3>My Dearest Love,</h3>
-                <p id="card-text">
-                    Every moment with you is a gift.
-                    May your day be as sweet as this cake
-                    and as bright as your smile.
-                    I love you so much.
-                </p>
+                <div class="scroll-text">
+                    <p id="card-text">
+                        On this special day, the world became a brighter place because you were born.
+                        <br><br>
+                        You are the melody in my heart and the reason for my biggest smiles. 
+                        I hope your day is filled with as much joy, love, and magic as you bring into my life every single day.
+                        <br><br>
+                        I love you more than words can say.
+                    </p>
+                </div>
                 <div class="action-row">
                     <div class="sig">Forever Yours ❤️</div>
                     <button id="tts-btn" class="tts-button" title="Read to me">🔊 Read</button>
                 </div>
             </div>
+            
             <div class="book-cover-container">
                 <div class="book-cover-front">
                     <div class="cover-content">
@@ -264,9 +279,6 @@
                     </div>
                 </div>
                 <div class="book-cover-back">
-                    <div class="photo-frame">
-                        <div class="heart-icon">💕</div>
-                    </div>
                 </div>
             </div>
         </div>
