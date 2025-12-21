@@ -54,29 +54,20 @@ body {
     width: 100%; height: 100%;
 }
 
-/* REALISTIC CURTAINS */
+/* CURTAINS */
 .curtain {
     position: absolute; top: 0; width: 50%; height: 100%;
-    /* Gradient simulates heavy folds */
-    background: repeating-linear-gradient(90deg, 
-        #560027 0%, 
-        #880e4f 10%, 
-        #ad1457 20%, 
-        #880e4f 30%, 
-        #560027 40%
-    );
+    background: repeating-linear-gradient(90deg, #560027 0%, #880e4f 10%, #ad1457 20%, #880e4f 30%, #560027 40%);
     z-index: 800;
     transition: transform 3s cubic-bezier(0.4, 0.0, 0.2, 1);
     box-shadow: 0 0 100px rgba(0,0,0,1);
 }
-/* Hem at the bottom */
 .curtain::after {
     content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 20px;
     background: #3e0015;
 }
 .curtain.left { left: 0; transform-origin: left; }
 .curtain.right { right: 0; transform-origin: right; }
-
 body.open .curtain.left { transform: scaleX(0); }
 body.open .curtain.right { transform: scaleX(0); }
 
@@ -91,7 +82,7 @@ body.open .curtain.right { transform: scaleX(0); }
     filter: blur(40px);
 }
 
-/* STARS & BALLOONS */
+/* DECORATIONS */
 .star {
     position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%;
     box-shadow: 0 0 10px white;
@@ -104,21 +95,17 @@ body.open .curtain.right { transform: scaleX(0); }
 
 .balloon {
     position: absolute; width: 60px; height: 70px;
-    border-radius: 50%;
-    opacity: 0.4;
+    border-radius: 50%; opacity: 0.4;
     box-shadow: inset -5px -5px 10px rgba(0,0,0,0.3), inset 5px 5px 10px rgba(255,255,255,0.2);
     animation: floatBalloon 6s ease-in-out infinite;
 }
-.balloon::after {
-    content: ''; position: absolute; bottom: -10px; left: 29px;
-    width: 2px; height: 30px; background: rgba(255,255,255,0.3);
-}
+.balloon::after { content: ''; position: absolute; bottom: -10px; left: 29px; width: 2px; height: 30px; background: rgba(255,255,255,0.3); }
 .b1 { background: #e53935; top: 20%; left: 10%; animation-delay: 0s; }
 .b2 { background: #8e24aa; top: 15%; right: 15%; animation-delay: 1s; }
 .b3 { background: #fdd835; top: 30%; left: 20%; width: 45px; height: 55px; animation-delay: 2s; }
 .b4 { background: #1e88e5; top: 25%; right: 25%; width: 50px; height: 60px; animation-delay: 3s; }
 
-/* RIBBON BANNER IMPROVED */
+/* BANNER */
 .banner-container {
     position: absolute; top: 5%; width: 100%;
     display: flex; justify-content: center;
@@ -126,165 +113,144 @@ body.open .curtain.right { transform: scaleX(0); }
     animation: floatBalloon 5s ease-in-out infinite;
     z-index: 50;
 }
-.ribbon {
-    width: 800px; height: 200px;
-    transform: rotate(-2deg);
-}
-.ribbon svg {
-    width: 100%; height: 100%;
-    overflow: visible;
-}
+.ribbon { width: 800px; height: 200px; transform: rotate(-2deg); }
+.ribbon svg { width: 100%; height: 100%; overflow: visible; }
 .ribbon text {
-    fill: #fff;
-    font-family: 'Great Vibes', cursive;
-    font-size: 32px;
-    font-weight: bold;
+    fill: #fff; font-family: 'Great Vibes', cursive;
+    font-size: 32px; font-weight: bold;
     text-shadow: 2px 2px 4px #d81b60;
 }
-/* Creating the ribbon shape effect behind text using strokes or a separate path */
 #curve {
-    stroke: #ec407a;
-    stroke-width: 60;
-    stroke-linecap: round;
-    fill: none;
-    box-shadow: 0 10px 10px rgba(0,0,0,0.5); /* SVG filters needed for internal shadow, simpler to rely on parent drop-shadow */
+    stroke: #ec407a; stroke-width: 60; stroke-linecap: round; fill: none;
+    box-shadow: 0 10px 10px rgba(0,0,0,0.5);
 }
-
 
 /* TABLE */
 .table-container {
-    position: absolute;
-    bottom: -10%; left: 50%;
-    transform: translateX(-50%);
-    width: 1200px; height: 600px;
-    z-index: 10;
+    position: absolute; bottom: -10%; left: 50%; transform: translateX(-50%);
+    width: 1200px; height: 600px; z-index: 10;
 }
 .table-shadow {
     position: absolute; bottom: 50px; left: 10%; width: 80%; height: 100px;
     background: black; border-radius: 50%; filter: blur(50px); opacity: 0.8;
 }
+
+/* Checkered Cloth Top */
 .cloth-top {
-    position: absolute; top: 100px; left: 0;
-    width: 100%; height: 400px;
-    background: #f8bbd0;
+    position: absolute; top: 100px; left: 0; width: 100%; height: 400px;
+    background-color: #fff;
+    /* Gingham / Checkered Pattern */
+    background-image: 
+        repeating-linear-gradient(45deg, rgba(255, 205, 210, 0.7) 25px, transparent 25px, transparent 50px, rgba(255, 205, 210, 0.7) 50px, rgba(255, 205, 210, 0.7) 75px, transparent 75px, transparent 100px),
+        repeating-linear-gradient(-45deg, rgba(255, 249, 196, 0.6) 25px, transparent 25px, transparent 50px, rgba(255, 249, 196, 0.6) 50px, rgba(255, 249, 196, 0.6) 75px, transparent 75px, transparent 100px);
     border-radius: 50%;
     box-shadow: 0 15px 35px rgba(0,0,0,0.3);
     z-index: 2; overflow: hidden;
+    /* Subtle fabric physics */
+    animation: fabricSway 10s ease-in-out infinite;
 }
-.lace-pattern {
-    position: absolute; inset: 0;
-    background-image: 
-        radial-gradient(circle, rgba(255,255,255,0.6) 2px, transparent 3px),
-        radial-gradient(circle, rgba(255,255,255,0.2) 15px, transparent 16px);
-    background-size: 30px 30px, 60px 60px;
-    opacity: 0.6;
-}
-.sprinkle {
-    position: absolute; width: 8px; height: 3px; background: gold; border-radius: 2px;
-    transform: rotate(45deg); opacity: 0.7;
-}
-.sp1 { top: 60%; left: 30%; background: #00e676; }
-.sp2 { top: 70%; right: 35%; background: #2979ff; transform: rotate(-30deg); }
-.sp3 { top: 50%; left: 45%; background: #ffea00; }
-.sp4 { top: 80%; right: 40%; background: #ff1744; }
 
+/* Cloth Draping */
 .cloth-body {
-    position: absolute; top: 300px; left: 5%;
-    width: 90%; height: 200px;
-    background: linear-gradient(to bottom, #ec407a, #880e4f);
+    position: absolute; top: 300px; left: 5%; width: 90%; height: 200px;
+    background: repeating-linear-gradient(90deg, #ffcdd2, #ffcdd2 20px, #e1bee7 40px, #ffcdd2 60px);
     border-radius: 0 0 50% 50%; z-index: 1;
+    box-shadow: inset 0 20px 40px rgba(0,0,0,0.3);
 }
 
-/* GIFTS & ANIMATIONS */
+/* GIFTS */
 .float-anim { animation: bob 3s ease-in-out infinite; }
+.float-anim-delayed { animation: bob 3.5s ease-in-out infinite reverse; }
+
 .gift-box {
-    top: 230px; left: 250px;
-    width: 110px; height: 90px;
-    background: linear-gradient(135deg, #7b1fa2, #4a148c);
+    width: 120px; height: 100px;
     box-shadow: 5px 15px 25px rgba(0,0,0,0.5);
-    border-radius: 2px;
+    border-radius: 4px;
+    z-index: 25;
 }
-.gift-box::after { /* Shimmer */
+.gift-box::after {
     content: ''; position: absolute; inset: 0;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
     animation: shimmer 2s infinite;
 }
 .gift-box .lid {
-    position: absolute; top: -15px; left: -5px;
-    width: 120px; height: 25px;
-    background: #8e24aa;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    position: absolute; top: -15px; left: -5px; width: 130px; height: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); border-radius: 2px;
 }
-.ribbon-horz { position: absolute; top: 50%; width: 100%; height: 12px; background: #ea80fc; }
-.ribbon-vert { position: absolute; left: 50%; height: 100%; width: 12px; background: #ea80fc; transform: translateX(-50%); }
+.ribbon-horz { position: absolute; top: 50%; width: 100%; height: 15px; transform: translateY(-50%); }
+.ribbon-vert { position: absolute; left: 50%; height: 100%; width: 15px; transform: translateX(-50%); }
 
-.letter {
-    top: 320px; right: 280px;
-    width: 130px; height: 90px;
-    background: #fff;
-    transform: rotate(8deg);
-    box-shadow: 2px 5px 15px rgba(0,0,0,0.2);
-    display: flex; align-items: center; justify-content: center;
-    border: 1px solid #eee;
+/* Left Gift - Purple */
+.gift-left {
+    position: absolute; top: 220px; left: 200px;
+    background: linear-gradient(135deg, #7b1fa2, #4a148c);
+}
+.gift-left .lid { background: #8e24aa; }
+.gift-left .ribbon-horz, .gift-left .ribbon-vert { background: #ea80fc; }
+
+/* Right Gift - Teal */
+.gift-right {
+    position: absolute; top: 240px; right: 200px;
+    background: linear-gradient(135deg, #00796b, #004d40);
+}
+.gift-right .lid { background: #00897b; }
+.gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #80cbc4; }
+
+/* CHOCOLATES */
+.chocolate {
+    position: absolute; background: #3e2723;
+    border-radius: 2px;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+.chocolate::after {
+    content: ''; position: absolute; top: 2px; left: 2px; width: 40%; height: 40%;
+    background: rgba(255,255,255,0.1); border-radius: 50%;
 }
 
-/* CAKE IMPROVED */
+/* CAKE */
 .cake-container {
     position: absolute; top: 130px; left: 50%; transform: translateX(-50%);
     width: 320px; height: 320px; z-index: 20;
 }
 .cake-plate {
     position: absolute; bottom: 0; left: -15%; width: 130%; height: 70px;
-    background: #fff;
-    border-radius: 50%;
+    background: #fff; border-radius: 50%;
     box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 -5px 10px rgba(0,0,0,0.1);
 }
-
 .tier { position: absolute; left: 50%; transform: translateX(-50%); }
 
-/* Bottom Tier - Rich Chocolate */
 .bottom-tier { bottom: 25px; width: 280px; height: 130px; }
 .bottom-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 90px;
-    /* Cleaner, smoother gradient */
     background: linear-gradient(to right, #4e342e, #6d4c41 30%, #5d4037 60%, #3e2723);
     border-radius: 0 0 140px 140px;
     box-shadow: inset 0 -10px 20px rgba(0,0,0,0.3);
 }
 .bottom-tier .tier-top {
     position: absolute; top: 0; width: 100%; height: 90px;
-    background: #5d4037;
-    border-radius: 50%;
-    box-shadow: inset 0 5px 10px rgba(0,0,0,0.3); /* depth */
+    background: #5d4037; border-radius: 50%;
+    box-shadow: inset 0 5px 10px rgba(0,0,0,0.3);
 }
 
-/* Top Tier - Smooth Strawberry */
 .top-tier { bottom: 100px; width: 200px; height: 110px; }
 .top-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 80px;
-    /* Smoother pink gradient */
     background: linear-gradient(to right, #ec407a, #f06292 30%, #e91e63 60%, #c2185b);
     border-radius: 0 0 100px 100px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 .top-tier .tier-top {
     position: absolute; top: 0; width: 100%; height: 70px;
-    background: #f48fb1;
-    border-radius: 50%;
+    background: #f48fb1; border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.3);
     display: flex; align-items: center; justify-content: center;
 }
 
-/* Drip Effect (CSS only) */
 .icing-drips {
-    position: absolute; top: 40px; left: 0; width: 100%; height: 20px;
-    z-index: 5;
+    position: absolute; top: 40px; left: 0; width: 100%; height: 20px; z-index: 5;
     background: transparent;
-    /* Radial gradient creates scallops */
     background-image: radial-gradient(circle at 50% 100%, #5d4037 8px, transparent 9px); 
-    background-size: 30px 20px;
-    background-repeat: repeat-x;
-    opacity: 0.9;
+    background-size: 30px 20px; background-repeat: repeat-x; opacity: 0.9;
 }
 .top-tier .icing-drips {
     top: 35px;
@@ -293,40 +259,66 @@ body.open .curtain.right { transform: scaleX(0); }
 }
 
 .cake-msg {
-    position: absolute; top: -50px;
-    width: 250%; text-align: center;
-    font-family: 'Great Vibes', cursive;
-    color: #880e4f; font-size: 1.6rem;
+    position: absolute; top: -50px; width: 250%; text-align: center;
+    font-family: 'Great Vibes', cursive; color: #880e4f; font-size: 1.6rem;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
-    pointer-events: none; z-index: 50;
-    transform: rotateX(10deg);
+    pointer-events: none; z-index: 50; transform: rotateX(10deg);
 }
 .highlight-text { font-size: 2.5rem; color: #ad1457; font-weight: bold; display: block; margin-top: -5px; }
 
-/* CANDLES */
+/* HIGH DEFINITION CANDLES */
 #candles-container {
     position: absolute; bottom: 175px; left: 50%; width: 0; height: 0; z-index: 30;
 }
 .candle {
     position: absolute; bottom: 0;
-    width: 8px; height: 50px;
-    background: repeating-linear-gradient(45deg, rgba(255,255,255,0.8), rgba(255,255,255,0.8) 5px, transparent 5px, transparent 10px);
-    background-color: #ffd54f;
-    border-radius: 3px;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    width: 14px; /* Thicker */
+    height: 60px; /* Taller */
+    background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 20%, rgba(0,0,0,0.1) 100%);
+    background-color: #ffd54f; /* Set by JS */
+    border-radius: 2px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
 }
-.wick { position: absolute; top: -6px; left: 3px; width: 2px; height: 6px; background: #222; }
+/* Wax Pool at top */
+.candle::after {
+    content: ''; position: absolute; top: -3px; left: 0; width: 100%; height: 6px;
+    background-color: inherit;
+    border-radius: 50%;
+    background-image: radial-gradient(rgba(255,255,255,0.8), transparent 70%);
+}
+.wick {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 2px; height: 8px; background: #333;
+    border-radius: 1px;
+}
+/* HD Flame Container */
 .flame {
-    position: absolute; top: -28px; left: -5px; width: 18px; height: 30px;
-    background: radial-gradient(ellipse at bottom, #fff 10%, #ffeb3b 40%, #ff9800 80%, transparent 100%);
-    border-radius: 50% 50% 20% 20%;
-    filter: drop-shadow(0 0 6px #ff5722);
-    animation: flicker 0.15s infinite alternate;
+    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 34px;
     transform-origin: center bottom;
+    /* Glow effect */
+    filter: drop-shadow(0 0 8px rgba(255, 200, 0, 0.6));
+    opacity: 0.9;
 }
-.flame.out { opacity: 0; transform: scale(0.5); transition: all 0.5s; }
+/* Main Flame Body (Orange/Yellow) */
+.flame::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ffca28 40%, #ff6f00 80%, transparent 100%);
+    border-radius: 50% 50% 20% 20%;
+    animation: flicker 0.1s infinite alternate, sway 2s ease-in-out infinite;
+}
+/* Blue Core */
+.flame::after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 10px;
+    background: rgba(0, 100, 255, 0.5);
+    border-radius: 50%;
+    filter: blur(1px);
+}
 
-/* BOOK CARD (FIXED ORIENTATION) */
+.flame.out { opacity: 0; transform: scale(0.5); transition: all 0.5s; filter: none; }
+
+/* BOOK CARD */
 #card-modal {
     position: fixed; inset: 0; z-index: 2000;
     background: rgba(0,0,0,0.85);
@@ -334,54 +326,33 @@ body.open .curtain.right { transform: scaleX(0); }
     perspective: 1500px;
     transition: opacity 1s;
 }
-
-/* The Book Container */
 .book {
     position: relative; width: 320px; height: 480px;
     transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
+.book.open { transform: translateX(160px); }
 
-/* When open, shift the whole book slightly right so the spread is centered */
-.book.open {
-    transform: translateX(160px);
-}
-
-/* The Static Right Page (Base) */
 .book-page.right-page {
-    position: absolute; inset: 0;
-    background: #fff0f5;
-    border-radius: 5px 15px 15px 5px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-    z-index: 1; /* Behind cover */
-    padding: 30px;
-    color: #880e4f;
+    position: absolute; inset: 0; background: #fff0f5;
+    border-radius: 5px 15px 15px 5px; box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    z-index: 1; padding: 30px; color: #880e4f;
     display: flex; flex-direction: column; justify-content: center; text-align: center;
 }
 .book-page h3 { font-family: 'Great Vibes', cursive; font-size: 2.2rem; margin-bottom: 20px; }
 .book-page p { line-height: 1.6; font-size: 1.1rem; }
 .sig { margin-top: 40px; font-weight: bold; font-family: 'Great Vibes', cursive; font-size: 1.8rem; color: #d81b60; }
 
-/* The Rotating Cover Container */
 .book-cover-container {
-    position: absolute; inset: 0;
-    transform-origin: left;
-    transform-style: preserve-3d;
-    transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1);
-    z-index: 2;
+    position: absolute; inset: 0; transform-origin: left; transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1); z-index: 2;
 }
-.book.open .book-cover-container {
-    transform: rotateY(-180deg);
-}
+.book.open .book-cover-container { transform: rotateY(-180deg); }
 
-/* Front of the Cover */
 .book-cover-front {
     position: absolute; inset: 0;
     background: linear-gradient(135deg, #880e4f, #ad1457);
-    border-radius: 5px 15px 15px 5px;
-    border: 2px solid #560027;
-    backface-visibility: hidden; /* Hide when flipped */
-    display: flex; align-items: center; justify-content: center;
-    z-index: 2;
+    border-radius: 5px 15px 15px 5px; border: 2px solid #560027;
+    backface-visibility: hidden; display: flex; align-items: center; justify-content: center; z-index: 2;
 }
 .book-cover-front::after {
     content: ''; position: absolute; inset: 0;
@@ -390,26 +361,32 @@ body.open .curtain.right { transform: scaleX(0); }
 .cover-content { text-align: center; color: #fff; z-index: 3; border: 4px double #f48fb1; padding: 40px; }
 .heart-anim { font-size: 5rem; animation: beat 1.5s infinite; text-shadow: 0 0 15px #f06292; }
 
-/* Back of the Cover (Inside Left) */
 .book-cover-back {
-    position: absolute; inset: 0;
-    background: #fce4ec; /* Light pink inside */
-    border-radius: 15px 5px 5px 15px; /* Mirrored radius */
-    transform: rotateY(180deg); /* Pre-rotated to face opposite */
-    backface-visibility: hidden;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: inset -5px 0 20px rgba(0,0,0,0.1);
+    position: absolute; inset: 0; background: #fce4ec; border-radius: 15px 5px 5px 15px;
+    transform: rotateY(180deg); backface-visibility: hidden;
+    display: flex; align-items: center; justify-content: center; box-shadow: inset -5px 0 20px rgba(0,0,0,0.1);
 }
 .photo-frame {
-    width: 80%; height: 60%;
-    border: 1px dashed #d81b60;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0.5;
+    width: 80%; height: 60%; border: 1px dashed #d81b60;
+    display: flex; align-items: center; justify-content: center; opacity: 0.5;
 }
 .heart-icon { font-size: 3rem; }
 
-
-@keyframes flicker { 0% { transform: scale(1) rotate(-2deg); opacity: 0.9; } 100% { transform: scale(1.05) rotate(2deg); opacity: 1; } }
+/* ANIMATIONS */
+@keyframes flicker {
+    0% { transform: scale(1) skewX(0deg); opacity: 0.95; }
+    50% { transform: scale(1.05) skewX(1deg); opacity: 1; }
+    100% { transform: scale(0.95) skewX(-1deg); opacity: 0.9; }
+}
+@keyframes sway {
+    0% { transform: rotate(-2deg); }
+    50% { transform: rotate(2deg); }
+    100% { transform: rotate(-2deg); }
+}
+@keyframes fabricSway {
+    0%, 100% { transform: skewX(0); border-radius: 50% 50% 48% 52%; }
+    50% { transform: skewX(1deg); border-radius: 52% 48% 50% 50%; }
+}
 @keyframes floatBalloon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }

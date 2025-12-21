@@ -33,13 +33,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Random Candle Colors (Pastels)
         const hues = [340, 200, 45, 120, 280]; // Pink, Blue, Gold, Green, Purple
         const h = hues[i % hues.length];
-        // Striped gradient logic is in CSS, just setting base color
         el.style.backgroundColor = `hsl(${h}, 70%, 85%)`;
 
         const wick = document.createElement('div');
         wick.className = 'wick';
         const flame = document.createElement('div');
         flame.className = 'flame';
+        
+        // Random animation delay for organic look
+        const delay = Math.random() * 2 + 's';
+        flame.style.setProperty('animation-delay', delay);
+        
+        // Pseudo element animation delay via CSS var would be ideal, 
+        // but here we just rely on the main element sway
         
         el.appendChild(wick);
         el.appendChild(flame);
@@ -48,7 +54,28 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, active: true });
     }
 
-    // 2. Start Button
+    // 2. Scatter Chocolates
+    const chocoContainer = document.getElementById('chocolates-container');
+    for(let i=0; i<8; i++) {
+        const choco = document.createElement('div');
+        choco.className = 'chocolate';
+        // Random pos on table
+        const top = 150 + Math.random() * 200;
+        const left = 20 + Math.random() * 80; // percent
+        const size = 10 + Math.random() * 10;
+        const rot = Math.random() * 360;
+        
+        choco.style.top = top + 'px';
+        choco.style.left = left + '%';
+        choco.style.width = size + 'px';
+        choco.style.height = size + 'px';
+        choco.style.transform = `rotate(${rot}deg)`;
+        choco.style.opacity = '0.9';
+        
+        chocoContainer.appendChild(choco);
+    }
+
+    // 3. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
         initAudio();
         
@@ -153,13 +180,15 @@ function playPuff() {
     const t = state.audioCtx.currentTime;
     const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for(let i=0; i<data.length; i++) data[i] = Math.random() * 2 - 1;
+    for(let i=0; i<data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5; // Reduce volume slightly
     
     const src = state.audioCtx.createBufferSource();
     src.buffer = buffer;
     const g = state.audioCtx.createGain();
-    g.gain.setValueAtTime(0.2, t);
-    g.gain.exponentialRampToValueAtTime(0.01, t+0.1);
+    
+    // Clap envelope
+    g.gain.setValueAtTime(0.5, t);
+    g.gain.exponentialRampToValueAtTime(0.01, t + 0.08); // Sharp decay
     
     src.connect(g);
     g.connect(state.audioCtx.destination);
@@ -168,7 +197,10 @@ function playPuff() {
 
 function playClapping() {
     if(!state.audioCtx) return;
-    for(let i=0; i<30; i++) setTimeout(playPuff, Math.random() * 2000);
+    // Create dense applause by firing many claps with slight random delays
+    for(let i=0; i<80; i++) {
+        setTimeout(playPuff, Math.random() * 2500);
+    }
 }
 
 // --- LOGIC LOOP ---
@@ -197,7 +229,7 @@ function blowCandle() {
     target.active = false;
     target.el.classList.add('out');
     
-    playPuff();
+    playPuff(); // Single puff for blowing out
     state.extinguished++;
     
     if(state.extinguished === CONFIG.candleCount) {
