@@ -1,270 +1,225 @@
-/* --- CONFIGURATION --- */
+/* 
+ * MAIN SCRIPT - VANILLA JS 
+ * No React, No Build Tools. Works everywhere.
+ */
+
 const CONFIG = {
-    candleCount: 16,
-    micThreshold: 25, // Sensitivity (Lower = easier)
-    blowCooldown: 150
+    candleCount: 17,
+    micThreshold: 20,
+    blowCooldown: 100
 };
 
-/* --- STATE MANAGEMENT --- */
 const state = {
+    isListening: false,
     audioCtx: null,
     analyser: null,
-    micSource: null,
-    isListening: false,
-    extinguishedCount: 0,
-    candles: [],
-    lastBlowTime: 0
+    candlesExtinguished: 0,
+    candles: []
 };
 
-/* --- DOM ELEMENTS --- */
-const ui = {
-    startScreen: document.getElementById('start-screen'),
-    startBtn: document.getElementById('start-btn'),
-    micStatus: document.getElementById('mic-status'),
-    micBar: document.getElementById('mic-bar'),
-    candleContainer: document.getElementById('candle-placement'),
-    curtains: document.querySelectorAll('.curtain'),
-    messageContainer: document.getElementById('message-container'),
-    cardBtn: document.getElementById('card-btn'),
-    cardModal: document.getElementById('card-modal'),
-    card3d: document.querySelector('.card-3d'),
-    closeCard: document.getElementById('close-card')
-};
-
-/* --- INITIALIZATION --- */
-window.onload = () => {
+// --- INIT ---
+document.addEventListener('DOMContentLoaded', () => {
     generateCandles();
     
-    ui.startBtn.addEventListener('click', async () => {
-        ui.micStatus.innerText = "Initializing Audio...";
-        try {
-            await initAudio();
-            startExperience();
-        } catch (err) {
-            console.error(err);
-            ui.micStatus.innerText = "Error: " + err.message;
-            alert("Could not access microphone. Please allow permissions.");
-        }
+    // Start Button
+    document.getElementById('start-btn').addEventListener('click', () => {
+        initAudio();
+        startExperience();
     });
 
     // Card Interaction
-    ui.cardBtn.addEventListener('click', () => {
-        ui.cardModal.classList.remove('hidden');
+    document.getElementById('card-wrapper').addEventListener('click', function() {
+        this.classList.toggle('open');
     });
-    ui.card3d.addEventListener('click', () => {
-        ui.card3d.classList.toggle('open');
-    });
-    ui.closeCard.addEventListener('click', () => {
-        ui.cardModal.classList.add('hidden');
-        ui.card3d.classList.remove('open');
-    });
-};
+});
 
-/* --- 3D OBJECT GENERATION --- */
+// --- SCENE SETUP ---
 function generateCandles() {
-    const radius = 90; // Fit on top tier
-    
-    for (let i = 0; i < CONFIG.candleCount; i++) {
+    const holder = document.getElementById('candles-holder');
+    const radius = 60; // Radius on top tier
+
+    for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
         const x = Math.cos(angle) * radius;
-        const z = Math.sin(angle) * radius; // Z axis for depth
+        const z = Math.sin(angle) * radius;
+
+        const el = document.createElement('div');
+        el.className = 'candle';
+        // Adjust transform to sit on the top tier surface
+        // The container is tilted, so we just translate x/z (which maps to visual circle)
+        // Note: The z-index trickery in CSS 3D is hard, so we just place them.
+        el.style.transform = `translateX(${x}px) translateZ(${z}px) translateY(-40px)`;
         
-        const candleWrapper = document.createElement('div');
-        candleWrapper.className = 'candle-obj';
-        // Translate X and Z to position on circle, translate Y up to sit on cake
-        // Note: transform-style preserve-3d is crucial here
-        candleWrapper.style.transform = `translateX(${x}px) translateZ(${z}px) rotateX(-90deg) translateY(-50px)`;
+        // Colors
+        const hue = (i * 40) % 360;
+        el.style.background = `linear-gradient(to right, #fff, hsl(${hue}, 70%, 80%), #eee)`;
+
+        const wick = document.createElement('div');
+        wick.className = 'wick';
         
-        // Build 3D Box for Candle
-        const candleHTML = `
-            <div class="c-side c-front"></div>
-            <div class="c-side c-back"></div>
-            <div class="c-side c-left"></div>
-            <div class="c-side c-right"></div>
-            <div class="wick"></div>
-            <div class="flame" id="flame-${i}"></div>
-        `;
-        
-        candleWrapper.innerHTML = candleHTML;
-        
-        // Click fallback
-        candleWrapper.addEventListener('click', () => blowOutCandle(i));
-        
-        ui.candleContainer.appendChild(candleWrapper);
-        state.candles.push({ id: i, active: true, el: candleWrapper });
+        const flame = document.createElement('div');
+        flame.className = 'flame';
+        flame.id = `flame-${i}`;
+
+        el.appendChild(wick);
+        el.appendChild(flame);
+        holder.appendChild(el);
+
+        state.candles.push({ id: i, active: true, el: flame });
     }
-}
-
-/* --- AUDIO ENGINE --- */
-async function initAudio() {
-    state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    // Resume context if suspended (browser policy)
-    if (state.audioCtx.state === 'suspended') {
-        await state.audioCtx.resume();
-    }
-
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    state.micSource = state.audioCtx.createMediaStreamSource(stream);
-    state.analyser = state.audioCtx.createAnalyser();
-    state.analyser.fftSize = 256;
-    
-    // Low pass filter to target "blowing" wind noise (bass frequencies)
-    const filter = state.audioCtx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.value = 400; // Focus on < 400Hz
-
-    state.micSource.connect(filter);
-    filter.connect(state.analyser);
-    
-    state.isListening = true;
 }
 
 function startExperience() {
-    ui.startScreen.style.opacity = 0;
-    setTimeout(() => ui.startScreen.style.display = 'none', 1000);
-    
-    // Open Curtains
+    // Hide Start Screen
+    const startScreen = document.getElementById('start-screen');
+    startScreen.style.opacity = '0';
+    setTimeout(() => startScreen.style.display = 'none', 1000);
+
+    // Show HUD
+    document.getElementById('hud').classList.remove('hidden');
+
+    // Open Curtains after delay
     setTimeout(() => {
-        document.querySelector('.room-wall').classList.add('curtains-open');
+        document.body.classList.add('curtains-open');
+        playMusic();
     }, 500);
 
+    // Start Loop
     loop();
 }
 
-/* --- GAME LOOP --- */
+// --- AUDIO ENGINE ---
+async function initAudio() {
+    try {
+        state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (state.audioCtx.state === 'suspended') await state.audioCtx.resume();
+
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = state.audioCtx.createMediaStreamSource(stream);
+        state.analyser = state.audioCtx.createAnalyser();
+        state.analyser.fftSize = 256;
+        
+        // Low pass filter for "blowing" sound
+        const filter = state.audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 800;
+        
+        source.connect(filter);
+        filter.connect(state.analyser);
+        
+        state.isListening = true;
+    } catch (e) {
+        console.error("Mic Error", e);
+        alert("Please allow microphone access to blow out candles! 🎂");
+    }
+}
+
+function playMusic() {
+    if(!state.audioCtx) return;
+    // Simple synthesized intro tune
+    const now = state.audioCtx.currentTime;
+    [261.6, 261.6, 293.6, 261.6, 349.2, 329.6].forEach((freq, i) => {
+        const osc = state.audioCtx.createOscillator();
+        const g = state.audioCtx.createGain();
+        osc.frequency.value = freq;
+        g.gain.setValueAtTime(0.05, now + i*0.4);
+        g.gain.exponentialRampToValueAtTime(0.001, now + i*0.4 + 0.3);
+        osc.connect(g);
+        g.connect(state.audioCtx.destination);
+        osc.start(now + i*0.4);
+        osc.stop(now + i*0.4 + 0.4);
+    });
+}
+
+// --- LOGIC LOOP ---
 function loop() {
-    if (!state.isListening) return;
+    if(!state.isListening) {
+        requestAnimationFrame(loop);
+        return;
+    }
+
+    const data = new Uint8Array(state.analyser.frequencyBinCount);
+    state.analyser.getByteFrequencyData(data);
     
-    const dataArray = new Uint8Array(state.analyser.frequencyBinCount);
-    state.analyser.getByteFrequencyData(dataArray);
-    
-    // Calculate average volume
+    // Average volume
     let sum = 0;
-    const length = dataArray.length;
-    for(let i = 0; i < length; i++) {
-        sum += dataArray[i];
+    for(let i=0; i<data.length; i++) sum += data[i];
+    const avg = sum / data.length;
+
+    // Update HUD
+    const level = Math.min(avg * 3, 100);
+    document.getElementById('mic-level').style.width = level + '%';
+
+    // Blow Detection
+    if(avg > CONFIG.micThreshold) {
+        blowCandles();
     }
-    const average = sum / length;
-    
-    // UI Update
-    ui.micBar.style.width = Math.min(average * 3, 100) + '%';
-    
-    // Detection Logic
-    if (average > CONFIG.micThreshold && (Date.now() - state.lastBlowTime > CONFIG.blowCooldown)) {
-        triggerBlow();
-        state.lastBlowTime = Date.now();
-    }
-    
+
     requestAnimationFrame(loop);
 }
 
-function triggerBlow() {
-    // Find active candles
+function blowCandles() {
     const active = state.candles.filter(c => c.active);
-    if (active.length === 0) return;
+    if(active.length === 0) return;
+
+    // Blow 1 at a time for realism
+    const idx = Math.floor(Math.random() * active.length);
+    const target = active[idx];
     
-    // Blow out 1 to 3 candles at random
-    const count = Math.ceil(Math.random() * 3);
+    target.active = false;
+    target.el.classList.add('out');
+    state.candlesExtinguished++;
     
-    for(let k=0; k<count; k++) {
-        if(state.candles.filter(c => c.active).length > 0) {
-            const randomIdx = Math.floor(Math.random() * active.length);
-            const target = active[randomIdx];
-            // Remove from local list to avoid double picking
-            active.splice(randomIdx, 1); 
-            blowOutCandle(target.id);
-        }
+    // Sound fx
+    playPuff();
+
+    if(state.candlesExtinguished >= CONFIG.candleCount) {
+        triggerWin();
     }
 }
 
-function blowOutCandle(index) {
-    const candle = state.candles[index];
-    if (!candle.active) return;
-    
-    candle.active = false;
-    state.extinguishedCount++;
-    
-    const flame = document.getElementById(`flame-${index}`);
-    flame.classList.add('out');
-    
-    // Smoke Particle
-    const smoke = document.createElement('div');
-    smoke.className = 'smoke';
-    candle.el.appendChild(smoke);
-    
-    // Sound Effect (White Noise Burst)
-    playPuffSound();
-
-    if (state.extinguishedCount >= CONFIG.candleCount) {
-        winSequence();
-    }
-}
-
-/* --- AUDIO SYNTHESIS --- */
-function playPuffSound() {
-    if (!state.audioCtx) return;
+function playPuff() {
+    if(!state.audioCtx) return;
     const t = state.audioCtx.currentTime;
     const osc = state.audioCtx.createBufferSource();
-    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
-    
-    osc.buffer = buffer;
-    const gain = state.audioCtx.createGain();
-    gain.gain.setValueAtTime(0.5, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
-    
-    osc.connect(gain);
-    gain.connect(state.audioCtx.destination);
+    const b = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
+    const d = b.getChannelData(0);
+    for(let i=0; i<b.length; i++) d[i] = Math.random() * 2 - 1;
+    osc.buffer = b;
+    const g = state.audioCtx.createGain();
+    g.gain.setValueAtTime(0.3, t);
+    g.gain.exponentialRampToValueAtTime(0.01, t+0.1);
+    osc.connect(g);
+    g.connect(state.audioCtx.destination);
     osc.start();
 }
 
-function playClapping() {
-    if (!state.audioCtx) return;
-    // Generate bursts of noise to simulate clapping
-    const count = 30; // Number of claps
-    const startT = state.audioCtx.currentTime;
+function triggerWin() {
+    state.isListening = false;
+    document.getElementById('main-title').innerText = "Happy Birthday!";
     
-    for(let i=0; i<count; i++) {
-        const t = startT + Math.random() * 2; // Spread over 2 seconds
-        const dur = 0.1 + Math.random() * 0.05;
-        
-        const osc = state.audioCtx.createBufferSource();
-        const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * dur, state.audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let j = 0; j < buffer.length; j++) data[j] = (Math.random() * 2 - 1) * 0.5; // Soften
-        
-        osc.buffer = buffer;
-        
-        // Filter to make it sound more like skin/hands
-        const filter = state.audioCtx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 1200;
-        
-        const gain = state.audioCtx.createGain();
-        gain.gain.setValueAtTime(0, t);
-        gain.gain.linearRampToValueAtTime(0.3, t + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.01, t + dur);
-        
-        osc.connect(filter);
-        filter.connect(gain);
-        gain.connect(state.audioCtx.destination);
-        osc.start(t);
-    }
+    // Sound
+    playClapping();
+
+    // Confetti
+    const duration = 3000;
+    const end = Date.now() + duration;
+    (function frame() {
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
+        if (Date.now() < end) requestAnimationFrame(frame);
+    }());
+
+    // Show Card after 2s
+    setTimeout(() => {
+        document.getElementById('card-modal').classList.remove('hidden');
+    }, 2000);
 }
 
-/* --- WIN SEQUENCE --- */
-function winSequence() {
-    state.isListening = false;
-    
-    setTimeout(() => {
-        playClapping();
-        confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 }
-        });
-        ui.messageContainer.classList.remove('hidden');
-    }, 500);
+function playClapping() {
+    // Simple noise burst loop
+    if(!state.audioCtx) return;
+    for(let i=0; i<20; i++) {
+        setTimeout(playPuff, i * 100);
+    }
 }

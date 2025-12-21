@@ -4,163 +4,139 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Happy Birthday My Love</title>
-    <!-- Versatile Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cinzel:wght@700&family=Playfair+Display:ital,wght@1,500&family=Montserrat:wght@400;600&family=Sacramento&display=swap" rel="stylesheet">
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&family=Playfair+Display:ital@0;1&display=swap" rel="stylesheet">
+    <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react-confetti": "https://esm.sh/react-confetti@^6.4.0",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
 </head>
 <body>
 
-    <!-- OVERLAY: START SCREEN (Z-Index fixed for interaction) -->
+    <!-- START SCREEN OVERLAY -->
     <div id="start-screen">
-        <div class="heart-bg"></div>
         <div class="content">
-            <h1>For My Love</h1>
-            <div class="instructions">
-                <p>1. Allow Microphone Access 🎙️</p>
-                <p>2. Turn up your volume 🔊</p>
-                <p>3. Blow on the screen to put out candles 🎂</p>
+            <h1 class="title-text">For My Love</h1>
+            <p class="subtitle">Please enable Sound & Microphone 🎙️</p>
+            <button id="start-btn">
+                <span>❤️ Open Surprise</span>
+            </button>
+        </div>
+        <div class="bg-hearts"></div>
+    </div>
+
+    <!-- UI: MICROPHONE METER -->
+    <div id="hud" class="hidden">
+        <div class="mic-container">
+            <span class="mic-icon">🎙️</span>
+            <div class="mic-bar-bg">
+                <div id="mic-level"></div>
             </div>
-            <!-- Added touch-action manipulation for better mobile tapping -->
-            <button id="start-btn" style="touch-action: manipulation;">Enter Surprise ❤️</button>
-            <p id="mic-status">Waiting for you...</p>
         </div>
     </div>
 
-    <!-- MAIN 3D WORLD -->
-    <div id="viewport">
-        <div id="camera">
-            
-            <!-- BACKGROUND ROOM -->
-            <div class="room-wall">
-                <!-- Happy Birthday Banner -->
-                <div class="wall-banner">
-                    <span>Happy Birthday</span>
-                </div>
+    <!-- MAIN 3D SCENE -->
+    <div id="scene-container">
+        
+        <!-- CURTAINS -->
+        <div class="curtain-panel left" id="curtain-left"></div>
+        <div class="curtain-panel right" id="curtain-right"></div>
 
-                <div class="window">
-                    <div class="night-sky">
-                        <div class="moon"></div>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="frame"></div>
-                    <div class="frame-mid"></div>
-                    <!-- Volumetric Light Beam -->
-                    <div class="light-beam"></div>
+        <!-- 3D ROOM -->
+        <div id="room">
+            <!-- WALLS -->
+            <div class="wall back">
+                <div class="banner-container">
+                    <h1 id="main-title">Happy Birthday</h1>
                 </div>
-                <!-- Curtains -->
-                <div class="curtain left"></div>
-                <div class="curtain right"></div>
             </div>
-
-            <!-- 3D TABLE -->
-            <div class="table-group">
-                <!-- Table Cloth Physics -->
-                <div class="table-top">
-                    <div class="cloth-pattern"></div>
-                    <div class="reflection"></div>
-                    
-                    <!-- Rose Petals -->
-                    <div class="petal p1"></div><div class="petal p2"></div><div class="petal p3"></div>
-                    <div class="petal p4"></div><div class="petal p5"></div>
-
-                    <!-- 3D GIFTS -->
-                    <div class="gift g1">
-                        <div class="gift-face g-front"></div><div class="gift-face g-back"></div>
-                        <div class="gift-face g-left"></div><div class="gift-face g-right"></div>
-                        <div class="gift-face g-top"></div>
-                        <div class="ribbon-h"></div><div class="ribbon-v"></div>
-                    </div>
-                    <div class="gift g2">
-                         <div class="gift-face g-front"></div><div class="gift-face g-back"></div>
-                         <div class="gift-face g-left"></div><div class="gift-face g-right"></div>
-                         <div class="gift-face g-top"></div>
-                         <div class="ribbon-h"></div><div class="ribbon-v"></div>
-                    </div>
+            <div class="wall left-wall">
+                <div class="window">
+                    <div class="moon"></div>
+                    <div class="stars"></div>
+                    <div class="window-frame"></div>
                 </div>
-                
-                <!-- Table Skirt -->
-                <div class="table-side">
-                    <div class="cloth-ruffle"></div>
-                </div>
-                
-                <!-- 3D CAKE CONTAINER -->
-                <div class="cake-group">
-                    
-                    <!-- PLATE -->
-                    <div class="plate"></div>
+                <div class="moon-beam"></div>
+            </div>
+            <div class="floor"></div>
 
+            <!-- TABLE GROUP -->
+            <div id="table-group">
+                <div class="table-surface">
+                    <div class="lace-overlay"></div>
+                    <div class="table-ruffle"></div>
+                </div>
+
+                <!-- PROPS ON TABLE -->
+                <div class="prop gift-box purple">
+                    <div class="lid"></div>
+                    <div class="ribbon-x"></div>
+                    <div class="ribbon-y"></div>
+                </div>
+                <div class="prop gift-box red">
+                     <div class="lid"></div>
+                     <div class="ribbon-x"></div>
+                </div>
+                <div class="prop chocolate choco-1"></div>
+                <div class="prop chocolate choco-2"></div>
+
+                <!-- CAKE CONTAINER -->
+                <div id="cake-container">
+                    <div class="plate">
+                        <div class="plate-inner"></div>
+                    </div>
+                    
                     <!-- BOTTOM TIER -->
-                    <div class="tier bottom">
-                        <div class="tier-face front"></div>
-                        <div class="tier-face back"></div>
-                        <div class="tier-face left"></div>
-                        <div class="tier-face right"></div>
+                    <div class="tier bottom-tier">
+                        <div class="tier-side"></div>
                         <div class="tier-top"></div>
                     </div>
 
                     <!-- TOP TIER -->
-                    <div class="tier top">
-                        <div class="tier-face front"></div>
-                        <div class="tier-face back"></div>
-                        <div class="tier-face left"></div>
-                        <div class="tier-face right"></div>
+                    <div class="tier top-tier">
+                        <div class="tier-side"></div>
                         <div class="tier-top">
-                            <div class="text-3d">Myyy Babyyy</div>
-                            <div id="candle-placement"></div>
+                            <div class="cake-text">
+                                Happy Birthday<br><span class="baby-text">My Baby</span>
+                            </div>
+                            <!-- PANDA TOPPER -->
+                            <div class="panda">
+                                <div class="ear left"></div>
+                                <div class="ear right"></div>
+                                <div class="face">
+                                    <div class="eye left"><div class="pupil"></div></div>
+                                    <div class="eye right"><div class="pupil"></div></div>
+                                    <div class="nose"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- CANDLES CONTAINER (Populated by JS) -->
+                    <div id="candles-holder"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- UI OVERLAY -->
-    <div id="ui-layer">
-        <div class="mic-meter">
-            <span class="icon">🎙️</span>
-            <div class="bar-bg"><div id="mic-bar"></div></div>
-        </div>
-        
-        <div id="message-container" class="hidden">
-            <h1 class="glow-text">Happy Birthday!</h1>
-            <button id="card-btn">💌 Open Card</button>
-        </div>
-    </div>
-
-    <!-- 3D CARD MODAL -->
+    <!-- CARD MODAL (Hidden Initially) -->
     <div id="card-modal" class="hidden">
-        <div class="card-wrapper">
-            <div class="card-3d">
-                <div class="card-front">
-                    <div class="card-design">
-                        <span>❤️</span>
-                        <h2>To My Love</h2>
-                    </div>
+        <div class="card-3d-wrapper" id="card-wrapper">
+            <div class="card-cover">
+                <div class="card-front-content">
+                    <div class="heart-icon">❤️</div>
+                    <h2>For You</h2>
+                    <p>TAP TO OPEN</p>
                 </div>
-                <div class="card-inside-left">
-                     <div class="photo-frame">📸</div>
-                </div>
-                <div class="card-inside-right">
-                    <h3>My Dearest,</h3>
-                    <p>May your day be filled with magic, love, and all the sweetness you bring into my life.</p>
-                    <p class="sign">Yours Forever</p>
+            </div>
+            <div class="card-inside">
+                <h3 class="script-font">My Dearest Love,</h3>
+                <p>Wishing you a day as beautiful as your smile and a year as lovely as your heart. You are my everything.</p>
+                <div class="signature">
+                    <strong>Forever Yours,</strong>
+                    <span>❤️</span>
                 </div>
             </div>
         </div>
-        <button id="close-card">Close</button>
     </div>
 
     <script src="script.js"></script>
