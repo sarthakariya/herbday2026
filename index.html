@@ -12,6 +12,12 @@
 </head>
 <body>
 
+    <!-- VIBRANT MELODIOUS MUSIC -->
+    <audio id="bg-music" loop preload="auto">
+        <!-- Romantic/Vibrant Piano Instrumental -->
+        <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
+    </audio>
+
     <!-- START SCREEN -->
     <div id="start-screen">
         <div class="content">
@@ -76,7 +82,7 @@
             <div class="streamer st9"></div>
             <div class="streamer st10"></div>
 
-            <!-- WALL POSTER (Restored) -->
+            <!-- WALL POSTER -->
             <div class="wall-poster jelly-anim">
                 <div class="poster-frame">
                     <div class="poster-inner">
@@ -87,10 +93,9 @@
                 <div class="poster-nail"></div>
             </div>
 
-            <!-- GIF STICKERS (Floating Polaroids) -->
+            <!-- GIF STICKERS -->
             <div class="gif-sticker g1 wobble-anim">
                 <div class="polaroid-inner">
-                    <!-- REPLACED GIF AS REQUESTED -->
                     <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1">
                 </div>
             </div>
@@ -116,7 +121,7 @@
             <div class="star s3"></div>
             <div class="star s4"></div>
             
-            <!-- Balloons (ADDED MORE FOR IMMERSIVE ATMOSPHERE) -->
+            <!-- Balloons -->
             <div class="balloon b1"></div>
             <div class="balloon b2"></div>
             <div class="balloon b3"></div>
@@ -130,11 +135,10 @@
             <div class="balloon b11"></div>
             <div class="balloon b12"></div>
             
-            <!-- Small Heart Balloons -->
             <div class="balloon heart-b h1"></div>
             <div class="balloon heart-b h2"></div>
 
-            <!-- CUSTOM RIBBON BANNER (Restored) -->
+            <!-- BANNER -->
             <div class="banner-container">
                 <div class="ribbon">
                     <svg viewBox="0 0 600 150">
@@ -149,27 +153,16 @@
             </div>
         </div>
 
-        <!-- LAYER 2: TABLE (Full Width) -->
+        <!-- LAYER 2: TABLE -->
         <div class="table-container">
-            <!-- Table Shadow -->
             <div class="table-shadow"></div>
-            
-            <!-- Table Cloth Body -->
-            <div class="cloth-body">
-                <div class="cloth-folds"></div>
-            </div>
-            <!-- Table Top -->
+            <div class="cloth-body"><div class="cloth-folds"></div></div>
             <div class="cloth-top">
-                <!-- Scattered Petals Container -->
                 <div id="petals-container"></div>
-                
-                <!-- Chocolates -->
                 <div id="chocolates-container"></div>
             </div>
 
             <!-- PROPS -->
-            
-            <!-- Bouquet -->
             <div class="prop bouquet-container bounce-anim">
                 <div class="vase-shadow"></div>
                 <div class="vase"></div>
@@ -183,7 +176,6 @@
                 </div>
             </div>
 
-            <!-- Macarons Plate -->
             <div class="prop macaron-plate bounce-anim">
                 <div class="plate-shadow"></div>
                 <div class="plate-base"></div>
@@ -192,23 +184,16 @@
                 <div class="macaron m3"></div>
             </div>
 
-            <!-- Left Gift -->
             <div class="gift-shadow left-shadow"></div>
             <div class="prop gift-box gift-left jelly-anim">
-                <div class="lid"></div>
-                <div class="ribbon-horz"></div>
-                <div class="ribbon-vert"></div>
+                <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
             
-            <!-- Right Gift -->
             <div class="gift-shadow right-shadow"></div>
             <div class="prop gift-box gift-right jelly-anim">
-                <div class="lid"></div>
-                <div class="ribbon-horz"></div>
-                <div class="ribbon-vert"></div>
+                <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
 
-            <!-- Easel Board (Restored) -->
             <div class="easel-container">
                 <div class="easel-legs"></div>
                 <div class="easel-board">
@@ -223,45 +208,30 @@
         <!-- LAYER 3: CAKE -->
         <div class="cake-container">
             <div class="cake-plate"></div>
-            
-            <!-- BOTTOM TIER -->
             <div class="tier bottom-tier">
                 <div class="icing-drips"></div>
                 <div class="tier-body sponge-texture"></div>
                 <div class="tier-top"></div>
             </div>
-
-            <!-- TOP TIER -->
             <div class="tier top-tier">
                 <div class="icing-drips"></div>
                 <div class="tier-body sponge-texture"></div>
                 <div class="tier-top">
-                     <!-- Strawberry Toppings -->
                      <div class="strawberry s-1"></div>
                      <div class="strawberry s-2"></div>
                      <div class="strawberry s-3"></div>
                 </div>
             </div>
-
-            <!-- CANDLES CONTAINER -->
             <div id="candles-container"></div>
         </div>
 
     </div>
 
-    <!-- BOOK CARD MODAL (UPDATED WITH PHOTO) -->
+    <!-- BOOK CARD MODAL (Redesigned for Single Page Open) -->
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
-            <!-- Left Page: Photo -->
-            <div class="book-page left-page">
-                <div class="photo-border loved-theme-photo">
-                    <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
-                    <div class="corner-heart top-left">❤️</div>
-                    <div class="corner-heart bottom-right">❤️</div>
-                </div>
-            </div>
-
-            <!-- Right Page: Text -->
+            
+            <!-- RIGHT PAGE (Base, Text) -->
             <div class="book-page right-page">
                 <h3>My Dearest Love,</h3>
                 <div class="scroll-text">
@@ -276,11 +246,12 @@
                 </div>
                 <div class="action-row">
                     <div class="sig">Forever Yours ❤️</div>
-                    <button id="tts-btn" class="tts-button" title="Read to me">🔊 Read</button>
                 </div>
             </div>
             
+            <!-- FRONT COVER CONTAINER (Rotates to show Photo on back) -->
             <div class="book-cover-container">
+                <!-- Front of Cover -->
                 <div class="book-cover-front">
                     <div class="cover-content">
                         <div class="heart-anim">❤️</div>
@@ -288,9 +259,17 @@
                         <p class="click-hint">(Tap to open)</p>
                     </div>
                 </div>
+                
+                <!-- Back of Cover (Inside Left - THE PHOTO) -->
                 <div class="book-cover-back">
+                     <div class="photo-border loved-theme-photo">
+                        <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                        <div class="corner-heart top-left">❤️</div>
+                        <div class="corner-heart bottom-right">❤️</div>
+                    </div>
                 </div>
             </div>
+            
         </div>
     </div>
 

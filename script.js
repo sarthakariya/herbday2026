@@ -1,5 +1,4 @@
 /* MAIN SCRIPT */
-import { GoogleGenAI, Modality } from "https://esm.sh/@google/genai";
 
 const CONFIG = {
     candleCount: 17,
@@ -12,9 +11,7 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    musicPlaying: false,
-    musicNodes: [],
-    ttsPlaying: false
+    musicPlaying: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -146,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Context
+        initAudio(); // Initialize Context for Mic
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -155,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Auto start music immediately on click (browser allowed)
+        // Auto start music immediately on click
         toggleMusic(); 
         
         setTimeout(playChime, 800);
@@ -168,14 +165,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Card Interaction
     const card = document.getElementById('card-wrapper');
-    card.addEventListener('click', (e) => {
-        // Prevent closing if clicking button
-        if(e.target.id === 'tts-btn') return;
+    card.addEventListener('click', () => {
         card.classList.toggle('open');
     });
-
-    // TTS Button
-    document.getElementById('tts-btn').addEventListener('click', playTTS);
 
     // Music Button
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
@@ -248,60 +240,21 @@ async function initAudio() {
     }
 }
 
-// Background Music Logic (Ambient Pads)
+// Background Music Logic (HTML Audio)
 function toggleMusic() {
-    if(!state.audioCtx) return;
+    const audio = document.getElementById('bg-music');
+    if(!audio) return;
 
     if(state.musicPlaying) {
-        // Stop
-        state.musicNodes.forEach(node => {
-            try { node.stop(); } catch(e){}
-            try { node.disconnect(); } catch(e){}
-        });
-        state.musicNodes = [];
+        audio.pause();
         state.musicPlaying = false;
         document.getElementById('music-btn').innerText = '🎵';
     } else {
-        // Play Ambient Chord (C Major 7 + 9)
-        const freqs = [261.63, 329.63, 392.00, 493.88, 587.33]; // C4, E4, G4, B4, D5
-        const now = state.audioCtx.currentTime;
-        
-        const masterGain = state.audioCtx.createGain();
-        masterGain.gain.setValueAtTime(0, now);
-        masterGain.gain.linearRampToValueAtTime(0.03, now + 2); // Very soft volume
-        masterGain.connect(state.audioCtx.destination);
-        state.musicNodes.push(masterGain); 
-
-        freqs.forEach(f => {
-            const osc = state.audioCtx.createOscillator();
-            osc.type = 'sine';
-            osc.frequency.value = f;
-            
-            // Subtle vibrato
-            const lfo = state.audioCtx.createOscillator();
-            lfo.type = 'sine';
-            lfo.frequency.value = 1 + Math.random();
-            const lfoGain = state.audioCtx.createGain();
-            lfoGain.gain.value = 2; // Hz depth
-            lfo.connect(lfoGain);
-            lfoGain.connect(osc.frequency);
-            lfo.start();
-
-            const oscGain = state.audioCtx.createGain();
-            oscGain.gain.value = 0.5;
-
-            osc.connect(oscGain);
-            oscGain.connect(masterGain);
-            osc.start();
-            
-            state.musicNodes.push(osc);
-            state.musicNodes.push(lfo);
-            state.musicNodes.push(lfoGain);
-            state.musicNodes.push(oscGain);
-        });
-
-        state.musicPlaying = true;
-        document.getElementById('music-btn').innerText = '🔇';
+        audio.volume = 0.5;
+        audio.play().then(() => {
+            state.musicPlaying = true;
+            document.getElementById('music-btn').innerText = '🔇';
+        }).catch(e => console.log("Audio play blocked", e));
     }
 }
 
@@ -318,42 +271,6 @@ function playChime() {
         g.connect(state.audioCtx.destination);
         osc.start(now + i*0.1);
         osc.stop(now + i*0.1 + 1);
-    });
-}
-
-const NOTE = {
-    G3: 196, A3: 220, B3: 246.9,
-    C4: 261.6, D4: 293.6, E4: 329.6, F4: 349.2, G4: 392, A4: 440, B4: 493.8, C5: 523.2
-};
-
-function playBirthdaySong() {
-    if(!state.audioCtx) return;
-    const t = state.audioCtx.currentTime;
-    
-    const song = [
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 1.0}, // Happy Birthday to You
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.0}, // Happy Birthday to You
-        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.G4, d: 0.6}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 0.6}, {f: NOTE.A3, d: 0.6}, // Happy Birthday My Baby
-        {f: NOTE.F4, d: 0.3}, {f: NOTE.F4, d: 0.3}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.2}  // Happy Birthday to You
-    ];
-
-    let cursor = 0;
-    song.forEach(note => {
-        const osc = state.audioCtx.createOscillator();
-        const gain = state.audioCtx.createGain();
-        osc.type = 'triangle'; // Softer, flute-like
-        osc.frequency.value = note.f;
-        
-        gain.gain.setValueAtTime(0.1, t + cursor);
-        gain.gain.linearRampToValueAtTime(0.08, t + cursor + note.d * 0.8);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + cursor + note.d);
-
-        osc.connect(gain);
-        gain.connect(state.audioCtx.destination);
-        osc.start(t + cursor);
-        osc.stop(t + cursor + note.d);
-        
-        cursor += note.d + 0.05; // slight gap
     });
 }
 
@@ -454,7 +371,28 @@ function win() {
     playClapping();
     superCelebration();
     
-    setTimeout(playBirthdaySong, 1000);
+    // Stop background music on win
+    const audio = document.getElementById('bg-music');
+    if(audio) {
+        let vol = audio.volume;
+        const fade = setInterval(() => {
+            if(vol > 0.05) {
+                vol -= 0.05;
+                audio.volume = vol;
+            } else {
+                clearInterval(fade);
+                audio.pause();
+                state.musicPlaying = false;
+                document.getElementById('music-btn').innerText = '🎵';
+            }
+        }, 100);
+    }
+    
+    // We removed the synthetic birthday song to keep it classy or rely on the track,
+    // but user requested "vibrant" song instead of "bad" song. 
+    // The background track is now vibrant. We can let it play or stop it.
+    // Usually winning implies "Happy Birthday" song. 
+    // Since we don't have a specific file for that, I will just let the Celebration happen visually.
 
     // Ensure we are targeting the correct element ID for the modal
     setTimeout(() => {
@@ -468,71 +406,5 @@ function win() {
                 setTimeout(() => book.classList.remove('bounce-anim'), 1000);
             }
         }
-    }, 4000);
-}
-
-// --- TTS Logic ---
-
-async function decodeAudioData(base64String, audioContext) {
-    const binaryString = atob(base64String);
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
-    }
-    return await audioContext.decodeAudioData(bytes.buffer);
-}
-
-async function playTTS() {
-    if(state.ttsPlaying) return;
-    const btn = document.getElementById('tts-btn');
-    btn.disabled = true;
-    btn.innerText = '⏳ Loading...';
-
-    try {
-        const text = document.getElementById('card-text').innerText;
-        
-        // IMPORTANT: In a real app, API_KEY should be handled securely.
-        // Assuming process.env.API_KEY is available via bundler replacement.
-        // If testing locally without bundler, replace process.env.API_KEY with actual key.
-        const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-        
-        const response = await ai.models.generateContent({
-            model: "gemini-2.5-flash-preview-tts",
-            contents: { parts: [{ text: text }] },
-            config: {
-                responseModalities: [Modality.AUDIO],
-                speechConfig: {
-                    voiceConfig: {
-                        prebuiltVoiceConfig: { voiceName: 'Kore' },
-                    },
-                },
-            },
-        });
-
-        const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-        if (base64Audio) {
-             const audioBuffer = await decodeAudioData(base64Audio, state.audioCtx);
-             const source = state.audioCtx.createBufferSource();
-             source.buffer = audioBuffer;
-             source.connect(state.audioCtx.destination);
-             source.start();
-             state.ttsPlaying = true;
-             btn.innerText = '🔊 Playing...';
-             source.onended = () => {
-                 state.ttsPlaying = false;
-                 btn.innerText = '🔊 Read';
-                 btn.disabled = false;
-             };
-        } else {
-             throw new Error("No audio data returned");
-        }
-
-    } catch(e) {
-        console.error("TTS Error:", e);
-        alert("Could not generate speech. Please check console/API Key.");
-        state.ttsPlaying = false;
-        btn.innerText = '🔊 Read';
-        btn.disabled = false;
-    }
+    }, 2000);
 }

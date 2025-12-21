@@ -107,7 +107,7 @@ body {
     to { transform: translateY(110vh) rotate(720deg); }
 }
 
-/* CURTAINS - Texture Upgrade */
+/* CURTAINS */
 .curtain {
     position: absolute; top: 0; width: 50%; height: 100%;
     /* Velvet Texture */
@@ -132,7 +132,7 @@ body {
 body.open .curtain.left { transform: scaleX(0); }
 body.open .curtain.right { transform: scaleX(0); }
 
-/* ROOM BACKGROUND - Texture Upgrade */
+/* ROOM BACKGROUND */
 .room-bg {
     position: absolute; inset: 0;
     /* Soft Wall Paint */
@@ -150,7 +150,7 @@ body.open .curtain.right { transform: scaleX(0); }
     filter: blur(80px); mix-blend-mode: soft-light;
 }
 
-/* BALLOONS - EXPANDED */
+/* BALLOONS */
 .balloon {
     position: absolute; width: 40px; height: 50px;
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
@@ -163,15 +163,12 @@ body.open .curtain.right { transform: scaleX(0); }
 }
 body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s forwards 1.5s; }
 
-/* Existing Balloons */
 .b1 { top: 15%; left: 5%; background: #ef5350; animation-delay: 0s, 1.5s; }
 .b2 { top: 20%; left: 15%; background: #ab47bc; animation-delay: 1s, 1.6s; }
 .b3 { top: 10%; right: 10%; background: #29b6f6; animation-delay: 2s, 1.7s; }
 .b4 { top: 25%; right: 5%; background: #66bb6a; animation-delay: 0.5s, 1.8s; }
 .b5 { top: 35%; left: 8%; background: #ffa726; animation-delay: 1.5s, 1.9s; }
 .b6 { top: 12%; left: 25%; background: #f06292; animation-delay: 2.5s, 2.0s; }
-
-/* New Balloons for Immersive Atmosphere */
 .b7 { top: 18%; right: 20%; background: #ffca28; width: 35px; height: 45px; animation-delay: 0.8s, 2.1s; }
 .b8 { top: 40%; right: 15%; background: #8d6e63; width: 45px; height: 55px; animation-delay: 1.2s, 2.2s; }
 .b9 { top: 8%; left: 35%; background: #7e57c2; width: 30px; height: 38px; animation-delay: 3s, 2.3s; }
@@ -190,7 +187,6 @@ body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s 
 .heart-b::after { top: 0; left: 20px; }
 .h1 { top: 25%; left: 80%; transform: rotate(-15deg) scale(0.6); animation-delay: 1.2s, 2.5s; }
 .h2 { top: 40%; left: 10%; transform: rotate(10deg) scale(0.5); animation-delay: 2.2s, 2.6s; }
-
 
 /* MAGIC DUST */
 #magic-dust {
@@ -270,7 +266,7 @@ body.open .gif-sticker { animation: fadeIn 2s forwards 3s, wobble 6s ease-in-out
 .g3 { top: 45%; left: 8%; transform: rotate(10deg); animation-delay: 2.5s; }
 .g4 { top: 50%; right: 12%; transform: rotate(-6deg); animation-delay: 3.5s; }
 
-/* WALL POSTER (Restored) */
+/* WALL POSTER */
 .wall-poster {
     position: absolute; top: 15%; left: 50%; transform: translateX(-50%);
     z-index: 5; opacity: 0;
@@ -302,7 +298,7 @@ body.open .wall-poster { animation: fadeIn 2s forwards 2s, jelly 4s infinite; }
     transform: translateX(-50%) rotate(45deg); z-index: -1;
 }
 
-/* BANNER (Restored) */
+/* BANNER */
 .banner-container {
     position: absolute; top: 5%; width: 100%;
     display: flex; justify-content: center;
@@ -322,7 +318,7 @@ body.open .banner-container {
 #curve { stroke: #f48fb1; stroke-width: 60; stroke-linecap: round; fill: none; box-shadow: 0 10px 10px rgba(0,0,0,0.1); }
 
 
-/* FULL WIDTH SQUARE TABLE - Wood Texture */
+/* FULL WIDTH SQUARE TABLE */
 .table-container {
     position: absolute; bottom: 0; left: 0; width: 100vw; height: 35vh; 
     z-index: 10; opacity: 0;
@@ -352,7 +348,7 @@ body.open .table-container { animation: slideUp 1.5s ease-out forwards 0.2s; }
     z-index: 3; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
 }
 
-/* GIFTS - ANIMATED (CRAZY ANIMATIONS) */
+/* GIFTS */
 .jelly-anim { animation: jelly 3s infinite; }
 .wobble-anim { animation: wobble 4s infinite ease-in-out; }
 .bounce-anim { animation: bounce 2s infinite; }
@@ -397,7 +393,7 @@ body.open .gift-shadow { animation: fadeIn 1s forwards 1s; }
 .gift-right .lid { background: #80cbc4; }
 .gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #e0f2f1; }
 
-/* TABLE PROPS - HIGHLY DETAILED ROSES */
+/* TABLE PROPS */
 .bouquet-container {
     position: absolute; top: 5vh; left: 20%;
     z-index: 28; transform: scale(0);
@@ -485,7 +481,7 @@ body.open .macaron-plate { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 
 .m2 { bottom: 5px; left: 32px; background: #fff59d; z-index: 2; }
 .m3 { bottom: 14px; left: 21px; background: #80cbc4; z-index: 3; }
 
-/* EASEL BOARD (Message) - FIXED SIZE */
+/* EASEL BOARD */
 .easel-container {
     position: absolute; bottom: 12vh; right: 26%; /* Positioned right of cake */
     width: 180px; height: 220px; z-index: 32;
@@ -517,91 +513,122 @@ body.open .easel-container { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32
     perspective: 1500px; transition: opacity 1s;
     backdrop-filter: blur(5px);
 }
-.book { position: relative; width: 600px; height: 450px; transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
-.book.open { transform: translateX(150px); }
 
+/* SINGLE PAGE CARD (Initially) */
+.book { 
+    position: relative; 
+    width: 300px; /* Half width initially */
+    height: 450px; 
+    transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1); 
+    transform-style: preserve-3d; 
+}
+/* When Open, we shift the spine so it stays centered visually */
+.book.open { 
+    transform: translateX(150px); 
+}
+
+/* The Right Page (Base) */
 .book-page {
-    position: absolute; top: 0; width: 50%; height: 100%;
+    position: absolute; top: 0; left: 0; 
+    width: 100%; height: 100%;
     background: #fff0f5;
     box-shadow: inset 0 0 20px rgba(0,0,0,0.1);
+    z-index: 1;
 }
-.left-page {
-    left: 0; border-radius: 5px 0 0 5px; z-index: 1;
-    display: flex; align-items: center; justify-content: center;
-    padding: 20px;
-    border-right: 1px solid #ddd;
-    /* Paper Texture */
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz4KPC9zdmc+');
-}
+
+/* Text Content Area */
 .right-page {
-    right: 0; border-radius: 0 5px 5px 0; z-index: 0;
     padding: 30px; color: #880e4f;
     display: flex; flex-direction: column; text-align: center;
     overflow-y: auto;
+    border-radius: 0 5px 5px 0;
 }
-.book.open .right-page { z-index: 1; }
+
+/* CONTAINER FOR COVER & INSIDE LEFT */
+.book-cover-container {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    transform-origin: left; 
+    transform-style: preserve-3d;
+    transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1); 
+    z-index: 2;
+}
+
+/* Rotate to open */
+.book.open .book-cover-container { 
+    transform: rotateY(-180deg); 
+}
+
+/* Front Cover */
+.book-cover-front {
+    position: absolute; inset: 0; 
+    background: linear-gradient(135deg, #f06292, #ec407a);
+    border-radius: 0 5px 5px 0; 
+    border: 2px solid #c2185b;
+    backface-visibility: hidden; 
+    display: flex; align-items: center; justify-content: center; 
+    z-index: 2;
+}
+.cover-content { text-align: center; color: white; }
+.cover-content h2 { font-family: 'Great Vibes', cursive; font-size: 3rem; margin: 10px 0; }
+.cover-content .heart-anim { font-size: 3rem; animation: beat 1.5s infinite; }
+.click-hint { font-size: 0.8rem; opacity: 0.8; margin-top: 10px; }
+
+/* Back of Cover (Inside Left - The Photo) */
+.book-cover-back {
+    position: absolute; inset: 0; 
+    background: #fff0f5; 
+    border-radius: 5px 0 0 5px;
+    transform: rotateY(180deg); 
+    backface-visibility: hidden;
+    box-shadow: inset -5px 0 20px rgba(0,0,0,0.05);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+    /* Paper Texture */
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMDAwIiBmaWxsLW9wYWNpdHk9IjAuMDIiLz4KPC9zdmc+');
+    border-right: 1px solid #ddd;
+}
 
 .photo-border {
     position: relative;
     padding: 10px; background: #fff;
     border: 1px dashed #ec407a;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transform: rotate(-3deg);
+    transform: rotate(2deg); /* Slight rotation for photo */
     width: 100%; height: auto;
     transition: transform 0.3s;
 }
+
+/* Enhanced Photo Style */
 .photo-border.loved-theme-photo {
     border: 3px double #ff4081;
-    box-shadow: 0 0 15px rgba(255, 64, 129, 0.3);
+    box-shadow: 0 0 15px rgba(255, 64, 129, 0.4);
 }
 .photo-border.loved-theme-photo::after {
     content: ''; position: absolute; inset: -5px; 
     border: 1px dashed #f48fb1; pointer-events: none;
 }
+
 .corner-heart {
-    position: absolute; font-size: 1.5rem;
-    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.1));
+    position: absolute; font-size: 2rem; color: #ff1744;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
     animation: beat 1.5s infinite;
+    z-index: 10;
 }
-.corner-heart.top-left { top: -15px; left: -10px; transform: rotate(-15deg); }
-.corner-heart.bottom-right { bottom: -15px; right: -10px; transform: rotate(15deg); }
+.corner-heart.top-left { top: -15px; left: -15px; transform: rotate(-25deg); }
+.corner-heart.bottom-right { bottom: -15px; right: -15px; transform: rotate(25deg); }
 
 .card-photo { width: 100%; height: auto; display: block; border-radius: 2px; }
 
 .book-page h3 { font-family: 'Great Vibes', cursive; font-size: 2.2rem; margin-bottom: 15px; border-bottom: 2px solid #f8bbd0; padding-bottom: 10px; }
 .scroll-text { flex: 1; overflow-y: auto; font-size: 1rem; line-height: 1.6; }
 
-.book-cover-container {
-    position: absolute; right: 0; width: 50%; height: 100%;
-    transform-origin: left; transform-style: preserve-3d;
-    transition: transform 1.5s cubic-bezier(0.645, 0.045, 0.355, 1); z-index: 10;
-}
-.book.open .book-cover-container { transform: rotateY(-180deg); }
-
-.book-cover-front {
-    position: absolute; inset: 0; background: linear-gradient(135deg, #f06292, #ec407a);
-    border-radius: 0 5px 5px 0; border: 2px solid #c2185b;
-    backface-visibility: hidden; display: flex; align-items: center; justify-content: center; z-index: 2;
-}
-.book-cover-back {
-    position: absolute; inset: 0; background: #fff0f5; border-radius: 5px 0 0 5px;
-    transform: rotateY(180deg); backface-visibility: hidden;
-    box-shadow: inset -5px 0 20px rgba(0,0,0,0.05);
-}
-
 .action-row {
     margin-top: 15px;
     display: flex; flex-direction: column; align-items: center; gap: 10px;
 }
 .sig { font-family: 'Great Vibes', cursive; font-size: 1.5rem; color: #d81b60; }
-.tts-button {
-    background: linear-gradient(45deg, #f06292, #ec407a);
-    color: white; border: none; padding: 8px 20px;
-    border-radius: 30px; font-size: 0.9rem; cursor: pointer;
-    box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3);
-    transition: transform 0.2s;
-}
-.tts-button:active { transform: scale(0.95); }
+
 
 /* CAKE & CANDLE STYLES */
 .cake-container {
