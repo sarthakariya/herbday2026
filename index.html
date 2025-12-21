@@ -25,8 +25,13 @@
 
     <!-- HUD -->
     <div id="hud" class="hidden">
-        <div class="mic-icon">🎙️</div>
-        <div class="mic-bar"><div id="mic-level"></div></div>
+        <div class="hud-item mic-container">
+            <div class="mic-icon">🎙️</div>
+            <div class="mic-bar"><div id="mic-level"></div></div>
+        </div>
+        <div class="hud-item">
+            <button id="music-btn" class="icon-btn" title="Toggle Music">🎵</button>
+        </div>
     </div>
 
     <!-- MAIN SCENE -->
@@ -54,7 +59,7 @@
             <div class="cloud c2"></div>
             <div class="cloud c3"></div>
 
-            <!-- STREAMERS (Added more) -->
+            <!-- STREAMERS -->
             <div class="streamer st1"></div>
             <div class="streamer st2"></div>
             <div class="streamer st3"></div>
@@ -142,8 +147,8 @@
             </div>
             <!-- Table Top -->
             <div class="cloth-top">
-                <!-- Fancy Table Runner -->
-                <div class="table-runner"></div>
+                <!-- Fancy Table Runner (Removed to show off checkered cloth better) -->
+                <!-- <div class="table-runner"></div> -->
 
                 <!-- Scattered Petals Container -->
                 <div id="petals-container"></div>
@@ -159,9 +164,10 @@
                 <div class="vase-shadow"></div>
                 <div class="vase"></div>
                 <div class="roses">
-                    <div class="rose r1"></div>
-                    <div class="rose r2"></div>
-                    <div class="rose r3"></div>
+                    <div class="rose r1"><div class="petal-inner"></div></div>
+                    <div class="rose r2"><div class="petal-inner"></div></div>
+                    <div class="rose r3"><div class="petal-inner"></div></div>
+                    <div class="rose r4"><div class="petal-inner"></div></div>
                     <div class="leaf l1"></div>
                     <div class="leaf l2"></div>
                 </div>
@@ -238,13 +244,16 @@
         <div class="book" id="card-wrapper">
             <div class="book-page right-page">
                 <h3>My Dearest Love,</h3>
-                <p>
-                    Every moment with you is a gift.<br>
-                    May your day be as sweet as this cake<br>
-                    and as bright as your smile.<br><br>
+                <p id="card-text">
+                    Every moment with you is a gift.
+                    May your day be as sweet as this cake
+                    and as bright as your smile.
                     I love you so much.
                 </p>
-                <div class="sig">Forever Yours ❤️</div>
+                <div class="action-row">
+                    <div class="sig">Forever Yours ❤️</div>
+                    <button id="tts-btn" class="tts-button" title="Read to me">🔊 Read</button>
+                </div>
             </div>
             <div class="book-cover-container">
                 <div class="book-cover-front">
@@ -263,6 +272,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
