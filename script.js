@@ -319,11 +319,13 @@ function blowCandle() {
         const t = state.audioCtx.currentTime;
         const osc = state.audioCtx.createOscillator();
         const g = state.audioCtx.createGain();
-        osc.type = 'noise'; // Not standard, simulating with buffer below
+        osc.type = 'triangle'; 
         g.gain.setValueAtTime(0.3, t);
         g.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
         osc.connect(g); 
-        // fallback noise logic omitted for brevity, using chime logic essentially
+        g.connect(state.audioCtx.destination);
+        osc.start();
+        osc.stop(t+0.1);
     }
     
     state.extinguished++;
