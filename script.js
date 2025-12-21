@@ -1,7 +1,6 @@
-/* --- CONFIGURATION --- */
+/* --- CONFIG --- */
 const TOTAL_CANDLES = 17;
-const BLOW_THRESHOLD = 30; 
-const CANDLE_COLORS = ['#ff80ab', '#82b1ff', '#ffff8d', '#b9f6ca'];
+const BLOW_THRESHOLD = 30;
 
 /* --- STATE --- */
 let audioCtx;
@@ -11,135 +10,112 @@ let isListening = false;
 let candlesExtinguished = 0;
 let candles = [];
 let animationFrameId;
-let winTriggered = false;
 
-/* --- DOM ELEMENTS --- */
+/* --- ELEMENTS --- */
 const startBtn = document.getElementById('start-btn');
 const startOverlay = document.getElementById('start-overlay');
 const room = document.getElementById('room');
 const micLevelEl = document.getElementById('mic-level');
-const micIconEl = document.getElementById('mic-icon');
-const headerText = document.getElementById('header-text');
 const candlesContainer = document.getElementById('candles-container');
-const cherriesContainer = document.getElementById('cherries-container');
+const sparklesContainer = document.getElementById('sparkles-container');
 const balloonContainer = document.getElementById('balloon-container');
-
-// Button Elements
 const openCardBtn = document.getElementById('open-card-btn');
-const replayBtn = document.getElementById('replay-btn');
 const cardModal = document.getElementById('card-modal');
-const bookElement = document.getElementById('book-element');
+const bookWrapper = document.getElementById('book-wrapper');
 const closeCardBtn = document.getElementById('close-card-btn');
+const headerText = document.getElementById('header-text');
 
-/* --- INITIALIZATION --- */
-window.addEventListener('load', init);
-
-function init() {
-    createCherries();
-    createCandles();
-    createDecorations();
-    startBtn.addEventListener('click', startApp);
+/* --- INIT --- */
+window.addEventListener('load', () => {
+    initScene();
+    startBtn.addEventListener('click', startExperience);
     
-    // Card Event Listeners
-    openCardBtn.addEventListener('click', showCard);
-    closeCardBtn.addEventListener('click', hideCard);
-    
-    // Book Hinge Logic
-    bookElement.addEventListener('click', () => {
-        bookElement.classList.toggle('open');
+    // Card Interactions
+    openCardBtn.addEventListener('click', () => {
+        cardModal.classList.remove('hidden');
+        void cardModal.offsetWidth; // force reflow
+        cardModal.classList.remove('opacity-0');
     });
-}
+    
+    closeCardBtn.addEventListener('click', () => {
+        cardModal.classList.add('opacity-0');
+        setTimeout(() => {
+            cardModal.classList.add('hidden');
+            bookWrapper.querySelector('.book').classList.remove('open');
+        }, 500);
+    });
 
-function createDecorations() {
-    const colors = ['#f48fb1', '#ce93d8', '#fff59d', '#80cbc4'];
+    bookWrapper.addEventListener('click', () => {
+        bookWrapper.querySelector('.book').classList.toggle('open');
+    });
+});
+
+function initScene() {
+    // Generate Candles
+    for(let i=0; i<TOTAL_CANDLES; i++) {
+        const angle = (i / TOTAL_CANDLES) * Math.PI * 2;
+        const radius = 40; // % of container
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius;
+        const color = ['#F48FB1', '#90CAF9', '#FFF59D'][i%3];
+        
+        const el = document.createElement('div');
+        el.className = 'candle-wrapper';
+        el.style.left = `calc(50% + ${x}%)`;
+        el.style.top = `calc(50% + ${y}%)`;
+        el.style.zIndex = Math.floor(y + 50);
+        
+        el.innerHTML = `
+            <div class="candle-stick" style="background: linear-gradient(90deg, #fff, ${color}, #ddd)"></div>
+            <div class="wick"></div>
+            <div class="flame-real">
+                <div class="flame-inner"></div>
+            </div>
+        `;
+        
+        // Click to blow fallback
+        el.addEventListener('click', () => blowCandle(i));
+        
+        candlesContainer.appendChild(el);
+        candles.push({ id: i, el: el, lit: true });
+    }
+
+    // Generate Sparkles
     for(let i=0; i<15; i++) {
+        const s = document.createElement('div');
+        s.className = 'sparkle';
+        s.style.left = Math.random() * 100 + '%';
+        s.style.top = Math.random() * 100 + '%';
+        s.style.animationDelay = Math.random() * 2 + 's';
+        sparklesContainer.appendChild(s);
+    }
+
+    // Generate Balloons
+    const balloonColors = ['#e91e63', '#2196f3', '#ffeb3b', '#4caf50'];
+    for(let i=0; i<10; i++) {
         const b = document.createElement('div');
         b.className = 'balloon';
-        b.style.left = (Math.random() * 95) + '%';
-        b.style.bottom = '-100px';
-        b.style.width = '50px'; b.style.height = '65px';
-        b.style.background = `radial-gradient(circle at 30% 30%, #fff, ${colors[i%4]})`;
-        b.style.borderRadius = '50% 50% 50% 50% / 40% 40% 60% 60%';
-        b.style.opacity = '0.6';
-        b.style.animation = `float-up ${20 + Math.random() * 10}s linear infinite`;
-        b.style.animationDelay = `${Math.random() * 10}s`;
-        
-        b.style.transition = 'transform 10s linear';
-        
+        b.style.left = (10 + i * 10) + '%';
+        b.style.setProperty('--color', balloonColors[i%4]);
+        b.style.setProperty('--duration', (15 + Math.random()*10) + 's');
+        b.style.setProperty('--delay', (i * 2) + 's');
         balloonContainer.appendChild(b);
     }
 }
 
-function createCherries() {
-    const count = 12;
-    const radius = 46; 
-    for (let i = 0; i < count; i++) {
-        const angle = (i / count) * Math.PI * 2;
-        const x = 50 + Math.cos(angle) * radius;
-        const y = 50 + Math.sin(angle) * radius;
-        
-        const el = document.createElement('div');
-        el.className = 'cherry';
-        el.style.left = x + '%';
-        el.style.top = y + '%';
-        el.style.width = '20px'; el.style.height = '20px';
-        el.style.background = 'radial-gradient(circle at 30% 30%, #ff1744, #b71c1c)';
-        el.style.borderRadius = '50%';
-        el.style.position = 'absolute';
-        // Note: transform is handled in CSS class .cherry to override specifics
-        el.style.zIndex = Math.floor(y + 50);
-        
-        cherriesContainer.appendChild(el);
-    }
-}
-
-function createCandles() {
-    const radius = 38; 
-    
-    for (let i = 0; i < TOTAL_CANDLES; i++) {
-        const angle = (i / TOTAL_CANDLES) * Math.PI * 2;
-        const x = 50 + Math.cos(angle) * radius;
-        const y = 50 + Math.sin(angle) * radius;
-        const color = CANDLE_COLORS[i % CANDLE_COLORS.length];
-        const height = 40 + Math.random() * 10;
-        
-        const wrapper = document.createElement('div');
-        wrapper.className = 'candle-wrapper';
-        wrapper.style.left = x + '%';
-        wrapper.style.top = y + '%';
-        wrapper.style.zIndex = Math.floor(y + 100);
-        
-        wrapper.innerHTML = `
-            <div class="candle-stick" style="height: ${height}px; background: linear-gradient(90deg, rgba(255,255,255,0.8), ${color}, rgba(0,0,0,0.1));"></div>
-            <div class="wick"></div>
-            <div class="flame-3d" id="flame-${i}">
-                <div class="flame-plane" style="--ry: 0deg;"></div>
-                <div class="flame-plane" style="--ry: 90deg;"></div>
-            </div>
-        `;
-        
-        // Manual click fallback
-        wrapper.addEventListener('click', () => {
-            if(candles[i].isLit) {
-                doExtinguish(candles[i]);
-                checkWin();
-            }
-        });
-
-        candlesContainer.appendChild(wrapper);
-        candles.push({
-            id: i,
-            el: wrapper,
-            flameEl: wrapper.querySelector('.flame-3d'),
-            isLit: true
-        });
-    }
-}
-
-/* --- LOGIC --- */
-async function startApp() {
+/* --- AUDIO & MIC --- */
+async function startExperience() {
     startOverlay.style.opacity = '0';
-    setTimeout(() => startOverlay.style.display = 'none', 1000);
+    setTimeout(() => startOverlay.style.display = 'none', 700);
+    
+    // Immediate Scene Show
+    room.style.opacity = '1';
+    
+    // Open Curtains Fast
+    setTimeout(() => {
+        document.getElementById('curtain-left').classList.add('curtain-open-left');
+        document.getElementById('curtain-right').classList.add('curtain-open-right');
+    }, 200);
 
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -147,202 +123,141 @@ async function startApp() {
         analyser = audioCtx.createAnalyser();
         microphone = audioCtx.createMediaStreamSource(stream);
         
+        // Low pass filter to catch "blow" sound (bass)
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 400; 
+        filter.frequency.value = 800;
         
         microphone.connect(filter);
         filter.connect(analyser);
         analyser.fftSize = 256;
-
-        setTimeout(() => {
-            room.style.opacity = '1';
-            isListening = true;
-            micIconEl.classList.add('text-green-400');
-            micIconEl.classList.remove('text-gray-400');
-            detectBlow();
-        }, 800);
-
-    } catch (err) {
-        console.warn(err);
-        setTimeout(() => {
-            room.style.opacity = '1';
-            alert("Mic access denied or error. Tap the candles to blow them out!");
-        }, 1000);
+        
+        isListening = true;
+        micIconEl.innerText = "🎤";
+        detectBlow();
+    } catch (e) {
+        console.warn("Mic error", e);
+        alert("Microphone not detected. You can tap candles to blow them out!");
     }
 }
 
 function detectBlow() {
-    if (!isListening) return;
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(dataArray);
+    if(!isListening) return;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
     
+    // Calculate volume
     let sum = 0;
-    const binCount = Math.floor(dataArray.length / 2); 
-    for (let i = 0; i < binCount; i++) sum += dataArray[i];
-    const average = sum / binCount;
+    const bins = Math.floor(data.length / 3);
+    for(let i=0; i<bins; i++) sum += data[i];
+    const avg = sum / bins;
     
-    micLevelEl.style.width = Math.min(average * 4, 100) + '%';
+    micLevelEl.style.width = Math.min(avg * 3, 100) + '%';
     
-    if (average > BLOW_THRESHOLD) extinguishCandles();
+    if(avg > BLOW_THRESHOLD) {
+        extinguishRandomCandles();
+    }
+    
     animationFrameId = requestAnimationFrame(detectBlow);
 }
 
-function extinguishCandles() {
-    const litCandles = candles.filter(c => c.isLit);
-    if (litCandles.length === 0) return;
+function extinguishRandomCandles() {
+    const lit = candles.filter(c => c.lit);
+    if(lit.length === 0) return;
     
-    litCandles.forEach(c => {
-         c.flameEl.style.transform = `translateX(-50%) scale(${1 + Math.random() * 0.4}) skewX(${Math.random()*10 - 5}deg)`;
-    });
-
-    const amount = Math.min(litCandles.length, Math.floor(Math.random() * 2) + 1);
-    for (let i = 0; i < amount; i++) {
-        const idx = Math.floor(Math.random() * litCandles.length);
-        const candle = litCandles[idx];
-        doExtinguish(candle);
-        litCandles.splice(idx, 1);
+    const count = Math.ceil(Math.random() * 2); // Blow 1-2 at a time
+    for(let i=0; i<count; i++) {
+        if(lit.length > 0) {
+            const idx = Math.floor(Math.random() * lit.length);
+            blowCandle(lit[idx].id);
+            lit.splice(idx, 1);
+        }
     }
-    checkWin();
 }
 
-function doExtinguish(candle) {
-    candle.isLit = false;
-    candle.flameEl.classList.add('out');
-    candle.el.classList.add('extinguished');
-    playPuffSound();
-    createSmoke(candle.el);
+function blowCandle(id) {
+    const candle = candles[id];
+    if(!candle.lit) return;
+    
+    candle.lit = false;
     candlesExtinguished++;
-}
-
-function createSmoke(parent) {
+    
+    const flame = candle.el.querySelector('.flame-real');
+    flame.classList.add('out');
+    
+    // Smoke Effect
     const smoke = document.createElement('div');
     smoke.className = 'smoke';
-    parent.appendChild(smoke);
-    setTimeout(() => smoke.remove(), 2500);
-}
-
-function checkWin() {
-    if (candlesExtinguished >= TOTAL_CANDLES && !winTriggered) {
-        winTriggered = true;
-        winSequence();
+    candle.el.appendChild(smoke);
+    
+    // Sound
+    playPuff();
+    
+    if(candlesExtinguished >= TOTAL_CANDLES) {
+        win();
     }
 }
 
-/* --- AUDIO & CELEBRATION --- */
-
-function playPuffSound() {
-    if (!audioCtx) return;
+function playPuff() {
+    if(!audioCtx) return;
     const osc = audioCtx.createBufferSource();
     const buffer = audioCtx.createBuffer(1, audioCtx.sampleRate * 0.1, audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for (let i = 0; i < buffer.length; i++) data[i] = Math.random() * 2 - 1;
+    for(let i=0; i<buffer.length; i++) data[i] = Math.random() * 2 - 1;
     osc.buffer = buffer;
+    
     const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    
     osc.connect(gain);
     gain.connect(audioCtx.destination);
     osc.start();
 }
 
-function playPartyHorn() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime;
-    
-    const osc1 = audioCtx.createOscillator();
-    osc1.type = 'sawtooth';
-    osc1.frequency.setValueAtTime(300, t);
-    osc1.frequency.linearRampToValueAtTime(500, t + 0.1);
-    
-    const osc2 = audioCtx.createOscillator();
-    osc2.type = 'sawtooth';
-    osc2.frequency.setValueAtTime(305, t);
-    osc2.frequency.linearRampToValueAtTime(510, t + 0.1);
-
-    const gain = audioCtx.createGain();
-    gain.gain.setValueAtTime(0.3, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.8);
-
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(audioCtx.destination);
-    
-    osc1.start(t);
-    osc2.start(t);
-    osc1.stop(t + 0.8);
-    osc2.stop(t + 0.8);
-}
-
-function playHappyBirthdaySong() {
-    if (!audioCtx) return;
-    const t = audioCtx.currentTime + 0.5;
-    
-    // Upbeat Melody
-    const song = [
-        {f: 392.00, d: 0.25}, {f: 392.00, d: 0.25}, {f: 440.00, d: 0.5}, {f: 392.00, d: 0.5}, {f: 523.25, d: 0.5}, {f: 493.88, d: 1.0},
-        {f: 392.00, d: 0.25}, {f: 392.00, d: 0.25}, {f: 440.00, d: 0.5}, {f: 392.00, d: 0.5}, {f: 587.33, d: 0.5}, {f: 523.25, d: 1.0},
-        {f: 392.00, d: 0.25}, {f: 392.00, d: 0.25}, {f: 783.99, d: 0.5}, {f: 659.25, d: 0.5}, {f: 523.25, d: 0.5}, {f: 493.88, d: 0.5}, {f: 440.00, d: 0.5}
-    ];
-
-    let cursor = t;
-    song.forEach(note => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.frequency.value = note.f;
-        osc.type = 'sawtooth'; // Bright, happy sound
-        
-        gain.gain.setValueAtTime(0, cursor);
-        gain.gain.linearRampToValueAtTime(0.1, cursor + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.01, cursor + note.d * 0.9);
-        
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(cursor);
-        osc.stop(cursor + note.d);
-        cursor += note.d;
-    });
-}
-
-function winSequence() {
+function win() {
     isListening = false;
     cancelAnimationFrame(animationFrameId);
     micLevelEl.style.width = '0%';
-    
-    headerText.innerHTML = "I Love You My Babyyy! ❤️";
-    headerText.classList.add('scale-110', 'text-[#ffc107]', 'transition-transform');
-    
-    playPartyHorn();
-    playHappyBirthdaySong();
+    headerText.innerText = "Happy Birthday My Love! ❤️";
     
     // Confetti
-    const end = Date.now() + 5000;
+    const duration = 5000;
+    const end = Date.now() + duration;
+    
     (function frame() {
-        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, colors: ['#ffeb3b', '#f48fb1'] });
-        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, colors: ['#ffeb3b', '#f48fb1'] });
+        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 } });
+        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 } });
         if (Date.now() < end) requestAnimationFrame(frame);
     }());
-
-    // Show Card Button after delay
+    
+    // Play Birthday Tune
+    playMelody();
+    
     setTimeout(() => {
         openCardBtn.classList.remove('hidden');
-        replayBtn.classList.remove('hidden');
-    }, 2000);
+    }, 1500);
 }
 
-/* --- CARD MODAL LOGIC --- */
-function showCard() {
-    cardModal.classList.remove('hidden');
-    // Force reflow for opacity transition
-    void cardModal.offsetWidth; 
-    cardModal.classList.remove('opacity-0');
-}
-
-function hideCard() {
-    cardModal.classList.add('opacity-0');
-    setTimeout(() => {
-        cardModal.classList.add('hidden');
-        // Reset card flip
-        bookElement.classList.remove('open');
-    }, 500);
+function playMelody() {
+    if(!audioCtx) return;
+    const t = audioCtx.currentTime;
+    // Simple Happy Birthday notes
+    const notes = [
+        {f: 392, d:0.2}, {f: 392, d:0.2}, {f: 440, d:0.4}, {f: 392, d:0.4}, {f: 523, d:0.4}, {f: 493, d:0.8}
+    ];
+    let time = t;
+    notes.forEach(n => {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.frequency.value = n.f;
+        osc.type = 'triangle';
+        g.gain.setValueAtTime(0.1, time);
+        g.gain.exponentialRampToValueAtTime(0.01, time + n.d - 0.05);
+        osc.connect(g);
+        g.connect(audioCtx.destination);
+        osc.start(time);
+        osc.stop(time + n.d);
+        time += n.d;
+    });
 }
