@@ -1,7 +1,7 @@
 /* RESET */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    background: #111;
+    background: #0d0005; /* Darker for atmosphere */
     color: white;
     font-family: 'Montserrat', sans-serif;
     overflow: hidden;
@@ -74,12 +74,24 @@ body.open .curtain.right { transform: scaleX(0); }
 /* ROOM BACKGROUND */
 .room-bg {
     position: absolute; inset: 0;
-    background: radial-gradient(circle at 50% 30%, #3e1f28 0%, #1a0509 60%, #000 100%);
+    background: radial-gradient(circle at 50% 40%, #2b0e16 0%, #120306 60%, #000 100%);
 }
 .spotlight {
     position: absolute; top: -20%; left: 20%; right: 20%; height: 100%;
-    background: radial-gradient(ellipse at center, rgba(255,255,255,0.08) 0%, transparent 70%);
-    filter: blur(40px);
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.05) 0%, transparent 60%);
+    filter: blur(50px);
+}
+
+/* FAIRY LIGHTS */
+#fairy-lights {
+    position: absolute; top: 0; left: 0; width: 100%; height: 200px;
+    z-index: 40; pointer-events: none;
+}
+.bulb {
+    position: absolute; width: 6px; height: 6px;
+    background: #fff; border-radius: 50%;
+    box-shadow: 0 0 10px #ffd54f, 0 0 20px #ff6f00;
+    animation: flash 2s infinite alternate;
 }
 
 /* DECORATIONS */
@@ -107,7 +119,7 @@ body.open .curtain.right { transform: scaleX(0); }
 
 /* BANNER */
 .banner-container {
-    position: absolute; top: 5%; width: 100%;
+    position: absolute; top: 8%; width: 100%;
     display: flex; justify-content: center;
     filter: drop-shadow(0 5px 15px rgba(233, 30, 99, 0.4));
     animation: floatBalloon 5s ease-in-out infinite;
@@ -158,20 +170,16 @@ body.open .curtain.right { transform: scaleX(0); }
     box-shadow: inset 0 20px 40px rgba(0,0,0,0.3);
 }
 
-/* GIFTS */
-.float-anim { animation: bob 3s ease-in-out infinite; }
-.float-anim-delayed { animation: bob 3.5s ease-in-out infinite reverse; }
-
+/* GIFTS & SHADOWS (GROUNDED) */
 .gift-box {
     width: 120px; height: 100px;
-    box-shadow: 5px 15px 25px rgba(0,0,0,0.5);
     border-radius: 4px;
     z-index: 25;
 }
 .gift-box::after {
     content: ''; position: absolute; inset: 0;
     background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: shimmer 2s infinite;
+    animation: shimmer 3s infinite;
 }
 .gift-box .lid {
     position: absolute; top: -15px; left: -5px; width: 130px; height: 25px;
@@ -180,18 +188,28 @@ body.open .curtain.right { transform: scaleX(0); }
 .ribbon-horz { position: absolute; top: 50%; width: 100%; height: 15px; transform: translateY(-50%); }
 .ribbon-vert { position: absolute; left: 50%; height: 100%; width: 15px; transform: translateX(-50%); }
 
-/* Left Gift - Purple */
+.gift-shadow {
+    position: absolute; width: 140px; height: 40px;
+    background: rgba(0,0,0,0.4); border-radius: 50%;
+    filter: blur(10px); z-index: 24;
+}
+
+/* Left Gift */
+.left-shadow { top: 300px; left: 190px; }
 .gift-left {
     position: absolute; top: 220px; left: 200px;
     background: linear-gradient(135deg, #7b1fa2, #4a148c);
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
 }
 .gift-left .lid { background: #8e24aa; }
 .gift-left .ribbon-horz, .gift-left .ribbon-vert { background: #ea80fc; }
 
-/* Right Gift - Teal */
+/* Right Gift */
+.right-shadow { top: 320px; right: 190px; }
 .gift-right {
     position: absolute; top: 240px; right: 200px;
     background: linear-gradient(135deg, #00796b, #004d40);
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
 }
 .gift-right .lid { background: #00897b; }
 .gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #80cbc4; }
@@ -272,14 +290,12 @@ body.open .curtain.right { transform: scaleX(0); }
 }
 .candle {
     position: absolute; bottom: 0;
-    width: 14px; /* Thicker */
-    height: 60px; /* Taller */
+    width: 14px; height: 60px;
     background: linear-gradient(90deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 20%, rgba(0,0,0,0.1) 100%);
-    background-color: #ffd54f; /* Set by JS */
+    background-color: #ffd54f;
     border-radius: 2px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.4);
 }
-/* Wax Pool at top */
 .candle::after {
     content: ''; position: absolute; top: -3px; left: 0; width: 100%; height: 6px;
     background-color: inherit;
@@ -291,32 +307,45 @@ body.open .curtain.right { transform: scaleX(0); }
     width: 2px; height: 8px; background: #333;
     border-radius: 1px;
 }
-/* HD Flame Container */
+
+/* REALISTIC FLAME */
 .flame {
-    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
-    width: 20px; height: 34px;
+    position: absolute; top: -38px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 38px;
     transform-origin: center bottom;
-    /* Glow effect */
-    filter: drop-shadow(0 0 8px rgba(255, 200, 0, 0.6));
-    opacity: 0.9;
-}
-/* Main Flame Body (Orange/Yellow) */
-.flame::before {
-    content: ''; position: absolute; inset: 0;
-    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ffca28 40%, #ff6f00 80%, transparent 100%);
-    border-radius: 50% 50% 20% 20%;
-    animation: flicker 0.1s infinite alternate, sway 2s ease-in-out infinite;
-}
-/* Blue Core */
-.flame::after {
-    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 6px; height: 10px;
-    background: rgba(0, 100, 255, 0.5);
-    border-radius: 50%;
-    filter: blur(1px);
+    /* Composite flame animation */
+    animation: flameFlicker 0.1s infinite alternate, flameWaver 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 160, 0, 0.6)) drop-shadow(0 0 20px rgba(255, 100, 0, 0.4));
+    opacity: 0.95;
+    z-index: 5;
 }
 
-.flame.out { opacity: 0; transform: scale(0.5); transition: all 0.5s; filter: none; }
+/* Outer Flame */
+.flame::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at bottom, 
+        rgba(255,255,200,0.9) 0%, 
+        rgba(255,200,50,0.8) 40%, 
+        rgba(255,100,0,0.5) 70%, 
+        transparent 95%);
+    border-radius: 50% 50% 20% 20%;
+}
+
+/* Inner Core */
+.flame::after {
+    content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 12px;
+    background: rgba(100, 180, 255, 0.6);
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.8;
+}
+
+.flame.out { 
+    opacity: 0; transform: scale(0.5); 
+    transition: opacity 0.3s, transform 0.3s;
+    filter: none; 
+}
 
 /* BOOK CARD */
 #card-modal {
@@ -373,15 +402,17 @@ body.open .curtain.right { transform: scaleX(0); }
 .heart-icon { font-size: 3rem; }
 
 /* ANIMATIONS */
-@keyframes flicker {
-    0% { transform: scale(1) skewX(0deg); opacity: 0.95; }
-    50% { transform: scale(1.05) skewX(1deg); opacity: 1; }
-    100% { transform: scale(0.95) skewX(-1deg); opacity: 0.9; }
+@keyframes flameFlicker {
+    0% { transform: translateX(-50%) scale(1.0) skewX(-1deg); opacity: 0.9; }
+    25% { transform: translateX(-50%) scale(1.02) skewX(1deg); opacity: 1; }
+    50% { transform: translateX(-50%) scale(0.98) skewX(-2deg); opacity: 0.85; }
+    75% { transform: translateX(-50%) scale(1.05) skewX(2deg); opacity: 0.95; }
+    100% { transform: translateX(-50%) scale(1.0) skewX(0deg); opacity: 0.9; }
 }
-@keyframes sway {
-    0% { transform: rotate(-2deg); }
-    50% { transform: rotate(2deg); }
-    100% { transform: rotate(-2deg); }
+@keyframes flameWaver {
+    0% { transform: translateX(-50%) rotate(-2deg); }
+    50% { transform: translateX(-50%) rotate(2deg); }
+    100% { transform: translateX(-50%) rotate(-2deg); }
 }
 @keyframes fabricSway {
     0%, 100% { transform: skewX(0); border-radius: 50% 50% 48% 52%; }
@@ -389,6 +420,6 @@ body.open .curtain.right { transform: scaleX(0); }
 }
 @keyframes floatBalloon { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
 @keyframes beat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
-@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 @keyframes twinkle { 0% { opacity: 0.3; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+@keyframes flash { 0% { opacity: 0.5; box-shadow: 0 0 5px #ffd54f; } 100% { opacity: 1; box-shadow: 0 0 15px #ff6f00, 0 0 30px #ffca28; } }

@@ -42,10 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Random animation delay for organic look
         const delay = Math.random() * 2 + 's';
-        flame.style.setProperty('animation-delay', delay);
-        
-        // Pseudo element animation delay via CSS var would be ideal, 
-        // but here we just rely on the main element sway
+        flame.style.setProperty('--delay', delay);
+        flame.style.animationDelay = delay;
         
         el.appendChild(wick);
         el.appendChild(flame);
@@ -75,7 +73,47 @@ document.addEventListener('DOMContentLoaded', () => {
         chocoContainer.appendChild(choco);
     }
 
-    // 3. Start Button
+    // 3. Generate Fairy Lights
+    const lightsContainer = document.getElementById('fairy-lights');
+    if(lightsContainer) {
+        // Create wire SVG
+        const svgNS = "http://www.w3.org/2000/svg";
+        const svg = document.createElementNS(svgNS, "svg");
+        svg.setAttribute("width", "100%");
+        svg.setAttribute("height", "100%");
+        svg.style.position = "absolute";
+        svg.style.top = "0";
+        svg.style.left = "0";
+        
+        const path = document.createElementNS(svgNS, "path");
+        // A simple drape curve
+        path.setAttribute("d", "M0,0 Q500,150 1000,0"); // Assuming standard width approx, percentages work better in CSS but this is a simple visual
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", "#555");
+        path.setAttribute("stroke-width", "2");
+        svg.appendChild(path);
+        lightsContainer.appendChild(svg);
+
+        // Add Bulbs along the curve
+        const bulbCount = 20;
+        for(let i=1; i<bulbCount; i++) {
+            const bulb = document.createElement('div');
+            bulb.className = 'bulb';
+            const pct = i * (100 / bulbCount);
+            bulb.style.left = pct + '%';
+            
+            // Approximate y position on a Quadratic curve y = 4*h*(x/w)*(1-x/w) roughly
+            // Curve goes from 0 to 150px down at center
+            const x = i / bulbCount;
+            const y = 150 * (1 - Math.pow(2*x - 1, 2)); // Parabola approx
+            
+            bulb.style.top = y + 'px';
+            bulb.style.animationDelay = Math.random() + 's';
+            lightsContainer.appendChild(bulb);
+        }
+    }
+
+    // 4. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
         initAudio();
         
