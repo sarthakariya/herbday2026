@@ -14,10 +14,10 @@ const state = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Generate Candles on the Top Tier Oval
+    // 1. Generate Candles
     const holder = document.getElementById('candles-container');
-    const rx = 60; 
-    const ry = 20;
+    const rx = 65; // Radius X
+    const ry = 25; // Radius Y (Perspective)
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -26,12 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const el = document.createElement('div');
         el.className = 'candle';
+        // Position and Depth Sorting
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.zIndex = Math.floor(y + 100);
 
-        // Random color
-        const hue = (i * 40) % 360;
-        el.style.background = `linear-gradient(to right, #fff, hsl(${hue}, 70%, 80%), #eee)`;
+        // Random Candle Colors (Pastels)
+        const hues = [340, 200, 45, 120, 280]; // Pink, Blue, Gold, Green, Purple
+        const h = hues[i % hues.length];
+        // Striped gradient logic is in CSS, just setting base color
+        el.style.backgroundColor = `hsl(${h}, 70%, 85%)`;
 
         const wick = document.createElement('div');
         wick.className = 'wick';
@@ -45,32 +48,29 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, active: true });
     }
 
-    // 2. Start Interaction
+    // 2. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
         initAudio();
         
-        // Hide Start text
-        document.getElementById('start-screen').style.opacity = 0;
-        setTimeout(() => document.getElementById('start-screen').remove(), 1000);
+        const screen = document.getElementById('start-screen');
+        screen.style.opacity = 0;
+        setTimeout(() => screen.remove(), 1000);
 
-        // Open Curtains
-        document.body.classList.add('open');
-        
-        // Show HUD
+        document.body.classList.add('open'); // Open Curtains
         document.getElementById('hud').classList.remove('hidden');
         
-        // Play Music
-        setTimeout(playBirthdayTune, 500);
+        // Play simple magical chime at start
+        setTimeout(playChime, 800);
 
-        // Start Mic
         loop();
     });
 
+    // Card Interaction
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', () => card.classList.toggle('open'));
 });
 
-// --- AUDIO SYSTEM ---
+// --- AUDIO ---
 async function initAudio() {
     try {
         state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -81,7 +81,6 @@ async function initAudio() {
         state.analyser = state.audioCtx.createAnalyser();
         state.analyser.fftSize = 256;
         
-        // Filter for "blowing" (low freq noise)
         const filter = state.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.value = 600;
@@ -90,99 +89,115 @@ async function initAudio() {
         filter.connect(state.analyser);
         state.listening = true;
     } catch(e) {
-        console.log("Mic Error: ", e);
-        alert("Microphone needed to blow out candles! 🎂");
+        console.error(e);
+        alert("Microphone access is needed for the magic! 🎂");
     }
 }
 
-function playBirthdayTune() {
+function playChime() {
     if(!state.audioCtx) return;
     const now = state.audioCtx.currentTime;
-    // "Happy Birthday" Notes (approx freq)
-    // C4, C4, D4, C4, F4, E4
-    const notes = [261.6, 261.6, 293.6, 261.6, 349.2, 329.6];
-    const timings = [0, 0.4, 0.8, 1.6, 2.4, 3.2];
-
-    notes.forEach((freq, i) => {
+    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
         const osc = state.audioCtx.createOscillator();
-        const gain = state.audioCtx.createGain();
+        const g = state.audioCtx.createGain();
         osc.frequency.value = freq;
-        osc.type = 'sine';
-        
-        gain.gain.setValueAtTime(0.1, now + timings[i]);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + timings[i] + 0.6);
-        
-        osc.connect(gain);
-        gain.connect(state.audioCtx.destination);
-        
-        osc.start(now + timings[i]);
-        osc.stop(now + timings[i] + 0.7);
+        g.gain.setValueAtTime(0.05, now + i*0.1);
+        g.gain.exponentialRampToValueAtTime(0.001, now + i*0.1 + 1);
+        osc.connect(g);
+        g.connect(state.audioCtx.destination);
+        osc.start(now + i*0.1);
+        osc.stop(now + i*0.1 + 1);
     });
 }
 
-function playPuffSound() {
+// "Happy Birthday" Song: G G A G C B | G G A G D C | G G G^ E C B A | F F E C D C
+// Simplified freq map for C major
+const NOTE = {
+    G3: 196, A3: 220, B3: 246.9,
+    C4: 261.6, D4: 293.6, E4: 329.6, F4: 349.2, G4: 392, A4: 440, B4: 493.8, C5: 523.2
+};
+
+function playBirthdaySong() {
     if(!state.audioCtx) return;
     const t = state.audioCtx.currentTime;
-    const bufferSize = state.audioCtx.sampleRate * 0.1; // 0.1 sec
-    const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
-
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1; // White noise
-    }
-
-    const noise = state.audioCtx.createBufferSource();
-    noise.buffer = buffer;
     
-    const gain = state.audioCtx.createGain();
-    gain.gain.setValueAtTime(0.2, t);
-    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.1);
+    const song = [
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 1.0}, // Happy Birthday to You
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.A3, d: 0.6}, {f: NOTE.G3, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.0}, // Happy Birthday to You
+        {f: NOTE.G3, d: 0.3}, {f: NOTE.G3, d: 0.3}, {f: NOTE.G4, d: 0.6}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.B3, d: 0.6}, {f: NOTE.A3, d: 0.6}, // Happy Birthday My Baby
+        {f: NOTE.F4, d: 0.3}, {f: NOTE.F4, d: 0.3}, {f: NOTE.E4, d: 0.6}, {f: NOTE.C4, d: 0.6}, {f: NOTE.D4, d: 0.6}, {f: NOTE.C4, d: 1.2}  // Happy Birthday to You
+    ];
 
-    noise.connect(gain);
-    gain.connect(state.audioCtx.destination);
-    noise.start();
+    let cursor = 0;
+    song.forEach(note => {
+        const osc = state.audioCtx.createOscillator();
+        const gain = state.audioCtx.createGain();
+        osc.type = 'triangle'; // Softer, flute-like
+        osc.frequency.value = note.f;
+        
+        gain.gain.setValueAtTime(0.1, t + cursor);
+        gain.gain.linearRampToValueAtTime(0.08, t + cursor + note.d * 0.8);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + cursor + note.d);
+
+        osc.connect(gain);
+        gain.connect(state.audioCtx.destination);
+        osc.start(t + cursor);
+        osc.stop(t + cursor + note.d);
+        
+        cursor += note.d + 0.05; // slight gap
+    });
 }
 
-function playApplause() {
+function playPuff() {
     if(!state.audioCtx) return;
-    // Simulate clapping by playing multiple random puffs rapidly
-    for(let i=0; i<30; i++) {
-        setTimeout(playPuffSound, Math.random() * 2000);
-    }
+    const t = state.audioCtx.currentTime;
+    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0; i<data.length; i++) data[i] = Math.random() * 2 - 1;
+    
+    const src = state.audioCtx.createBufferSource();
+    src.buffer = buffer;
+    const g = state.audioCtx.createGain();
+    g.gain.setValueAtTime(0.2, t);
+    g.gain.exponentialRampToValueAtTime(0.01, t+0.1);
+    
+    src.connect(g);
+    g.connect(state.audioCtx.destination);
+    src.start();
 }
 
-// --- LOGIC ---
+function playClapping() {
+    if(!state.audioCtx) return;
+    for(let i=0; i<30; i++) setTimeout(playPuff, Math.random() * 2000);
+}
+
+// --- LOGIC LOOP ---
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
         state.analyser.getByteFrequencyData(data);
-        
-        let sum = 0;
-        for(let i=0; i<data.length; i++) sum += data[i];
-        const avg = sum / data.length;
+        const avg = data.reduce((a,b)=>a+b) / data.length;
 
-        // Visual Meter
-        const pct = Math.min(avg * 4, 100);
-        document.getElementById('mic-level').style.width = pct + "%";
+        // HUD
+        document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
 
         if(avg > CONFIG.micThreshold) {
-            blowOutCandle();
+            blowCandle();
         }
     }
     requestAnimationFrame(loop);
 }
 
-function blowOutCandle() {
+function blowCandle() {
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
-    // Pick random candle to extinguish
     const idx = Math.floor(Math.random() * active.length);
     const target = active[idx];
-    
     target.active = false;
     target.el.classList.add('out');
-    playPuffSound();
+    
+    playPuff();
     state.extinguished++;
     
     if(state.extinguished === CONFIG.candleCount) {
@@ -192,12 +207,16 @@ function blowOutCandle() {
 
 function win() {
     state.listening = false;
-    playApplause();
     
-    // Confetti
-    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    // 1. Clapping & Confetti immediately
+    playClapping();
+    confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
     
+    // 2. Play Song after slight pause
+    setTimeout(playBirthdaySong, 1000);
+
+    // 3. Show Card after 4 seconds (User Request)
     setTimeout(() => {
         document.getElementById('card-modal').classList.remove('hidden');
-    }, 1500);
+    }, 4000);
 }
