@@ -12,7 +12,7 @@
 </head>
 <body>
 
-    <!-- BACKGROUND MUSIC (Instrumental Piyu Bole or Soft Piano) -->
+    <!-- BACKGROUND MUSIC (Instrumental) -->
     <audio id="bg-music" loop preload="auto">
         <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
     </audio>
@@ -47,38 +47,33 @@
         </div>
     </div>
 
-    <!-- BIG GREETING OVERLAY (Hidden initially) -->
+    <!-- BIG GREETING OVERLAY -->
     <div id="big-greeting" class="hidden">
-        <h1 class="glow-text">Happy Birthday<br>To You My Baby!</h1>
+        <div class="greeting-content">
+            <h1 class="glow-text">Happy Birthday<br>My Love!</h1>
+            <div class="giant-heart">❤️</div>
+        </div>
     </div>
 
     <!-- MAIN SCENE -->
     <div id="scene">
         
-        <!-- Continuous Falling Confetti Container -->
+        <!-- Continuous Falling Confetti -->
         <div id="continuous-confetti"></div>
 
-        <!-- CURTAINS (Overlay) -->
+        <!-- CURTAINS -->
         <div class="curtain left" id="c-left"></div>
         <div class="curtain right" id="c-right"></div>
 
         <!-- LAYER 1: ROOM BACKGROUND -->
         <div class="room-bg">
-            <div class="vignette"></div>
-            <div class="wall-texture"></div>
-            
-            <!-- Magic Dust Container -->
-            <div id="magic-dust"></div>
-
-            <!-- Fairy Lights Container -->
-            <div id="fairy-lights"></div>
-
             <div class="spotlight"></div>
             
-            <!-- CLOUDS -->
-            <div class="cloud c1"></div>
-            <div class="cloud c2"></div>
-            <div class="cloud c3"></div>
+            <!-- Magic Dust -->
+            <div id="magic-dust"></div>
+
+            <!-- Fairy Lights -->
+            <div id="fairy-lights"></div>
 
             <!-- STREAMERS -->
             <div class="streamer st1"></div>
@@ -125,12 +120,6 @@
                 </div>
             </div>
 
-            <!-- DECORATIONS -->
-            <div class="star s1"></div>
-            <div class="star s2"></div>
-            <div class="star s3"></div>
-            <div class="star s4"></div>
-            
             <!-- Balloons -->
             <div class="balloon b1"></div>
             <div class="balloon b2"></div>
@@ -144,7 +133,6 @@
             <div class="balloon b10"></div>
             <div class="balloon b11"></div>
             <div class="balloon b12"></div>
-            
             <div class="balloon heart-b h1"></div>
             <div class="balloon heart-b h2"></div>
 
@@ -166,14 +154,9 @@
         <!-- LAYER 2: TABLE -->
         <div class="table-container">
             <div class="table-shadow"></div>
-            <!-- Cloth Body -->
-            <div class="cloth-body">
-                <div class="texture-overlay"></div>
-                <div class="cloth-folds"></div>
-            </div>
-            <!-- Cloth Top -->
+            <!-- Cloth -->
+            <div class="cloth-body"><div class="cloth-folds"></div></div>
             <div class="cloth-top">
-                <div class="texture-overlay"></div>
                 <div id="petals-container"></div>
                 <div id="chocolates-container"></div>
             </div>
@@ -202,13 +185,11 @@
 
             <div class="gift-shadow left-shadow"></div>
             <div class="prop gift-box gift-left jelly-anim">
-                <div class="gift-texture"></div>
                 <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
             
             <div class="gift-shadow right-shadow"></div>
             <div class="prop gift-box gift-right jelly-anim">
-                <div class="gift-texture"></div>
                 <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
 
@@ -228,12 +209,12 @@
             <div class="cake-plate"></div>
             <div class="tier bottom-tier">
                 <div class="icing-drips"></div>
-                <div class="tier-body sponge-texture"></div>
+                <div class="tier-body"></div>
                 <div class="tier-top"></div>
             </div>
             <div class="tier top-tier">
                 <div class="icing-drips"></div>
-                <div class="tier-body sponge-texture"></div>
+                <div class="tier-body"></div>
                 <div class="tier-top">
                      <div class="strawberry s-1"></div>
                      <div class="strawberry s-2"></div>
@@ -249,7 +230,7 @@
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
             
-            <!-- RIGHT PAGE (Base, Text) -->
+            <!-- RIGHT PAGE (Text) -->
             <div class="book-page right-page">
                 <h3>My Dearest Love,</h3>
                 <div class="scroll-text">
@@ -271,7 +252,6 @@
             <div class="book-cover-container">
                 <!-- Front of Cover -->
                 <div class="book-cover-front">
-                    <div class="cover-texture"></div>
                     <div class="cover-content">
                         <div class="heart-anim">❤️</div>
                         <h2>For You</h2>
@@ -279,7 +259,7 @@
                     </div>
                 </div>
                 
-                <!-- Back of Cover (Inside Left) -->
+                <!-- Back of Cover (Photo) -->
                 <div class="book-cover-back">
                      <div class="photo-border loved-theme-photo">
                         <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
