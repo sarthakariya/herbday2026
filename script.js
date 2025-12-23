@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.createElement('div');
         el.className = 'candle';
         el.style.transform = `translate(${x}px, ${y}px)`;
-        el.style.zIndex = Math.floor(y + 200);
+        el.style.zIndex = Math.floor(y + 300); // Higher z-index relative to container
 
         const hues = [340, 200, 45, 120, 280]; 
         const h = hues[i % hues.length];
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, container: el, active: true });
     }
 
-    // 2. Scatter Props (Chocolates moved to Right Side)
+    // 2. Scatter Props
     const chocoContainer = document.getElementById('chocolates-container');
     if(chocoContainer) {
         for(let i=0; i<12; i++) {
@@ -134,16 +134,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Start Button Logic
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Mic
-        
+        // Force the open class immediately to guarantee visibility
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
         setTimeout(() => screen.remove(), 1000);
-
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
-        
-        // Play Happy Birthday Song IMMEDIATELY
+
+        // Then attempt audio
+        initAudio();
         playMainMusic();
         
         setTimeout(playChime, 800);
@@ -247,7 +246,8 @@ async function initAudio() {
         state.listening = true;
     } catch(e) {
         console.error(e);
-        alert("Microphone access is needed for the magic! 🎂");
+        // Don't alert, just log, so it doesn't break flow
+        console.log("Microphone access is needed for the magic! 🎂");
     }
 }
 
@@ -461,10 +461,12 @@ function loopFireworks() {
     if (!fireworksRunning) return;
     requestAnimationFrame(loopFireworks);
     
-    // Fade out trail
-    fCtx.globalCompositeOperation = 'destination-out';
-    fCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-    fCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+    // Clear the canvas properly with transparency
+    fCtx.clearRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+    
+    // Optional: Add a very slight trailing effect if desired, but keep it clean
+    // fCtx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
+    // fCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
     
     // Add glowing blend mode
     fCtx.globalCompositeOperation = 'lighter';
@@ -505,6 +507,10 @@ function win() {
         fwSound.volume = 0.6;
         fwSound.play().catch(e => console.log(e));
     }
+
+    // TRIGGER CONFETTI (Restored)
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    setTimeout(() => confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } }), 500);
 
     // Start Real Fireworks
     startRealFireworks();
