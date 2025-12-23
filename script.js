@@ -2,9 +2,8 @@
 
 const CONFIG = {
     candleCount: 17,
-    // Increased threshold: 5 was too sensitive, 30 requires a deliberate blow close to mic.
-    micThreshold: 30, 
-    flickerThreshold: 10,
+    micThreshold: 20, // Tuned down slightly from 30 for better usability
+    flickerThreshold: 8,
 };
 
 const state = {
@@ -41,7 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const flame = document.createElement('div');
         flame.className = 'flame';
         
-        // Randomize initial animation
         const delay = Math.random() * 2 + 's';
         flame.style.setProperty('--delay', delay);
         flame.style.animationDelay = delay;
@@ -53,27 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, container: el, active: true });
     }
 
-    // 2. Scatter Chocolates
+    // 2. Scatter Props
     const chocoContainer = document.getElementById('chocolates-container');
-    for(let i=0; i<12; i++) {
-        const choco = document.createElement('div');
-        choco.className = 'chocolate';
-        const top = 20 + Math.random() * 100;
-        const left = 5 + Math.random() * 90;
-        const size = 10 + Math.random() * 10;
-        const rot = Math.random() * 360;
-        
-        choco.style.top = top + 'px';
-        choco.style.left = left + '%';
-        choco.style.width = size + 'px';
-        choco.style.height = size + 'px';
-        choco.style.transform = `rotate(${rot}deg)`;
-        choco.style.opacity = '0.9';
-        
-        chocoContainer.appendChild(choco);
+    if(chocoContainer) {
+        for(let i=0; i<12; i++) {
+            const choco = document.createElement('div');
+            choco.className = 'chocolate';
+            const top = 20 + Math.random() * 100;
+            const left = 5 + Math.random() * 90;
+            const size = 10 + Math.random() * 10;
+            const rot = Math.random() * 360;
+            choco.style.top = top + 'px';
+            choco.style.left = left + '%';
+            choco.style.width = size + 'px';
+            choco.style.height = size + 'px';
+            choco.style.transform = `rotate(${rot}deg)`;
+            choco.style.opacity = '0.9';
+            chocoContainer.appendChild(choco);
+        }
     }
 
-    // 3. Scatter Petals
     const petalsContainer = document.getElementById('petals-container');
     if(petalsContainer) {
         for(let i=0; i<15; i++) {
@@ -82,19 +79,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const top = Math.random() * 120;
             const left = Math.random() * 100;
             const rot = Math.random() * 360;
-            
             petal.style.top = top + 'px';
             petal.style.left = left + '%';
             petal.style.transform = `rotate(${rot}deg)`;
-            
             const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
             petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
-            
             petalsContainer.appendChild(petal);
         }
     }
 
-    // 4. Magic Dust
     const dustContainer = document.getElementById('magic-dust');
     if(dustContainer) {
         for(let i=0; i<30; i++) {
@@ -107,7 +100,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Generate Fairy Lights
+    // 3. Bubbles Generator
+    createBubbles();
+
+    // 4. Fairy Lights
     const lightsContainer = document.getElementById('fairy-lights');
     if(lightsContainer) {
         const svgNS = "http://www.w3.org/2000/svg";
@@ -117,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
         svg.style.position = "absolute";
         svg.style.top = "0";
         svg.style.left = "0";
-        
         const path = document.createElementNS(svgNS, "path");
         path.setAttribute("d", "M0,0 Q500,150 1000,0");
         path.setAttribute("fill", "none");
@@ -125,26 +120,22 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute("stroke-width", "2");
         svg.appendChild(path);
         lightsContainer.appendChild(svg);
-
-        const bulbCount = 20;
-        for(let i=1; i<bulbCount; i++) {
+        for(let i=1; i<20; i++) {
             const bulb = document.createElement('div');
             bulb.className = 'bulb';
-            const pct = i * (100 / bulbCount);
+            const pct = i * (100 / 20);
             bulb.style.left = pct + '%';
-            
-            const x = i / bulbCount;
+            const x = i / 20;
             const y = 150 * (1 - Math.pow(2*x - 1, 2));
-            
             bulb.style.top = y + 'px';
             bulb.style.animationDelay = Math.random() + 's';
             lightsContainer.appendChild(bulb);
         }
     }
 
-    // 6. Start Button
+    // 5. Start Button Logic
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Context for Mic & Music
+        initAudio(); // Initialize Mic
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -153,24 +144,32 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Auto start music immediately on click
-        toggleMusic(); 
+        // Ensure music tries to play immediately
+        const bgAudio = document.getElementById('bg-music');
+        if(bgAudio) {
+            bgAudio.volume = 0.5;
+            const p = bgAudio.play();
+            if(p !== undefined) {
+                p.then(() => {
+                    state.musicPlaying = true;
+                    document.getElementById('music-btn').innerText = '🔇';
+                }).catch(e => {
+                    console.log("Auto-play prevented", e);
+                    // Retry on a global click once if needed, but usually button click covers it.
+                });
+            }
+        }
         
         setTimeout(playChime, 800);
-        
-        // Start Continuous Falling Confetti
         setInterval(spawnFallingBit, 300);
-
         loop();
     });
 
-    // Card Interaction
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', () => {
         card.classList.toggle('open');
     });
 
-    // Music Button
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
     
     // Force reload GIFs
@@ -180,36 +179,58 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// CONTINUOUS FALLING CONFETTI/LEAVES
+function createBubbles() {
+    const container = document.getElementById('bubbles-container');
+    if(!container) return;
+    
+    // Create initial set
+    for(let i=0; i<15; i++) {
+        spawnBubble(container);
+    }
+    
+    // Periodically add more
+    setInterval(() => {
+        if(document.hidden) return; // Save performance
+        spawnBubble(container);
+    }, 2000);
+}
+
+function spawnBubble(container) {
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    
+    const size = 10 + Math.random() * 40;
+    bubble.style.width = size + 'px';
+    bubble.style.height = size + 'px';
+    bubble.style.left = Math.random() * 100 + '%';
+    bubble.style.animationDuration = (8 + Math.random() * 10) + 's';
+    
+    container.appendChild(bubble);
+    
+    // Cleanup
+    setTimeout(() => {
+        if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
+    }, 18000);
+}
+
 function spawnFallingBit() {
     const container = document.getElementById('continuous-confetti');
     if(!container) return;
-    
     const bit = document.createElement('div');
     bit.className = 'falling-bit';
-    
     bit.style.left = Math.random() * 100 + '%';
     bit.style.animationDuration = (5 + Math.random() * 5) + 's';
-    
     const type = Math.random();
     if(type < 0.3) {
-        bit.style.background = '#fbc02d'; // Deep Gold
-        bit.style.borderRadius = '50%';
+        bit.style.background = '#fbc02d'; bit.style.borderRadius = '50%';
     } else if (type < 0.6) {
-        bit.style.background = '#e91e63'; // Deep Pink
-        bit.style.width = '8px';
-        bit.style.height = '8px';
-        bit.style.transform = 'rotate(45deg)';
+        bit.style.background = '#e91e63'; bit.style.width = '8px'; bit.style.height = '8px'; bit.style.transform = 'rotate(45deg)';
     } else {
-        bit.style.background = '#388e3c'; // Deep Green (Leaf)
-        bit.style.borderRadius = '0 50% 0 50%';
-        bit.style.height = '12px';
+        bit.style.background = '#388e3c'; bit.style.borderRadius = '0 50% 0 50%'; bit.style.height = '12px';
     }
-
     container.appendChild(bit);
     setTimeout(() => { bit.remove(); }, 10000);
 }
-
 
 // --- AUDIO ---
 async function initAudio() {
@@ -221,12 +242,11 @@ async function initAudio() {
         const source = state.audioCtx.createMediaStreamSource(stream);
         state.analyser = state.audioCtx.createAnalyser();
         state.analyser.fftSize = 512;
-        state.analyser.smoothingTimeConstant = 0.4;
+        state.analyser.smoothingTimeConstant = 0.5;
         
-        // Create a low-pass filter to isolate wind/breath sounds (low frequency)
         const filter = state.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 800; // Focus on lower freq
+        filter.frequency.value = 800;
         
         source.connect(filter);
         filter.connect(state.analyser);
@@ -240,17 +260,15 @@ async function initAudio() {
 function toggleMusic() {
     const audio = document.getElementById('bg-music');
     if(!audio) return;
-
     if(state.musicPlaying) {
         audio.pause();
         state.musicPlaying = false;
         document.getElementById('music-btn').innerText = '🎵';
     } else {
-        audio.volume = 0.5;
         audio.play().then(() => {
             state.musicPlaying = true;
             document.getElementById('music-btn').innerText = '🔇';
-        }).catch(e => console.log("Audio play blocked", e));
+        });
     }
 }
 
@@ -270,58 +288,73 @@ function playChime() {
     });
 }
 
-// Procedural White Noise "Puff" Sound
-function playPuff() {
+// REALISTIC WIND SOUND
+function playAirSound() {
     if(!state.audioCtx) return;
-    const bufferSize = state.audioCtx.sampleRate * 0.5; // 0.5 seconds
+    
+    // Create buffer for white noise
+    const bufferSize = state.audioCtx.sampleRate * 1.5; // 1.5 seconds long
     const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
 
     for (let i = 0; i < bufferSize; i++) {
-        // White noise
         data[i] = Math.random() * 2 - 1;
     }
 
-    const noiseSrc = state.audioCtx.createBufferSource();
-    noiseSrc.buffer = buffer;
+    const noise = state.audioCtx.createBufferSource();
+    noise.buffer = buffer;
 
-    // Filter to make it sound like air
-    const noiseFilter = state.audioCtx.createBiquadFilter();
-    noiseFilter.type = 'lowpass';
-    noiseFilter.frequency.value = 1000;
+    // Filter to make it deep and windy
+    const filter = state.audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(400, state.audioCtx.currentTime);
+    filter.frequency.linearRampToValueAtTime(100, state.audioCtx.currentTime + 1.5);
 
-    const noiseGain = state.audioCtx.createGain();
-    noiseGain.gain.setValueAtTime(0.8, state.audioCtx.currentTime);
-    noiseGain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.4);
+    // Gain envelope
+    const gain = state.audioCtx.createGain();
+    gain.gain.setValueAtTime(0, state.audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.8, state.audioCtx.currentTime + 0.1); // Attack
+    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 1.5); // Decay
 
-    noiseSrc.connect(noiseFilter);
-    noiseFilter.connect(noiseGain);
-    noiseGain.connect(state.audioCtx.destination);
-    noiseSrc.start();
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(state.audioCtx.destination);
+    
+    noise.start();
 }
 
 function playClapping() {
     if(!state.audioCtx) return;
-    // Simulate applause with random noise bursts
+    // Simple clapping effect
     for(let i=0; i<40; i++) {
-        setTimeout(playPuff, Math.random() * 2000);
+        setTimeout(() => {
+             // Reusing a short burst of noise for clap
+             const osc = state.audioCtx.createOscillator();
+             const g = state.audioCtx.createGain();
+             osc.frequency.value = 100 + Math.random()*200;
+             osc.type = 'triangle';
+             g.gain.setValueAtTime(0.1, state.audioCtx.currentTime);
+             g.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.1);
+             osc.connect(g);
+             g.connect(state.audioCtx.destination);
+             osc.start();
+             osc.stop(state.audioCtx.currentTime + 0.1);
+        }, Math.random() * 2000);
     }
 }
 
-// --- LOGIC LOOP ---
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
         state.analyser.getByteFrequencyData(data);
         
-        // Calculate average volume
         let sum = 0;
         for(let i=0; i<data.length; i++) sum += data[i];
         const avg = sum / data.length;
 
         document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
 
-        // FLICKER EFFECT: If blowing gently (threshold 10 - 30)
+        // Flicker Logic
         if(avg > CONFIG.flickerThreshold && avg < CONFIG.micThreshold) {
              state.candles.forEach(c => {
                  if(c.active) c.el.classList.add('flicker-hard');
@@ -332,7 +365,7 @@ function loop() {
              });
         }
 
-        // BLOW OUT: If blowing hard (threshold > 30)
+        // Blow Out Logic
         if(avg > CONFIG.micThreshold) {
             blowCandle();
         }
@@ -344,13 +377,11 @@ function blowCandle() {
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
-    // Extinguish 1-3 candles at a time for realism
-    const amount = Math.floor(Math.random() * 3) + 1;
+    const amount = Math.floor(Math.random() * 2) + 1;
     
     for(let i=0; i<amount; i++) {
         if(state.extinguished >= CONFIG.candleCount) break;
         
-        // Find a random active candle
         const activeCandidates = state.candles.filter(c => c.active);
         if(activeCandidates.length === 0) break;
 
@@ -358,16 +389,16 @@ function blowCandle() {
         const target = activeCandidates[idx];
         
         target.active = false;
-        target.el.classList.remove('flicker-hard'); // Stop flicker
-        target.el.classList.add('out'); // Add out (fade + smoke)
-        target.container.classList.add('out'); // For smoke effect selector
+        target.el.classList.remove('flicker-hard');
+        target.el.classList.add('out'); 
+        target.container.classList.add('out'); 
         
-        playPuff(); // Sound
+        playAirSound(); // New improved wind sound
         state.extinguished++;
     }
     
     if(state.extinguished >= CONFIG.candleCount) {
-        setTimeout(win, 500); // Slight delay before win state
+        setTimeout(win, 800);
     }
 }
 
@@ -385,52 +416,43 @@ function superCelebration() {
     }, 2000);
 }
 
-// WIN STATE LOGIC
 function win() {
-    if(!state.listening) return; // Prevent double trigger
-    state.listening = false; // Stop listening
+    if(!state.listening) return;
+    state.listening = false;
     
-    // 1. Trigger Confetti & Clapping
     playClapping();
     superCelebration();
     
-    // 2. STOP Background Music
     const bgAudio = document.getElementById('bg-music');
     if(bgAudio) {
         bgAudio.pause();
         bgAudio.currentTime = 0; 
     }
 
-    // 3. START Happy Birthday Song
     const winAudio = document.getElementById('win-music');
     if(winAudio) {
         winAudio.volume = 1.0;
         winAudio.currentTime = 0;
-        // Resume context just in case
         if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
         
         const playPromise = winAudio.play();
         if (playPromise !== undefined) {
             playPromise.catch(error => {
-                console.error("Auto-play failed:", error);
-                // Fallback: Use browser text-to-speech if MP3 fails
+                console.error("Win music auto-play failed:", error);
                 const msg = new SpeechSynthesisUtterance("Happy Birthday My Love!");
                 window.speechSynthesis.speak(msg);
             });
         }
     }
     
-    // 4. Hide Music Controls
     const musicControl = document.getElementById('music-control');
     if(musicControl) musicControl.style.display = 'none';
 
-    // 5. SHOW Big Greeting Text Overlay immediately
     const bigGreeting = document.getElementById('big-greeting');
     if(bigGreeting) {
         bigGreeting.classList.remove('hidden');
     }
 
-    // 6. SHOW Card Modal after 7 seconds
     setTimeout(() => {
         const modal = document.getElementById('card-modal');
         if(modal) {

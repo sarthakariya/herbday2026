@@ -13,6 +13,11 @@ body {
 .hidden { display: none !important; opacity: 0; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
+/* Optimize Animations */
+.wobble-anim, .jelly-anim, .bounce-anim, .streamer, .balloon, .floating-hearts span {
+    will-change: transform;
+}
+
 /* --- START SCREEN --- */
 #start-screen {
     position: fixed; inset: 0; z-index: 1000;
@@ -81,7 +86,6 @@ body {
 #big-greeting {
     position: fixed; inset: 0; z-index: 1500;
     display: flex; align-items: center; justify-content: center;
-    /* Removed background/blur per request */
     background: transparent;
     pointer-events: none;
 }
@@ -139,6 +143,22 @@ body.open .curtain.right { transform: scaleX(0); }
     position: absolute; top: -20%; left: 20%; right: 20%; height: 100%;
     background: radial-gradient(ellipse at center, rgba(255,255,255,0.4) 0%, transparent 60%);
     filter: blur(60px); mix-blend-mode: screen;
+}
+
+/* BUBBLES */
+#bubbles-container { position: absolute; inset: 0; pointer-events: none; z-index: 10; overflow: hidden; }
+.bubble {
+    position: absolute; border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.1) 60%, rgba(255,255,255,0.05) 100%);
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.5), 0 0 10px rgba(255,255,255,0.2);
+    opacity: 0.6;
+    animation: bubbleFloat 10s linear infinite;
+    bottom: -100px; /* Start below screen */
+}
+@keyframes bubbleFloat {
+    0% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+    10% { opacity: 0.6; }
+    100% { transform: translateY(-120vh) translateX(50px) scale(1.2); opacity: 0; }
 }
 
 /* STREAMERS */
@@ -327,21 +347,46 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
     100% { transform: translateX(-50%) skewX(-5deg) scaleY(0.9); }
 }
 
-/* Extinguished State + Smoke */
+/* Extinguished State + MASSIVE Smoke */
 .flame.out { 
     animation: none; opacity: 0; transition: opacity 0.2s; 
 }
 .candle.out .wick::after {
-   /* Smoke Effect */
-   content: ''; position: absolute; top: 0; left: 50%; width: 4px; height: 20px;
-   background: rgba(255,255,255,0.4); filter: blur(2px);
+   /* Massive Smoke Effect */
+   content: ''; position: absolute; top: 0; left: 50%; width: 10px; height: 40px;
+   background: radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, rgba(200,200,200,0.4) 60%, transparent 100%);
+   filter: blur(5px);
    transform: translateX(-50%);
-   animation: smokeRise 1.5s forwards;
+   animation: smokeRise 2.5s forwards;
+   pointer-events: none;
 }
 @keyframes smokeRise {
     0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
-    20% { opacity: 0.6; transform: translateX(-50%) translateY(-10px) scale(1); }
-    100% { opacity: 0; transform: translateX(-40%) translateY(-40px) scale(2); }
+    10% { opacity: 0.8; transform: translateX(-50%) translateY(-15px) scale(1.5); }
+    100% { opacity: 0; transform: translateX(-30%) translateY(-80px) scale(4); }
+}
+
+/* --- TEXTURES (Book/Card) --- */
+.book-cover-front {
+    position: absolute; inset: 0; 
+    background: linear-gradient(135deg, #f06292, #ec407a);
+    /* Paper Texture Overlay */
+    background-image: linear-gradient(135deg, #f06292, #ec407a), url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.2'/%3E%3C/svg%3E");
+    background-blend-mode: overlay;
+    border-radius: 0 5px 5px 0; border: 2px solid #c2185b;
+    backface-visibility: hidden; display: flex; align-items: center; justify-content: center; z-index: 2;
+}
+.book-page {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: #fff0f5; 
+    /* Paper Texture */
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.1); z-index: 1;
+}
+.book-cover-back {
+    position: absolute; inset: 0; background: #fff0f5; 
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E");
+    border-radius: 5px 0 0 5px; transform: rotateY(180deg); backface-visibility: hidden; box-shadow: inset -5px 0 20px rgba(0,0,0,0.05); display: flex; align-items: center; justify-content: center; padding: 20px; border-right: 1px solid #ddd;
 }
 
 /* --- Rest of Styles --- */

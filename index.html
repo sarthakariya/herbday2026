@@ -13,12 +13,13 @@
 <body>
 
     <!-- BACKGROUND MUSIC (Instrumental) -->
-    <audio id="bg-music" loop preload="auto">
+    <!-- Added crossorigin to help with loading issues -->
+    <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
         <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
     </audio>
 
     <!-- WIN MUSIC (Happy Birthday Song) -->
-    <audio id="win-music" preload="auto" loop>
+    <audio id="win-music" preload="auto" loop crossorigin="anonymous">
         <source src="https://cdn.pixabay.com/audio/2023/10/03/audio_a975775d7c.mp3" type="audio/mpeg">
     </audio>
 
@@ -57,6 +58,9 @@
 
     <!-- MAIN SCENE -->
     <div id="scene">
+        
+        <!-- BUBBLES CONTAINER -->
+        <div id="bubbles-container"></div>
         
         <!-- Continuous Falling Confetti -->
         <div id="continuous-confetti"></div>
@@ -98,25 +102,25 @@
                 <div class="poster-nail"></div>
             </div>
 
-            <!-- GIF STICKERS -->
+            <!-- GIF STICKERS (Optimized classes) -->
             <div class="gif-sticker g1 wobble-anim">
                 <div class="polaroid-inner">
-                    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1">
+                    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1" loading="lazy">
                 </div>
             </div>
             <div class="gif-sticker g2 wobble-anim">
                 <div class="polaroid-inner">
-                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Zmdjlkam9zZzI2N3ExNWNmazluZmRscnlyYzZubGlmN290bDB3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SwUqpdM8i6NH2asVn2/giphy.gif" alt="Cute Gif 2">
+                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Zmdjlkam9zZzI2N3ExNWNmazluZmRscnlyYzZubGlmN290bDB3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SwUqpdM8i6NH2asVn2/giphy.gif" alt="Cute Gif 2" loading="lazy">
                 </div>
             </div>
             <div class="gif-sticker g3 wobble-anim">
                 <div class="polaroid-inner">
-                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWIxdnNzNTFlYTAzdmMzZzM1OHVvZzMwMTU3enBkaGQ1NXNoZG9hYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/i9BkTMFxW7eBJ9ZOqP/giphy.gif" alt="Cute Gif 3">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWIxdnNzNTFlYTAzdmMzZzM1OHVvZzMwMTU3enBkaGQ1NXNoZG9hYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/i9BkTMFxW7eBJ9ZOqP/giphy.gif" alt="Cute Gif 3" loading="lazy">
                 </div>
             </div>
             <div class="gif-sticker g4 wobble-anim">
                 <div class="polaroid-inner">
-                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3J1YnJvbG85aWd2bWxiaDM2ODk2cDEwMDh3ZWI1cHg5eHZjdjE0eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/4Ka9hpRXpjXJzW2PRi/giphy.gif" alt="Cute Gif 4">
+                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3J1YnJvbG85aWd2bWxiaDM2ODk2cDEwMDh3ZWI1cHg5eHZjdjE0eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/4Ka9hpRXpjXJzW2PRi/giphy.gif" alt="Cute Gif 4" loading="lazy">
                 </div>
             </div>
 
