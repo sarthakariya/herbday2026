@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 20, // Tuned down slightly from 30 for better usability
+    micThreshold: 20, 
     flickerThreshold: 8,
 };
 
@@ -12,7 +12,6 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    musicPlaying: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -144,25 +143,22 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Ensure music tries to play immediately
-        const bgAudio = document.getElementById('bg-music');
-        if(bgAudio) {
-            bgAudio.volume = 0.5;
-            const p = bgAudio.play();
-            if(p !== undefined) {
-                p.then(() => {
-                    state.musicPlaying = true;
-                    document.getElementById('music-btn').innerText = '🔇';
-                }).catch(e => {
-                    console.log("Auto-play prevented", e);
-                    // Retry on a global click once if needed, but usually button click covers it.
-                });
-            }
-        }
+        // Ensure music plays immediately
+        playBackgroundMusic();
         
         setTimeout(playChime, 800);
         setInterval(spawnFallingBit, 300);
         loop();
+    });
+
+    // 6. Interactive Balloons (Poppable Easter Egg)
+    document.querySelectorAll('.balloon').forEach(b => {
+        b.addEventListener('click', function() {
+            if(this.classList.contains('popped')) return;
+            this.classList.add('popped');
+            playBalloonPop();
+            setTimeout(() => this.style.display = 'none', 300);
+        });
     });
 
     const card = document.getElementById('card-wrapper');
@@ -170,8 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
         card.classList.toggle('open');
     });
 
-    document.getElementById('music-btn').addEventListener('click', toggleMusic);
-    
     // Force reload GIFs
     document.querySelectorAll('.gif-sticker img').forEach(img => {
         const src = img.src;
@@ -179,18 +173,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function playBackgroundMusic() {
+    const bgAudio = document.getElementById('bg-music');
+    if(bgAudio) {
+        bgAudio.volume = 0.5;
+        const p = bgAudio.play();
+        if(p !== undefined) {
+            p.catch(e => {
+                console.log("Auto-play prevented (User must interact first)", e);
+            });
+        }
+    }
+}
+
 function createBubbles() {
     const container = document.getElementById('bubbles-container');
     if(!container) return;
     
-    // Create initial set
     for(let i=0; i<15; i++) {
         spawnBubble(container);
     }
     
-    // Periodically add more
     setInterval(() => {
-        if(document.hidden) return; // Save performance
+        if(document.hidden) return; 
         spawnBubble(container);
     }, 2000);
 }
@@ -206,8 +211,6 @@ function spawnBubble(container) {
     bubble.style.animationDuration = (8 + Math.random() * 10) + 's';
     
     container.appendChild(bubble);
-    
-    // Cleanup
     setTimeout(() => {
         if(bubble.parentNode) bubble.parentNode.removeChild(bubble);
     }, 18000);
@@ -257,21 +260,6 @@ async function initAudio() {
     }
 }
 
-function toggleMusic() {
-    const audio = document.getElementById('bg-music');
-    if(!audio) return;
-    if(state.musicPlaying) {
-        audio.pause();
-        state.musicPlaying = false;
-        document.getElementById('music-btn').innerText = '🎵';
-    } else {
-        audio.play().then(() => {
-            state.musicPlaying = true;
-            document.getElementById('music-btn').innerText = '🔇';
-        });
-    }
-}
-
 function playChime() {
     if(!state.audioCtx) return;
     const now = state.audioCtx.currentTime;
@@ -288,12 +276,9 @@ function playChime() {
     });
 }
 
-// REALISTIC WIND SOUND
 function playAirSound() {
     if(!state.audioCtx) return;
-    
-    // Create buffer for white noise
-    const bufferSize = state.audioCtx.sampleRate * 1.5; // 1.5 seconds long
+    const bufferSize = state.audioCtx.sampleRate * 1.5; 
     const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
 
@@ -304,17 +289,15 @@ function playAirSound() {
     const noise = state.audioCtx.createBufferSource();
     noise.buffer = buffer;
 
-    // Filter to make it deep and windy
     const filter = state.audioCtx.createBiquadFilter();
     filter.type = 'lowpass';
     filter.frequency.setValueAtTime(400, state.audioCtx.currentTime);
     filter.frequency.linearRampToValueAtTime(100, state.audioCtx.currentTime + 1.5);
 
-    // Gain envelope
     const gain = state.audioCtx.createGain();
     gain.gain.setValueAtTime(0, state.audioCtx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.8, state.audioCtx.currentTime + 0.1); // Attack
-    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 1.5); // Decay
+    gain.gain.linearRampToValueAtTime(0.8, state.audioCtx.currentTime + 0.1); 
+    gain.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 1.5); 
 
     noise.connect(filter);
     filter.connect(gain);
@@ -325,22 +308,36 @@ function playAirSound() {
 
 function playClapping() {
     if(!state.audioCtx) return;
-    // Simple clapping effect
-    for(let i=0; i<40; i++) {
+    // Increased volume and frequency for better sound
+    for(let i=0; i<60; i++) {
         setTimeout(() => {
-             // Reusing a short burst of noise for clap
              const osc = state.audioCtx.createOscillator();
              const g = state.audioCtx.createGain();
-             osc.frequency.value = 100 + Math.random()*200;
+             osc.frequency.value = 150 + Math.random()*300; // Wider freq range
              osc.type = 'triangle';
-             g.gain.setValueAtTime(0.1, state.audioCtx.currentTime);
-             g.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.1);
+             // Higher gain
+             g.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
+             g.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.15);
              osc.connect(g);
              g.connect(state.audioCtx.destination);
              osc.start();
-             osc.stop(state.audioCtx.currentTime + 0.1);
-        }, Math.random() * 2000);
+             osc.stop(state.audioCtx.currentTime + 0.15);
+        }, Math.random() * 3000);
     }
+}
+
+function playBalloonPop() {
+    if(!state.audioCtx) return;
+    const osc = state.audioCtx.createOscillator();
+    const g = state.audioCtx.createGain();
+    osc.frequency.setValueAtTime(200, state.audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(50, state.audioCtx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.5, state.audioCtx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.1);
+    osc.connect(g);
+    g.connect(state.audioCtx.destination);
+    osc.start();
+    osc.stop(state.audioCtx.currentTime + 0.1);
 }
 
 function loop() {
@@ -354,7 +351,6 @@ function loop() {
 
         document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
 
-        // Flicker Logic
         if(avg > CONFIG.flickerThreshold && avg < CONFIG.micThreshold) {
              state.candles.forEach(c => {
                  if(c.active) c.el.classList.add('flicker-hard');
@@ -365,7 +361,6 @@ function loop() {
              });
         }
 
-        // Blow Out Logic
         if(avg > CONFIG.micThreshold) {
             blowCandle();
         }
@@ -393,7 +388,7 @@ function blowCandle() {
         target.el.classList.add('out'); 
         target.container.classList.add('out'); 
         
-        playAirSound(); // New improved wind sound
+        playAirSound(); 
         state.extinguished++;
     }
     
@@ -403,17 +398,30 @@ function blowCandle() {
 }
 
 function superCelebration() {
-    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    setTimeout(() => {
-        confetti({ particleCount: 50, spread: 100, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFD700', '#FFA500'] });
-    }, 500);
-    setTimeout(() => {
-        confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, shapes: ['circle'], colors: ['#e91e63'] });
-        confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, shapes: ['circle'], colors: ['#e91e63'] });
-    }, 1000);
-    setTimeout(() => {
-        confetti({ particleCount: 200, spread: 160, origin: { y: 0.3 }, scalar: 1.2 });
-    }, 2000);
+    // Standard Confetti
+    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+    
+    // FIREWORKS LOOP
+    const duration = 15 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      const particleCount = 50 * (timeLeft / duration);
+      // since particles fall down, start a bit higher than random
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+    }, 250);
 }
 
 function win() {
@@ -435,6 +443,7 @@ function win() {
         winAudio.currentTime = 0;
         if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
         
+        // Robust Play Attempt
         const playPromise = winAudio.play();
         if (playPromise !== undefined) {
             playPromise.catch(error => {
@@ -444,9 +453,6 @@ function win() {
             });
         }
     }
-    
-    const musicControl = document.getElementById('music-control');
-    if(musicControl) musicControl.style.display = 'none';
 
     const bigGreeting = document.getElementById('big-greeting');
     if(bigGreeting) {

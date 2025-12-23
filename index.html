@@ -13,7 +13,6 @@
 <body>
 
     <!-- BACKGROUND MUSIC (Instrumental) -->
-    <!-- Added crossorigin to help with loading issues -->
     <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
         <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
     </audio>
@@ -37,14 +36,11 @@
         </div>
     </div>
 
-    <!-- HUD -->
+    <!-- HUD (Music Button Removed) -->
     <div id="hud" class="hidden">
         <div class="hud-item mic-container">
             <div class="mic-icon">🎙️</div>
             <div class="mic-bar"><div id="mic-level"></div></div>
-        </div>
-        <div class="hud-item" id="music-control">
-            <button id="music-btn" class="icon-btn" title="Toggle Music">🎵</button>
         </div>
     </div>
 
@@ -102,7 +98,7 @@
                 <div class="poster-nail"></div>
             </div>
 
-            <!-- GIF STICKERS (Optimized classes) -->
+            <!-- GIF STICKERS -->
             <div class="gif-sticker g1 wobble-anim">
                 <div class="polaroid-inner">
                     <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1" loading="lazy">
@@ -124,7 +120,7 @@
                 </div>
             </div>
 
-            <!-- Balloons -->
+            <!-- Balloons (Interactive Class Added via JS) -->
             <div class="balloon b1"></div>
             <div class="balloon b2"></div>
             <div class="balloon b3"></div>
