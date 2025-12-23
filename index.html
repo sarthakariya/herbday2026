@@ -14,11 +14,14 @@
 
     <!-- FIREWORKS CANVAS -->
     <canvas id="fireworks-canvas"></canvas>
-    <!-- LIGHTING FLASH OVERLAY -->
-    <div id="flash-overlay"></div>
 
-    <!-- BACKGROUND MUSIC (Happy Birthday from start) -->
-    <audio id="bg-music" loop preload="auto">
+    <!-- BACKGROUND MUSIC (Instrumental) -->
+    <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- WIN MUSIC (Happy Birthday Song) -->
+    <audio id="win-music" preload="auto" loop>
         <source src="happy_birthday.mp3" type="audio/mpeg">
     </audio>
 
@@ -290,13 +293,11 @@
                 
                 <!-- Back of Cover (Photo) -->
                 <div class="book-cover-back">
-                     <div class="photo-wrapper">
-                         <!-- "Tape" decoration -->
-                         <div class="tape-strip"></div>
-                         <div class="photo-border loved-theme-photo">
-                            <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
-                        </div>
-                     </div>
+                     <div class="photo-border loved-theme-photo">
+                        <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                        <div class="corner-heart top-left">❤️</div>
+                        <div class="corner-heart bottom-right">❤️</div>
+                    </div>
                 </div>
             </div>
             
