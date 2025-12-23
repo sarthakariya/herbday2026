@@ -17,8 +17,8 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
-    const rx = 65; // Radius X
-    const ry = 25; // Radius Y (Perspective)
+    const rx = 65; 
+    const ry = 25; 
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -30,8 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.style.transform = `translate(${x}px, ${y}px)`;
         el.style.zIndex = Math.floor(y + 100);
 
-        // Random Candle Colors (Pastels)
-        const hues = [340, 200, 45, 120, 280]; // Pink, Blue, Gold, Green, Purple
+        const hues = [340, 200, 45, 120, 280]; 
         const h = hues[i % hues.length];
         el.style.backgroundColor = `hsl(${h}, 70%, 85%)`;
 
@@ -85,7 +84,6 @@ document.addEventListener('DOMContentLoaded', () => {
             petal.style.left = left + '%';
             petal.style.transform = `rotate(${rot}deg)`;
             
-            // Random petal colors (pinks/reds)
             const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
             petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
             
@@ -157,7 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         setTimeout(playChime, 800);
         
-        // Start Continuous Falling Confetti (More frequent now)
+        // Start Continuous Falling Confetti
         setInterval(spawnFallingBit, 300);
 
         loop();
@@ -172,10 +170,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Music Button
     document.getElementById('music-btn').addEventListener('click', toggleMusic);
     
-    // Force reload GIFs to ensure animation plays
+    // Force reload GIFs
     document.querySelectorAll('.gif-sticker img').forEach(img => {
         const src = img.src;
-        img.src = src; // Re-assigning src triggers reload
+        img.src = src; 
     });
 });
 
@@ -187,11 +185,9 @@ function spawnFallingBit() {
     const bit = document.createElement('div');
     bit.className = 'falling-bit';
     
-    // Random visual properties
     bit.style.left = Math.random() * 100 + '%';
     bit.style.animationDuration = (5 + Math.random() * 5) + 's';
     
-    // Deep colors
     const type = Math.random();
     if(type < 0.3) {
         bit.style.background = '#fbc02d'; // Deep Gold
@@ -208,11 +204,7 @@ function spawnFallingBit() {
     }
 
     container.appendChild(bit);
-
-    // Cleanup
-    setTimeout(() => {
-        bit.remove();
-    }, 10000);
+    setTimeout(() => { bit.remove(); }, 10000);
 }
 
 
@@ -240,7 +232,6 @@ async function initAudio() {
     }
 }
 
-// Background Music Logic (HTML Audio)
 function toggleMusic() {
     const audio = document.getElementById('bg-music');
     if(!audio) return;
@@ -334,77 +325,60 @@ function blowCandle() {
 }
 
 function superCelebration() {
-    // 1. Classic Confetti
     confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-    
-    // 2. Stars
     setTimeout(() => {
-        confetti({ 
-            particleCount: 50, 
-            spread: 100, 
-            origin: { y: 0.6 },
-            shapes: ['star'],
-            colors: ['#FFD700', '#FFA500']
-        });
+        confetti({ particleCount: 50, spread: 100, origin: { y: 0.6 }, shapes: ['star'], colors: ['#FFD700', '#FFA500'] });
     }, 500);
-
-    // 3. Hearts from sides
     setTimeout(() => {
         confetti({ particleCount: 50, angle: 60, spread: 55, origin: { x: 0 }, shapes: ['circle'], colors: ['#e91e63'] });
         confetti({ particleCount: 50, angle: 120, spread: 55, origin: { x: 1 }, shapes: ['circle'], colors: ['#e91e63'] });
     }, 1000);
-
-    // 4. Big Burst
     setTimeout(() => {
-        confetti({ 
-            particleCount: 200, 
-            spread: 160, 
-            origin: { y: 0.3 },
-            scalar: 1.2
-        });
+        confetti({ particleCount: 200, spread: 160, origin: { y: 0.3 }, scalar: 1.2 });
     }, 2000);
 }
 
+// WIN STATE LOGIC
 function win() {
     state.listening = false;
     
+    // 1. Trigger Confetti & Clapping sound effect (puff noise)
     playClapping();
     superCelebration();
     
-    // Stop background music on win
-    const audio = document.getElementById('bg-music');
-    if(audio) {
-        let vol = audio.volume;
-        const fade = setInterval(() => {
-            if(vol > 0.05) {
-                vol -= 0.05;
-                audio.volume = vol;
-            } else {
-                clearInterval(fade);
-                audio.pause();
-                state.musicPlaying = false;
-                document.getElementById('music-btn').innerText = '🎵';
-            }
-        }, 100);
+    // 2. STOP Background Music
+    const bgAudio = document.getElementById('bg-music');
+    if(bgAudio) {
+        bgAudio.pause();
+        state.musicPlaying = false;
+        document.getElementById('music-btn').innerText = '🎵';
     }
-    
-    // We removed the synthetic birthday song to keep it classy or rely on the track,
-    // but user requested "vibrant" song instead of "bad" song. 
-    // The background track is now vibrant. We can let it play or stop it.
-    // Usually winning implies "Happy Birthday" song. 
-    // Since we don't have a specific file for that, I will just let the Celebration happen visually.
 
-    // Ensure we are targeting the correct element ID for the modal
+    // 3. START Happy Birthday Song
+    const winAudio = document.getElementById('win-music');
+    if(winAudio) {
+        winAudio.volume = 0.8;
+        winAudio.play().catch(e => console.log("Win audio play blocked", e));
+    }
+
+    // 4. SHOW Big Greeting Text Overlay immediately
+    const bigGreeting = document.getElementById('big-greeting');
+    if(bigGreeting) {
+        bigGreeting.classList.remove('hidden');
+    }
+
+    // 5. SHOW Card Modal after 3 seconds
     setTimeout(() => {
+        // Hide Greeting? Or keep it? Usually better to fade it out or put card over it.
+        // Let's put card over it.
         const modal = document.getElementById('card-modal');
         if(modal) {
             modal.classList.remove('hidden');
-            // Add a little pop animation class to the book
             const book = document.getElementById('card-wrapper');
             if(book) {
-                book.classList.add('bounce-anim'); // Reuse bounce anim for entrance
+                book.classList.add('bounce-anim'); 
                 setTimeout(() => book.classList.remove('bounce-anim'), 1000);
             }
         }
-    }, 2000);
+    }, 3000);
 }

@@ -12,10 +12,14 @@
 </head>
 <body>
 
-    <!-- VIBRANT MELODIOUS MUSIC -->
+    <!-- BACKGROUND MUSIC (Instrumental Piyu Bole or Soft Piano) -->
     <audio id="bg-music" loop preload="auto">
-        <!-- Romantic/Vibrant Piano Instrumental -->
         <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- WIN MUSIC (Happy Birthday Song) -->
+    <audio id="win-music" preload="auto">
+        <source src="https://cdn.pixabay.com/audio/2023/10/03/audio_a975775d7c.mp3" type="audio/mpeg">
     </audio>
 
     <!-- START SCREEN -->
@@ -43,6 +47,11 @@
         </div>
     </div>
 
+    <!-- BIG GREETING OVERLAY (Hidden initially) -->
+    <div id="big-greeting" class="hidden">
+        <h1 class="glow-text">Happy Birthday<br>To You My Baby!</h1>
+    </div>
+
     <!-- MAIN SCENE -->
     <div id="scene">
         
@@ -55,6 +64,7 @@
 
         <!-- LAYER 1: ROOM BACKGROUND -->
         <div class="room-bg">
+            <div class="vignette"></div>
             <div class="wall-texture"></div>
             
             <!-- Magic Dust Container -->
@@ -156,8 +166,14 @@
         <!-- LAYER 2: TABLE -->
         <div class="table-container">
             <div class="table-shadow"></div>
-            <div class="cloth-body"><div class="cloth-folds"></div></div>
+            <!-- Cloth Body -->
+            <div class="cloth-body">
+                <div class="texture-overlay"></div>
+                <div class="cloth-folds"></div>
+            </div>
+            <!-- Cloth Top -->
             <div class="cloth-top">
+                <div class="texture-overlay"></div>
                 <div id="petals-container"></div>
                 <div id="chocolates-container"></div>
             </div>
@@ -186,11 +202,13 @@
 
             <div class="gift-shadow left-shadow"></div>
             <div class="prop gift-box gift-left jelly-anim">
+                <div class="gift-texture"></div>
                 <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
             
             <div class="gift-shadow right-shadow"></div>
             <div class="prop gift-box gift-right jelly-anim">
+                <div class="gift-texture"></div>
                 <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
 
@@ -227,7 +245,7 @@
 
     </div>
 
-    <!-- BOOK CARD MODAL (Redesigned for Single Page Open) -->
+    <!-- BOOK CARD MODAL -->
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
             
@@ -249,10 +267,11 @@
                 </div>
             </div>
             
-            <!-- FRONT COVER CONTAINER (Rotates to show Photo on back) -->
+            <!-- FRONT COVER CONTAINER -->
             <div class="book-cover-container">
                 <!-- Front of Cover -->
                 <div class="book-cover-front">
+                    <div class="cover-texture"></div>
                     <div class="cover-content">
                         <div class="heart-anim">❤️</div>
                         <h2>For You</h2>
@@ -260,7 +279,7 @@
                     </div>
                 </div>
                 
-                <!-- Back of Cover (Inside Left - THE PHOTO) -->
+                <!-- Back of Cover (Inside Left) -->
                 <div class="book-cover-back">
                      <div class="photo-border loved-theme-photo">
                         <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
