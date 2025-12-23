@@ -16,7 +16,6 @@ body {
 /* --- START SCREEN --- */
 #start-screen {
     position: fixed; inset: 0; z-index: 1000;
-    /* Vibrant Start Gradient */
     background: radial-gradient(circle at center, #ffca28 0%, #f48fb1 30%, #ad1457 100%);
     display: flex; align-items: center; justify-content: center;
     transition: opacity 1s;
@@ -78,35 +77,37 @@ body {
 .icon-btn { background: none; border: none; font-size: 1.5rem; cursor: pointer; transition: transform 0.2s; }
 .icon-btn:hover { transform: scale(1.1); }
 
-/* --- BIG GREETING OVERLAY --- */
+/* --- BIG GREETING OVERLAY (Transparent) --- */
 #big-greeting {
     position: fixed; inset: 0; z-index: 1500;
     display: flex; align-items: center; justify-content: center;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(4px);
-    opacity: 0; transition: opacity 1s;
+    /* Removed background/blur per request */
+    background: transparent;
     pointer-events: none;
 }
-#big-greeting:not(.hidden) { opacity: 1; animation: popIn 0.5s forwards; }
+#big-greeting:not(.hidden) { animation: popIn 0.5s forwards; }
 
 .greeting-content { text-align: center; }
 .glow-text {
     font-family: 'Great Vibes', cursive;
-    font-size: 5rem;
+    font-size: 6rem;
     color: #ffd700; /* Gold */
+    /* Strong text shadow for visibility without background */
     text-shadow: 
-        0 0 10px #e65100, 
-        0 0 20px #e65100, 
-        0 0 40px #ffca28;
+        0 0 10px #ff6f00, 
+        0 0 20px #ff6f00, 
+        0 0 40px #ffca28,
+        0 0 80px #d81b60,
+        2px 2px 0px #000;
     line-height: 1.2;
     transform: scale(0.8);
     animation: pulseGlow 2s infinite alternate;
 }
-.giant-heart { font-size: 4rem; margin-top: 20px; animation: beat 1s infinite; }
+.giant-heart { font-size: 5rem; margin-top: 20px; animation: beat 1s infinite; filter: drop-shadow(0 0 20px red); }
 
 @keyframes pulseGlow {
-    from { text-shadow: 0 0 10px #e65100, 0 0 20px #ff6f00; transform: scale(1); }
-    to { text-shadow: 0 0 20px #e65100, 0 0 50px #ffd700, 0 0 80px #fff; transform: scale(1.05); }
+    from { text-shadow: 0 0 10px #ff6f00, 0 0 20px #ff6f00, 2px 2px 0px #000; transform: scale(1); }
+    to { text-shadow: 0 0 20px #ff6f00, 0 0 50px #ffd700, 0 0 80px #ffeb3b, 2px 2px 0px #000; transform: scale(1.05); }
 }
 
 
@@ -116,7 +117,6 @@ body {
 /* CURTAINS */
 .curtain {
     position: absolute; top: 0; width: 50%; height: 100%;
-    /* Rich Velvet Gradient */
     background: repeating-linear-gradient(90deg, #880e4f 0%, #ad1457 10%, #d81b60 20%, #ad1457 30%, #880e4f 40%);
     z-index: 800; transition: transform 3s cubic-bezier(0.4, 0.0, 0.2, 1);
     box-shadow: 0 0 50px rgba(0,0,0,0.8);
@@ -130,10 +130,9 @@ body {
 body.open .curtain.left { transform: scaleX(0); }
 body.open .curtain.right { transform: scaleX(0); }
 
-/* ROOM BACKGROUND - VIBRANT & CLEAN */
+/* ROOM BACKGROUND */
 .room-bg {
     position: absolute; inset: 0;
-    /* Beautiful Vibrant Gradient: Yellow Glow -> Soft Pink -> Deep Pink */
     background: radial-gradient(circle at 50% 50%, #fff59d 0%, #f48fb1 40%, #c2185b 100%);
 }
 .spotlight {
@@ -183,14 +182,12 @@ body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s 
 .b10 { top: 30%; right: 30%; background: #26a69a; width: 42px; height: 52px; animation-delay: 1.8s, 2.4s; }
 .b11 { top: 50%; left: 2%; background: #ec407a; width: 50px; height: 60px; animation-delay: 0.2s, 2.5s; }
 .b12 { top: 45%; right: 2%; background: #42a5f5; width: 48px; height: 58px; animation-delay: 2.2s, 2.6s; }
-
 .heart-b { width: 40px; height: 40px; border-radius: 50%; background: #ff1744; box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2); }
 .heart-b::before { content: ''; position: absolute; top: -20px; left: 0; width: 40px; height: 40px; background: inherit; border-radius: 50%; }
 .heart-b::after { content: ''; position: absolute; top: 0; left: 20px; width: 40px; height: 40px; background: inherit; border-radius: 50%; }
 .h1 { top: 25%; left: 80%; transform: rotate(-15deg) scale(0.6); animation-delay: 1.2s, 2.5s; }
 .h2 { top: 40%; left: 10%; transform: rotate(10deg) scale(0.5); animation-delay: 2.2s, 2.6s; }
 
-/* PARTICLES */
 #magic-dust { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
 .dust-particle { position: absolute; width: 4px; height: 4px; background: #fff; border-radius: 50%; box-shadow: 0 0 8px #fff, 0 0 12px #ffd54f; opacity: 0; animation: dustFloat 8s infinite linear; }
 @keyframes dustFloat { 0% { transform: translateY(0) translateX(0); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translateY(-100px) translateX(20px); opacity: 0; } }
@@ -198,7 +195,7 @@ body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s 
 body.open #fairy-lights { animation: fadeIn 3s ease-in-out forwards 1s; }
 .bulb { position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800; animation: flash 3s infinite alternate; }
 
-/* TABLE - CLEAN VECTOR STYLE */
+/* TABLE */
 .table-container { position: absolute; bottom: 0; left: 0; width: 100vw; height: 35vh; z-index: 10; opacity: 0; }
 body.open .table-container { animation: slideUp 1.5s ease-out forwards 0.2s; }
 .table-shadow { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: linear-gradient(to top, rgba(93, 64, 55, 0.4), transparent); z-index: 0; }
@@ -206,7 +203,6 @@ body.open .table-container { animation: slideUp 1.5s ease-out forwards 0.2s; }
 .cloth-top {
     position: absolute; top: 0; left: 0; width: 100%; height: 20vh;
     background-color: #fff;
-    /* Clean Checkered Pattern */
     background-image: 
         repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255, 235, 59, 0.15) 30px, rgba(255, 235, 59, 0.15) 60px),
         repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(244, 143, 177, 0.2) 30px, rgba(244, 143, 177, 0.2) 60px);
@@ -220,33 +216,27 @@ body.open .table-container { animation: slideUp 1.5s ease-out forwards 0.2s; }
     z-index: 3; box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
 }
 
-/* GIFTS - CLEAN GRADIENTS */
+/* GIFTS */
 .gift-box { width: 120px; height: 100px; border-radius: 4px; z-index: 25; transform: scale(0); }
 body.open .gift-box { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1s, jelly 4s infinite 2s; }
 .gift-box .lid { position: absolute; top: -15px; left: -5px; width: 130px; height: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border-radius: 2px; z-index: 2; }
 .ribbon-horz { position: absolute; top: 50%; width: 100%; height: 15px; transform: translateY(-50%); z-index: 3; }
 .ribbon-vert { position: absolute; left: 50%; height: 100%; width: 15px; transform: translateX(-50%); z-index: 3; }
-
 .gift-left { position: absolute; top: 12vh; left: 15%; background: linear-gradient(135deg, #ab47bc, #7b1fa2); box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
 .gift-left .lid { background: #ce93d8; }
 .gift-left .ribbon-horz, .gift-left .ribbon-vert { background: #f3e5f5; }
-
 .gift-right { position: absolute; top: 12vh; right: 15%; background: linear-gradient(135deg, #26a69a, #00897b); box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
 .gift-right .lid { background: #80cbc4; }
 .gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #e0f2f1; }
 
-/* CAKE - 3 TIERS & FIXED CANDLE POSITION */
+/* CAKE */
 .cake-container { 
     position: absolute; bottom: 12vh; left: 40%; transform: translateX(-50%); 
     width: 320px; height: 350px; z-index: 30; opacity: 0; 
 }
 body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.8s; }
 .cake-plate { position: absolute; bottom: 0; left: -15%; width: 130%; height: 50px; background: #fff; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
-
-/* Tier Styles */
 .tier { position: absolute; left: 50%; transform: translateX(-50%); }
-
-/* Bottom Tier */
 .bottom-tier { bottom: 25px; width: 300px; height: 100px; z-index: 1; }
 .bottom-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 80px;
@@ -257,8 +247,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
     position: absolute; top: 0; width: 100%; height: 80px;
     background: #5d4037; border-radius: 50%; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
 }
-
-/* Middle Tier */
 .middle-tier { bottom: 85px; width: 220px; height: 90px; z-index: 2; }
 .middle-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 70px;
@@ -269,8 +257,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
     position: absolute; top: 0; width: 100%; height: 70px;
     background: #d81b60; border-radius: 50%; box-shadow: inset 0 5px 10px rgba(0,0,0,0.1);
 }
-
-/* Top Tier */
 .top-tier { bottom: 145px; width: 150px; height: 80px; z-index: 3; }
 .top-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 60px;
@@ -283,22 +269,14 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
     border: 1px solid rgba(255,255,255,0.3);
     display: flex; align-items: center; justify-content: center;
 }
-
-/* Decoration Details */
 .icing-drips {
     position: absolute; top: 30px; left: 0; width: 100%; height: 20px; z-index: 5;
     background: transparent;
     background-image: radial-gradient(circle at 50% 100%, #5d4037 8px, transparent 9px); 
     background-size: 25px 20px; background-repeat: repeat-x; opacity: 0.9;
 }
-.middle-tier .icing-drips { 
-    top: 25px; 
-    background-image: radial-gradient(circle at 50% 100%, #ad1457 8px, transparent 9px); 
-}
-.top-tier .icing-drips { 
-    top: 20px; 
-    background-image: radial-gradient(circle at 50% 100%, #fce4ec 8px, transparent 9px); 
-}
+.middle-tier .icing-drips { top: 25px; background-image: radial-gradient(circle at 50% 100%, #ad1457 8px, transparent 9px); }
+.top-tier .icing-drips { top: 20px; background-image: radial-gradient(circle at 50% 100%, #fce4ec 8px, transparent 9px); }
 
 /* STRAWBERRIES */
 .strawberry {
@@ -311,12 +289,10 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .s-2 { top: -2px; right: 25%; transform: rotate(10deg); }
 .s-3 { top: 15px; left: 45%; z-index: 5; }
 
-/* CANDLES */
+/* CANDLES & FLAMES */
 #candles-container { 
-    position: absolute; bottom: 195px; /* Sits on Top Tier (145 + ~50) */
-    left: 50%; width: 0; height: 0; 
-    z-index: 100; /* Ensure on top */ 
-    opacity: 0; 
+    position: absolute; bottom: 195px; left: 50%; width: 0; height: 0; 
+    z-index: 100; opacity: 0; 
 }
 body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 
@@ -326,27 +302,49 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
     background-color: #ffd54f; border-radius: 2px; box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
 }
 .candle::after { content: ''; position: absolute; top: -2px; left: 0; width: 100%; height: 4px; background-color: inherit; border-radius: 50%; background-image: radial-gradient(rgba(255,255,255,0.8), transparent 70%); }
-.flame { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); width: 12px; height: 25px; transform-origin: center bottom; animation: flameFlicker 0.1s infinite alternate, flameWaver 2s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(255, 160, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 100, 0, 0.4)); opacity: 0.95; z-index: 5; }
+.wick { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: #333; border-radius: 1px; }
 
-/* BOOK CARD - CLEAN & VIBRANT */
-.book-cover-front {
-    position: absolute; inset: 0; 
-    background: linear-gradient(135deg, #f06292, #ec407a);
-    border-radius: 0 5px 5px 0; border: 2px solid #c2185b;
-    backface-visibility: hidden; display: flex; align-items: center; justify-content: center; z-index: 2;
+/* Better Flame with Gradient */
+.flame { 
+    position: absolute; top: -28px; left: 50%; transform: translateX(-50%); 
+    width: 14px; height: 28px; 
+    border-radius: 50% 50% 20% 20%;
+    background: radial-gradient(ellipse at bottom, #ffff00 0%, #ffca28 50%, #ff6f00 100%);
+    box-shadow: 0 0 10px #ff6f00, 0 0 20px #ffca28;
+    transform-origin: center bottom; 
+    animation: flameFlicker 0.1s infinite alternate, flameWaver 2s ease-in-out infinite; 
+    opacity: 0.9; z-index: 5; 
 }
-.book-page {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: #fff0f5; /* Clean light pink */
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.1); z-index: 1;
-}
-.photo-border {
-    position: relative; padding: 10px; background: #fff;
-    border: 1px dashed #ec407a; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    transform: rotate(2deg); width: 100%; height: auto;
-}
-.photo-border.loved-theme-photo { border: 3px double #ff4081; box-shadow: 0 0 15px rgba(255, 64, 129, 0.4); }
 
+/* Flicker Hard (when blowing but not out) */
+.flame.flicker-hard {
+    animation: flameFlicker 0.05s infinite alternate, flameWild 0.2s infinite !important;
+    transform: translateX(-50%) skewX(10deg) scale(1.1);
+}
+@keyframes flameWild {
+    0% { transform: translateX(-50%) skewX(-15deg) scaleY(0.8); }
+    50% { transform: translateX(-50%) skewX(15deg) scaleY(1.1); }
+    100% { transform: translateX(-50%) skewX(-5deg) scaleY(0.9); }
+}
+
+/* Extinguished State + Smoke */
+.flame.out { 
+    animation: none; opacity: 0; transition: opacity 0.2s; 
+}
+.candle.out .wick::after {
+   /* Smoke Effect */
+   content: ''; position: absolute; top: 0; left: 50%; width: 4px; height: 20px;
+   background: rgba(255,255,255,0.4); filter: blur(2px);
+   transform: translateX(-50%);
+   animation: smokeRise 1.5s forwards;
+}
+@keyframes smokeRise {
+    0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
+    20% { opacity: 0.6; transform: translateX(-50%) translateY(-10px) scale(1); }
+    100% { opacity: 0; transform: translateX(-40%) translateY(-40px) scale(2); }
+}
+
+/* --- Rest of Styles --- */
 /* Reuse generic anims */
 .wall-poster { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); z-index: 5; opacity: 0; }
 body.open .wall-poster { animation: fadeIn 2s forwards 2s, jelly 4s infinite; }
@@ -407,8 +405,7 @@ body.open .gift-shadow { animation: fadeIn 1s forwards 1s; }
 .chocolate { position: absolute; background: #5d4037; border-radius: 2px; box-shadow: 1px 1px 3px rgba(0,0,0,0.2); opacity: 0; }
 body.open .chocolate { animation: fadeIn 1s forwards 1.2s; }
 .chocolate::after { content: ''; position: absolute; top: 2px; left: 2px; width: 40%; height: 40%; background: rgba(255,255,255,0.2); border-radius: 50%; }
-.wick { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 2px; height: 6px; background: #333; border-radius: 1px; }
-.flame.out { animation: none; opacity: 0; transform: translateX(-50%) scale(0.5); transition: opacity 0.3s, transform 0.3s; filter: none; }
+
 @keyframes flameFlicker { 0% { transform: translateX(-50%) scale(1.0) skewX(-1deg); opacity: 0.9; } 25% { transform: translateX(-50%) scale(1.02) skewX(1deg); opacity: 1; } 50% { transform: translateX(-50%) scale(0.98) skewX(-2deg); opacity: 0.85; } 100% { transform: translateX(-50%) scale(1.0) skewX(0deg); opacity: 0.9; } }
 @keyframes flameWaver { 0% { transform: translateX(-50%) rotate(-2deg); } 50% { transform: translateX(-50%) rotate(2deg); } 100% { transform: translateX(-50%) rotate(-2deg); } }
 @keyframes jelly { 0%, 100% { transform: scale(1, 1); } 25% { transform: scale(0.9, 1.1); } 75% { transform: scale(0.95, 1.05); } }

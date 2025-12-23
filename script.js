@@ -2,7 +2,9 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 5, // Lowered for better sensitivity
+    // Increased threshold: 5 was too sensitive, 30 requires a deliberate blow close to mic.
+    micThreshold: 30, 
+    flickerThreshold: 10,
 };
 
 const state = {
@@ -17,7 +19,6 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
-    // Adjusted Radius for new top tier
     const rx = 55; 
     const ry = 20; 
 
@@ -29,7 +30,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.createElement('div');
         el.className = 'candle';
         el.style.transform = `translate(${x}px, ${y}px)`;
-        // Increased base Z-index to ensure they are on top
         el.style.zIndex = Math.floor(y + 200);
 
         const hues = [340, 200, 45, 120, 280]; 
@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const flame = document.createElement('div');
         flame.className = 'flame';
         
+        // Randomize initial animation
         const delay = Math.random() * 2 + 's';
         flame.style.setProperty('--delay', delay);
         flame.style.animationDelay = delay;
@@ -49,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         el.appendChild(flame);
         holder.appendChild(el);
 
-        state.candles.push({ el: flame, active: true });
+        state.candles.push({ el: flame, container: el, active: true });
     }
 
     // 2. Scatter Chocolates
@@ -143,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 6. Start Button
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Context for Mic
+        initAudio(); // Initialize Context for Mic & Music
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -219,11 +220,13 @@ async function initAudio() {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         const source = state.audioCtx.createMediaStreamSource(stream);
         state.analyser = state.audioCtx.createAnalyser();
-        state.analyser.fftSize = 256;
+        state.analyser.fftSize = 512;
+        state.analyser.smoothingTimeConstant = 0.4;
         
+        // Create a low-pass filter to isolate wind/breath sounds (low frequency)
         const filter = state.audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 600;
+        filter.frequency.value = 800; // Focus on lower freq
         
         source.connect(filter);
         filter.connect(state.analyser);
@@ -267,29 +270,41 @@ function playChime() {
     });
 }
 
+// Procedural White Noise "Puff" Sound
 function playPuff() {
     if(!state.audioCtx) return;
-    const t = state.audioCtx.currentTime;
-    const buffer = state.audioCtx.createBuffer(1, state.audioCtx.sampleRate * 0.1, state.audioCtx.sampleRate);
+    const bufferSize = state.audioCtx.sampleRate * 0.5; // 0.5 seconds
+    const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
     const data = buffer.getChannelData(0);
-    for(let i=0; i<data.length; i++) data[i] = (Math.random() * 2 - 1) * 0.5;
-    
-    const src = state.audioCtx.createBufferSource();
-    src.buffer = buffer;
-    const g = state.audioCtx.createGain();
-    
-    g.gain.setValueAtTime(0.5, t);
-    g.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
-    
-    src.connect(g);
-    g.connect(state.audioCtx.destination);
-    src.start();
+
+    for (let i = 0; i < bufferSize; i++) {
+        // White noise
+        data[i] = Math.random() * 2 - 1;
+    }
+
+    const noiseSrc = state.audioCtx.createBufferSource();
+    noiseSrc.buffer = buffer;
+
+    // Filter to make it sound like air
+    const noiseFilter = state.audioCtx.createBiquadFilter();
+    noiseFilter.type = 'lowpass';
+    noiseFilter.frequency.value = 1000;
+
+    const noiseGain = state.audioCtx.createGain();
+    noiseGain.gain.setValueAtTime(0.8, state.audioCtx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.4);
+
+    noiseSrc.connect(noiseFilter);
+    noiseFilter.connect(noiseGain);
+    noiseGain.connect(state.audioCtx.destination);
+    noiseSrc.start();
 }
 
 function playClapping() {
     if(!state.audioCtx) return;
-    for(let i=0; i<80; i++) {
-        setTimeout(playPuff, Math.random() * 2500);
+    // Simulate applause with random noise bursts
+    for(let i=0; i<40; i++) {
+        setTimeout(playPuff, Math.random() * 2000);
     }
 }
 
@@ -298,10 +313,26 @@ function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
         state.analyser.getByteFrequencyData(data);
-        const avg = data.reduce((a,b)=>a+b) / data.length;
+        
+        // Calculate average volume
+        let sum = 0;
+        for(let i=0; i<data.length; i++) sum += data[i];
+        const avg = sum / data.length;
 
         document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
 
+        // FLICKER EFFECT: If blowing gently (threshold 10 - 30)
+        if(avg > CONFIG.flickerThreshold && avg < CONFIG.micThreshold) {
+             state.candles.forEach(c => {
+                 if(c.active) c.el.classList.add('flicker-hard');
+             });
+        } else {
+             state.candles.forEach(c => {
+                 if(c.active) c.el.classList.remove('flicker-hard');
+             });
+        }
+
+        // BLOW OUT: If blowing hard (threshold > 30)
         if(avg > CONFIG.micThreshold) {
             blowCandle();
         }
@@ -313,16 +344,30 @@ function blowCandle() {
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
-    const idx = Math.floor(Math.random() * active.length);
-    const target = active[idx];
-    target.active = false;
-    target.el.classList.add('out');
+    // Extinguish 1-3 candles at a time for realism
+    const amount = Math.floor(Math.random() * 3) + 1;
     
-    playPuff();
-    state.extinguished++;
+    for(let i=0; i<amount; i++) {
+        if(state.extinguished >= CONFIG.candleCount) break;
+        
+        // Find a random active candle
+        const activeCandidates = state.candles.filter(c => c.active);
+        if(activeCandidates.length === 0) break;
+
+        const idx = Math.floor(Math.random() * activeCandidates.length);
+        const target = activeCandidates[idx];
+        
+        target.active = false;
+        target.el.classList.remove('flicker-hard'); // Stop flicker
+        target.el.classList.add('out'); // Add out (fade + smoke)
+        target.container.classList.add('out'); // For smoke effect selector
+        
+        playPuff(); // Sound
+        state.extinguished++;
+    }
     
-    if(state.extinguished === CONFIG.candleCount) {
-        win();
+    if(state.extinguished >= CONFIG.candleCount) {
+        setTimeout(win, 500); // Slight delay before win state
     }
 }
 
@@ -342,28 +387,40 @@ function superCelebration() {
 
 // WIN STATE LOGIC
 function win() {
-    state.listening = false;
+    if(!state.listening) return; // Prevent double trigger
+    state.listening = false; // Stop listening
     
-    // 1. Trigger Confetti & Clapping sound effect (puff noise)
+    // 1. Trigger Confetti & Clapping
     playClapping();
     superCelebration();
     
-    // 2. STOP Background Music immediately
+    // 2. STOP Background Music
     const bgAudio = document.getElementById('bg-music');
     if(bgAudio) {
         bgAudio.pause();
-        bgAudio.currentTime = 0; // Reset
+        bgAudio.currentTime = 0; 
     }
 
-    // 3. START Happy Birthday Song immediately
+    // 3. START Happy Birthday Song
     const winAudio = document.getElementById('win-music');
     if(winAudio) {
         winAudio.volume = 1.0;
         winAudio.currentTime = 0;
-        winAudio.play().catch(e => console.log("Win audio play blocked", e));
+        // Resume context just in case
+        if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
+        
+        const playPromise = winAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.error("Auto-play failed:", error);
+                // Fallback: Use browser text-to-speech if MP3 fails
+                const msg = new SpeechSynthesisUtterance("Happy Birthday My Love!");
+                window.speechSynthesis.speak(msg);
+            });
+        }
     }
     
-    // 4. Hide Music Controls so it cannot be stopped
+    // 4. Hide Music Controls
     const musicControl = document.getElementById('music-control');
     if(musicControl) musicControl.style.display = 'none';
 
@@ -373,7 +430,7 @@ function win() {
         bigGreeting.classList.remove('hidden');
     }
 
-    // 6. SHOW Card Modal after 7 seconds (per request)
+    // 6. SHOW Card Modal after 7 seconds
     setTimeout(() => {
         const modal = document.getElementById('card-modal');
         if(modal) {
