@@ -14,20 +14,29 @@
 
     <!-- FIREWORKS CANVAS -->
     <canvas id="fireworks-canvas"></canvas>
+    
+    <!-- LIGHTING FLASH OVERLAY -->
+    <div id="flash-overlay"></div>
 
-    <!-- BACKGROUND MUSIC (Instrumental) -->
-    <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
-        <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- WIN MUSIC (Happy Birthday Song) -->
-    <audio id="win-music" preload="auto" loop>
+    <!-- BACKGROUND MUSIC (Happy Birthday Song) -->
+    <!-- Starts immediately upon entering as requested -->
+    <audio id="bg-music" loop preload="auto">
         <source src="happy_birthday.mp3" type="audio/mpeg">
     </audio>
 
     <!-- SFX: REAL CHEERING -->
     <audio id="cheer-sfx" preload="auto" crossorigin="anonymous">
         <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153e2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SFX: CLAPPING -->
+    <audio id="clapping-sfx" preload="auto" crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/audio/2024/08/09/audio_6527f5c71b.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SFX: CONFETTI POP -->
+    <audio id="pop-sfx" preload="auto" crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/audio/2022/03/10/audio_c8c8a73467.mp3" type="audio/mpeg">
     </audio>
 
     <!-- SFX: REAL FIREWORKS -->
@@ -293,11 +302,13 @@
                 
                 <!-- Back of Cover (Photo) -->
                 <div class="book-cover-back">
-                     <div class="photo-border loved-theme-photo">
-                        <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
-                        <div class="corner-heart top-left">❤️</div>
-                        <div class="corner-heart bottom-right">❤️</div>
-                    </div>
+                     <div class="photo-wrapper">
+                         <!-- "Tape" decoration -->
+                         <div class="tape-strip"></div>
+                         <div class="photo-border loved-theme-photo">
+                            <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                        </div>
+                     </div>
                 </div>
             </div>
             
