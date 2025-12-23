@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 12, // Lowered for easier blowing
+    micThreshold: 20, 
     flickerThreshold: 8,
 };
 
@@ -414,7 +414,6 @@ class Rocket {
         if (this.vy >= 0 && !this.exploded) {
             this.exploded = true;
             this.createParticles(this.x, this.y, this.color);
-            triggerFlash(); // Trigger light effect
             return false;
         }
         return true;
@@ -425,15 +424,6 @@ let fireworksCanvas, fCtx;
 let rockets = [];
 let particles = [];
 let fireworksRunning = false;
-
-function triggerFlash() {
-    const flash = document.getElementById('flash-overlay');
-    if(!flash) return;
-    flash.style.opacity = 0.6;
-    setTimeout(() => {
-        flash.style.opacity = 0;
-    }, 100);
-}
 
 function startRealFireworks() {
     fireworksCanvas = document.getElementById('fireworks-canvas');
@@ -487,32 +477,36 @@ function win() {
     const cheer = document.getElementById('cheer-sfx');
     if(cheer) cheer.play().catch(e => console.log(e));
     
-    const clap = document.getElementById('clapping-sfx');
-    if(clap) clap.play().catch(e => console.log(e));
-
-    const pop = document.getElementById('pop-sfx');
-    if(pop) pop.play().catch(e => console.log(e));
-    
     const fwSound = document.getElementById('fireworks-sfx');
     if(fwSound) {
         fwSound.volume = 0.6;
         fwSound.play().catch(e => console.log(e));
     }
 
-    // TRIGGER CONFETTI
-    if(typeof confetti !== 'undefined') {
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-        setTimeout(() => confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } }), 500);
-    }
-
     // Start Real Fireworks
     startRealFireworks();
     
-    // Continue background music or switch volume if needed
-    const music = document.getElementById('bg-music');
-    if(music) {
-        music.volume = 1.0;
+    const bgAudio = document.getElementById('bg-music');
+    if(bgAudio) {
+        bgAudio.pause();
+        bgAudio.currentTime = 0; 
+    }
+
+    const winAudio = document.getElementById('win-music');
+    if(winAudio) {
+        winAudio.volume = 1.0;
+        winAudio.currentTime = 0;
         if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
+        
+        // Robust Play Attempt
+        const playPromise = winAudio.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.error("Win music auto-play failed:", error);
+                const msg = new SpeechSynthesisUtterance("Happy Birthday My Love!");
+                window.speechSynthesis.speak(msg);
+            });
+        }
     }
 
     const bigGreeting = document.getElementById('big-greeting');
