@@ -21,19 +21,7 @@ body {
     width: 100%;
     height: 100%;
     pointer-events: none;
-    z-index: 3000;
-    background: transparent; /* Explicitly transparent */
-}
-
-/* FLASH OVERLAY (Lighting Effect) */
-#flash-overlay {
-    position: fixed; inset: 0;
-    background: white;
-    opacity: 0;
-    z-index: 2999;
-    pointer-events: none;
-    mix-blend-mode: overlay;
-    transition: opacity 0.1s;
+    z-index: 3000; /* Very high to be over overlay */
 }
 
 /* Optimize Animations */
@@ -157,8 +145,6 @@ body.open .curtain.right { transform: scaleX(0); }
 .room-bg {
     position: absolute; inset: 0;
     background: radial-gradient(circle at 50% 50%, #fff59d 0%, #f48fb1 40%, #c2185b 100%);
-    /* Ensure background is behind everything */
-    z-index: 0; 
 }
 .spotlight {
     position: absolute; top: -20%; left: 20%; right: 20%; height: 100%;
@@ -205,6 +191,7 @@ body.open .curtain.right { transform: scaleX(0); }
     position: absolute; width: 45px; height: 55px;
     border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
     z-index: 20; opacity: 0;
+    /* 3D Glossy Effect */
     background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.2) 20%, transparent 60%),
                 radial-gradient(circle at 50% 60%, var(--b-color, #ff4081) 40%, rgba(0,0,0,0.2) 100%);
     box-shadow: inset -5px -5px 15px rgba(0,0,0,0.1), 5px 10px 15px rgba(0,0,0,0.15);
@@ -216,11 +203,12 @@ body.open .curtain.right { transform: scaleX(0); }
 .balloon::after { 
     content: ''; position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); 
     width: 1px; height: 50px; background: rgba(255,255,255,0.8); 
+    /* Wavy string simulation */
     box-shadow: 1px 10px 0 rgba(255,255,255,0.6), -1px 20px 0 rgba(255,255,255,0.6), 0 30px 0 rgba(255,255,255,0.4);
 }
 body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s forwards 1.5s; }
 
-/* Set colors via variable */
+/* Set colors via variable for the gradient to work */
 .b1 { --b-color: #ef5350; top: 15%; left: 5%; animation-delay: 0s, 1.5s; }
 .b2 { --b-color: #ab47bc; top: 20%; left: 15%; animation-delay: 1s, 1.6s; }
 .b3 { --b-color: #29b6f6; top: 10%; right: 10%; animation-delay: 2s, 1.7s; }
@@ -250,12 +238,8 @@ body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s 
 body.open #fairy-lights { animation: fadeIn 3s ease-in-out forwards 1s; }
 .bulb { position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; box-shadow: 0 0 10px #ffeb3b, 0 0 20px #ff9800; animation: flash 3s infinite alternate; }
 
-/* TABLE - HIGH Z-INDEX TO PREVENT HIDING */
-.table-container { 
-    position: absolute; bottom: 0; left: 0; width: 100vw; height: 35vh; 
-    z-index: 200; /* High z-index */
-    opacity: 0; 
-}
+/* TABLE */
+.table-container { position: absolute; bottom: 0; left: 0; width: 100vw; height: 35vh; z-index: 10; opacity: 0; }
 body.open .table-container { animation: slideUp 1.5s ease-out forwards 0.2s; }
 .table-shadow { position: absolute; bottom: 0; left: 0; width: 100%; height: 50px; background: linear-gradient(to top, rgba(93, 64, 55, 0.4), transparent); z-index: 0; }
 
@@ -288,12 +272,10 @@ body.open .gift-box { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275
 .gift-right .lid { background: #80cbc4; }
 .gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #e0f2f1; }
 
-/* CAKE - ENHANCED TEXTURE - HIGH Z-INDEX */
+/* CAKE - ENHANCED TEXTURE */
 .cake-container { 
     position: absolute; bottom: 12vh; left: 40%; transform: translateX(-50%); 
-    width: 320px; height: 350px; 
-    z-index: 250; /* Higher than table */
-    opacity: 0; 
+    width: 320px; height: 350px; z-index: 30; opacity: 0; 
 }
 body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 0.8s; }
 .cake-plate { position: absolute; bottom: 0; left: -15%; width: 130%; height: 50px; background: #fff; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
@@ -316,6 +298,7 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .bottom-tier { bottom: 25px; width: 300px; height: 100px; z-index: 1; }
 .bottom-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 80px;
+    /* Rich Chocolate */
     background: linear-gradient(to right, #4e342e, #5d4037 30%, #3e2723 60%, #291e1b);
     border-radius: 0 0 150px 150px; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
     overflow: hidden;
@@ -328,6 +311,7 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .middle-tier { bottom: 85px; width: 220px; height: 90px; z-index: 2; }
 .middle-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 70px;
+    /* Berry Frosting */
     background: linear-gradient(to right, #ad1457, #d81b60 30%, #880e4f 60%, #6a0a3a);
     border-radius: 0 0 110px 110px; box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     overflow: hidden;
@@ -340,6 +324,7 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .top-tier { bottom: 145px; width: 150px; height: 80px; z-index: 3; }
 .top-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 60px;
+    /* Vanilla Cream */
     background: linear-gradient(to right, #f48fb1, #f8bbd0 30%, #f06292 60%, #ec407a);
     border-radius: 0 0 75px 75px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -375,8 +360,7 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 /* CANDLES & FLAMES */
 #candles-container { 
     position: absolute; bottom: 195px; left: 50%; width: 0; height: 0; 
-    z-index: 300; /* Highest on cake */
-    opacity: 0; 
+    z-index: 100; opacity: 0; 
 }
 body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 
@@ -434,6 +418,7 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 .book-cover-front {
     position: absolute; inset: 0; 
     background: #ec407a;
+    /* Rich Leather/Paper Texture */
     background-image: 
         radial-gradient(circle at 50% 0, rgba(255,255,255,0.2), transparent 70%),
         url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
@@ -446,6 +431,7 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 .book-page {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #fffaf0; 
+    /* Quality Paper Texture */
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.08'/%3E%3C/svg%3E");
     box-shadow: inset 0 0 20px rgba(0,0,0,0.05); z-index: 1;
 }
@@ -458,49 +444,8 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
     border-right: 1px solid #e0e0e0;
 }
 
-/* --- DECORATED PHOTO --- */
-.photo-wrapper {
-    position: relative;
-    width: 80%; /* Slightly smaller */
-    max-width: 200px;
-    transform: rotate(-3deg);
-    transition: transform 0.3s;
-}
-.photo-wrapper:hover { transform: rotate(0deg) scale(1.05); }
-
-.photo-border {
-    background: #fff;
-    padding: 10px 10px 30px 10px; /* Polaroid bottom heavy */
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    border: 1px solid #ddd;
-    border-radius: 2px;
-}
-
-.card-photo {
-    width: 100%;
-    height: auto;
-    display: block;
-    border: 1px solid #eee;
-    filter: sepia(0.2) contrast(1.1); /* Slight vintage look */
-}
-
-/* Tape graphic */
-.tape-strip {
-    position: absolute;
-    top: -12px;
-    left: 50%;
-    transform: translateX(-50%) rotate(2deg);
-    width: 60px;
-    height: 20px;
-    background-color: rgba(255, 255, 255, 0.4);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    backdrop-filter: blur(2px);
-    border-left: 1px dotted rgba(255,255,255,0.3);
-    border-right: 1px dotted rgba(255,255,255,0.3);
-    z-index: 10;
-}
-
-/* Rest of styles (posters, etc) */
+/* --- Rest of Styles --- */
+/* Reuse generic anims */
 .wall-poster { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); z-index: 5; opacity: 0; }
 body.open .wall-poster { animation: fadeIn 2s forwards 2s, jelly 4s infinite; }
 .poster-frame { width: 200px; height: 140px; background: #5d4037; padding: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-radius: 4px; transform: rotate(2deg); }
@@ -522,13 +467,13 @@ body.open .banner-container { animation: slideDown 2s cubic-bezier(0.34, 1.56, 0
 .ribbon svg { width: 100%; height: 100%; overflow: visible; }
 .ribbon text { fill: #fff; font-family: 'Great Vibes', cursive; font-size: 36px; font-weight: bold; text-shadow: 3px 3px 0 #d81b60, 0 0 15px rgba(233, 30, 99, 0.8); }
 #curve { stroke: #f48fb1; stroke-width: 60; stroke-linecap: round; fill: none; box-shadow: 0 10px 10px rgba(0,0,0,0.1); }
-.easel-container { position: absolute; bottom: 12vh; right: 26%; width: 180px; height: 220px; z-index: 232; transform: rotate(3deg); opacity: 0; }
+.easel-container { position: absolute; bottom: 12vh; right: 26%; width: 180px; height: 220px; z-index: 32; transform: rotate(3deg); opacity: 0; }
 body.open .easel-container { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.2s; }
 .easel-legs { position: absolute; top: 20px; left: 20px; width: 140px; height: 200px; border-left: 5px solid #5d4037; border-right: 5px solid #5d4037; border-top: 5px solid #5d4037; transform: perspective(200px) rotateX(10deg); }
 .easel-board { position: absolute; top: 30px; left: 0; width: 180px; height: 130px; background: #3e2723; border: 4px solid #8d6e63; border-radius: 4px; box-shadow: 0 5px 10px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; }
 .board-content { font-family: 'Great Vibes', cursive; color: #fff; text-align: center; font-size: 1.5rem; line-height: 1.1; width: 100%; }
 .small-heart { font-size: 1rem; margin-top: 5px; animation: beat 2s infinite; }
-.bouquet-container { position: absolute; top: 5vh; left: 20%; z-index: 228; transform: scale(0); }
+.bouquet-container { position: absolute; top: 5vh; left: 20%; z-index: 28; transform: scale(0); }
 body.open .bouquet-container { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.4s, wobble 5s infinite 2s; }
 .vase { position: absolute; bottom: 0; left: 0; width: 45px; height: 70px; background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(200,230,255,0.5)); border-radius: 5px 5px 20px 20px; border: 1px solid rgba(255,255,255,0.8); box-shadow: inset 0 0 10px rgba(255,255,255,0.5), 0 5px 10px rgba(0,0,0,0.1); backdrop-filter: blur(4px); z-index: 2; }
 .vase-shadow { position: absolute; bottom: -5px; left: -10px; width: 65px; height: 15px; background: rgba(0,0,0,0.2); border-radius: 50%; filter: blur(5px); }
@@ -544,7 +489,7 @@ body.open .bouquet-container { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.
 .leaf { position: absolute; width: 25px; height: 12px; background: linear-gradient(to right, #2e7d32, #66bb6a); border-radius: 20px 0 20px 0; box-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
 .l1 { top: 40px; left: -5px; transform: rotate(-45deg); }
 .l2 { top: 45px; left: 50px; transform: rotate(45deg); }
-.macaron-plate { position: absolute; top: 10vh; right: 20%; z-index: 228; transform: scale(0); }
+.macaron-plate { position: absolute; top: 10vh; right: 20%; z-index: 28; transform: scale(0); }
 body.open .macaron-plate { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 1.5s, jelly 3s infinite 2s; }
 .plate-base { position: absolute; bottom: 0; width: 60px; height: 15px; background: #fff; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); border: 1px solid #eee; }
 .plate-shadow { position: absolute; bottom: -5px; left: -5px; width: 70px; height: 15px; background: rgba(0,0,0,0.2); border-radius: 50%; filter: blur(4px); }
