@@ -6,11 +6,14 @@
     <title>Happy Birthday My Love</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
-    <!-- Confetti Library -->
+    <!-- Confetti Library (kept for falling bits, but fireworks will use custom canvas) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <!-- FIREWORKS CANVAS -->
+    <canvas id="fireworks-canvas"></canvas>
 
     <!-- BACKGROUND MUSIC (Instrumental) -->
     <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
@@ -18,9 +21,18 @@
     </audio>
 
     <!-- WIN MUSIC (Happy Birthday Song) -->
-    <!-- REPLACE 'happy_birthday.mp3' with your actual file in the same folder -->
     <audio id="win-music" preload="auto" loop>
         <source src="happy_birthday.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SFX: REAL CHEERING -->
+    <audio id="cheer-sfx" preload="auto" crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_0625c153e2.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SFX: REAL FIREWORKS -->
+    <audio id="fireworks-sfx" preload="auto" loop crossorigin="anonymous">
+        <source src="https://cdn.pixabay.com/audio/2022/10/20/audio_f5519f71c1.mp3" type="audio/mpeg">
     </audio>
 
     <!-- START SCREEN -->

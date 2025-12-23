@@ -13,6 +13,17 @@ body {
 .hidden { display: none !important; opacity: 0; }
 .flex-center { display: flex; align-items: center; justify-content: center; }
 
+/* FIREWORKS CANVAS */
+#fireworks-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3000; /* Very high to be over overlay */
+}
+
 /* Optimize Animations */
 .wobble-anim, .jelly-anim, .bounce-anim, .streamer, .balloon, .floating-hearts span {
     will-change: transform;

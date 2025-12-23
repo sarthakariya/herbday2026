@@ -50,14 +50,15 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, container: el, active: true });
     }
 
-    // 2. Scatter Props
+    // 2. Scatter Props (Chocolates moved to Right Side)
     const chocoContainer = document.getElementById('chocolates-container');
     if(chocoContainer) {
         for(let i=0; i<12; i++) {
             const choco = document.createElement('div');
             choco.className = 'chocolate';
+            // Adjusted: Left position from 60% to 90%
             const top = 20 + Math.random() * 100;
-            const left = 5 + Math.random() * 90;
+            const left = 60 + Math.random() * 30; 
             const size = 10 + Math.random() * 10;
             const rot = Math.random() * 360;
             choco.style.top = top + 'px';
@@ -150,8 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(spawnFallingBit, 300);
         loop();
     });
-
-    // Removed Balloon Easter Egg (Click Listener) per request
 
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', () => {
@@ -298,26 +297,6 @@ function playAirSound() {
     noise.start();
 }
 
-function playClapping() {
-    if(!state.audioCtx) return;
-    // Increased volume and frequency for better sound
-    for(let i=0; i<60; i++) {
-        setTimeout(() => {
-             const osc = state.audioCtx.createOscillator();
-             const g = state.audioCtx.createGain();
-             osc.frequency.value = 150 + Math.random()*300; // Wider freq range
-             osc.type = 'triangle';
-             // Higher gain
-             g.gain.setValueAtTime(0.3, state.audioCtx.currentTime);
-             g.gain.exponentialRampToValueAtTime(0.001, state.audioCtx.currentTime + 0.15);
-             osc.connect(g);
-             g.connect(state.audioCtx.destination);
-             osc.start();
-             osc.stop(state.audioCtx.currentTime + 0.15);
-        }, Math.random() * 3000);
-    }
-}
-
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
@@ -375,40 +354,137 @@ function blowCandle() {
     }
 }
 
-function superCelebration() {
-    // Standard Confetti
-    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-    
-    // FIREWORKS LOOP
-    const duration = 15 * 1000;
-    const animationEnd = Date.now() + duration;
-    // Set z-index high enough to be over the modal/overlay
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 3000 };
+// --- REAL CANVAS FIREWORKS ENGINE ---
+class Particle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = Math.random() * 6 + 2;
+        this.vx = Math.cos(angle) * velocity;
+        this.vy = Math.sin(angle) * velocity;
+        this.alpha = 1;
+        this.decay = Math.random() * 0.015 + 0.015;
+    }
+    draw(ctx) {
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.05; // gravity
+        this.alpha -= this.decay;
+        return this.alpha > 0;
+    }
+}
 
-    function randomInRange(min, max) {
-      return Math.random() * (max - min) + min;
+class Rocket {
+    constructor(ctx, createParticles) {
+        this.ctx = ctx;
+        this.createParticles = createParticles;
+        this.x = Math.random() * window.innerWidth;
+        this.y = window.innerHeight;
+        this.vx = (Math.random() - 0.5) * 4;
+        this.vy = -(Math.random() * 5 + 12);
+        this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        this.exploded = false;
+    }
+    draw() {
+        this.ctx.globalAlpha = 1;
+        this.ctx.fillStyle = this.color;
+        this.ctx.beginPath();
+        this.ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
+        this.ctx.fill();
+        // trail
+        this.ctx.beginPath();
+        this.ctx.moveTo(this.x, this.y);
+        this.ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+        this.ctx.strokeStyle = this.color;
+        this.ctx.stroke();
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += 0.2; // gravity
+        if (this.vy >= 0 && !this.exploded) {
+            this.exploded = true;
+            this.createParticles(this.x, this.y, this.color);
+            return false;
+        }
+        return true;
+    }
+}
+
+let fireworksCanvas, fCtx;
+let rockets = [];
+let particles = [];
+let fireworksRunning = false;
+
+function startRealFireworks() {
+    fireworksCanvas = document.getElementById('fireworks-canvas');
+    if (!fireworksCanvas) return;
+    fCtx = fireworksCanvas.getContext('2d');
+    fireworksCanvas.width = window.innerWidth;
+    fireworksCanvas.height = window.innerHeight;
+    fireworksRunning = true;
+    requestAnimationFrame(loopFireworks);
+}
+
+function loopFireworks() {
+    if (!fireworksRunning) return;
+    requestAnimationFrame(loopFireworks);
+    
+    // Fade out trail
+    fCtx.globalCompositeOperation = 'destination-out';
+    fCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    fCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+    fCtx.globalCompositeOperation = 'lighter';
+
+    // Spawn rockets randomly
+    if (Math.random() < 0.05) {
+        rockets.push(new Rocket(fCtx, createExplosion));
+        // occasionally double shot
+        if(Math.random() < 0.3) rockets.push(new Rocket(fCtx, createExplosion));
     }
 
-    const interval = setInterval(function() {
-      const timeLeft = animationEnd - Date.now();
+    rockets = rockets.filter(r => {
+        r.draw();
+        return r.update();
+    });
 
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
+    particles = particles.filter(p => {
+        p.draw(fCtx);
+        return p.update();
+    });
+}
 
-      const particleCount = 50 * (timeLeft / duration);
-      // since particles fall down, start a bit higher than random
-      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-    }, 250);
+function createExplosion(x, y, color) {
+    for (let i = 0; i < 40; i++) {
+        particles.push(new Particle(x, y, color));
+    }
 }
 
 function win() {
     if(!state.listening) return;
     state.listening = false;
     
-    playClapping();
-    superCelebration();
+    // Play SFX
+    const cheer = document.getElementById('cheer-sfx');
+    if(cheer) cheer.play().catch(e => console.log(e));
+    
+    const fwSound = document.getElementById('fireworks-sfx');
+    if(fwSound) {
+        fwSound.volume = 0.6;
+        fwSound.play().catch(e => console.log(e));
+    }
+
+    // Start Real Fireworks
+    startRealFireworks();
     
     const bgAudio = document.getElementById('bg-music');
     if(bgAudio) {
