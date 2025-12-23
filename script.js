@@ -151,15 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loop();
     });
 
-    // 6. Interactive Balloons (Poppable Easter Egg)
-    document.querySelectorAll('.balloon').forEach(b => {
-        b.addEventListener('click', function() {
-            if(this.classList.contains('popped')) return;
-            this.classList.add('popped');
-            playBalloonPop();
-            setTimeout(() => this.style.display = 'none', 300);
-        });
-    });
+    // Removed Balloon Easter Egg (Click Listener) per request
 
     const card = document.getElementById('card-wrapper');
     card.addEventListener('click', () => {
@@ -326,20 +318,6 @@ function playClapping() {
     }
 }
 
-function playBalloonPop() {
-    if(!state.audioCtx) return;
-    const osc = state.audioCtx.createOscillator();
-    const g = state.audioCtx.createGain();
-    osc.frequency.setValueAtTime(200, state.audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(50, state.audioCtx.currentTime + 0.1);
-    g.gain.setValueAtTime(0.5, state.audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.01, state.audioCtx.currentTime + 0.1);
-    osc.connect(g);
-    g.connect(state.audioCtx.destination);
-    osc.start();
-    osc.stop(state.audioCtx.currentTime + 0.1);
-}
-
 function loop() {
     if(state.listening && state.analyser) {
         const data = new Uint8Array(state.analyser.frequencyBinCount);
@@ -404,7 +382,8 @@ function superCelebration() {
     // FIREWORKS LOOP
     const duration = 15 * 1000;
     const animationEnd = Date.now() + duration;
-    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    // Set z-index high enough to be over the modal/overlay
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 3000 };
 
     function randomInRange(min, max) {
       return Math.random() * (max - min) + min;
