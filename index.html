@@ -18,7 +18,7 @@
     </audio>
 
     <!-- WIN MUSIC (Happy Birthday Song) -->
-    <audio id="win-music" preload="auto">
+    <audio id="win-music" preload="auto" loop>
         <source src="https://cdn.pixabay.com/audio/2023/10/03/audio_a975775d7c.mp3" type="audio/mpeg">
     </audio>
 
@@ -42,7 +42,7 @@
             <div class="mic-icon">🎙️</div>
             <div class="mic-bar"><div id="mic-level"></div></div>
         </div>
-        <div class="hud-item">
+        <div class="hud-item" id="music-control">
             <button id="music-btn" class="icon-btn" title="Toggle Music">🎵</button>
         </div>
     </div>
@@ -207,11 +207,22 @@
         <!-- LAYER 3: CAKE -->
         <div class="cake-container">
             <div class="cake-plate"></div>
+            
+            <!-- Bottom Tier -->
             <div class="tier bottom-tier">
                 <div class="icing-drips"></div>
                 <div class="tier-body"></div>
                 <div class="tier-top"></div>
             </div>
+            
+            <!-- Middle Tier -->
+            <div class="tier middle-tier">
+                <div class="icing-drips"></div>
+                <div class="tier-body"></div>
+                <div class="tier-top"></div>
+            </div>
+
+            <!-- Top Tier -->
             <div class="tier top-tier">
                 <div class="icing-drips"></div>
                 <div class="tier-body"></div>
@@ -221,6 +232,8 @@
                      <div class="strawberry s-3"></div>
                 </div>
             </div>
+            
+            <!-- Candles Container -->
             <div id="candles-container"></div>
         </div>
 

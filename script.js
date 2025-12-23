@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 10,
+    micThreshold: 5, // Lowered for better sensitivity
 };
 
 const state = {
@@ -17,8 +17,9 @@ const state = {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
-    const rx = 65; 
-    const ry = 25; 
+    // Adjusted Radius for new top tier
+    const rx = 55; 
+    const ry = 20; 
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -28,7 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.createElement('div');
         el.className = 'candle';
         el.style.transform = `translate(${x}px, ${y}px)`;
-        el.style.zIndex = Math.floor(y + 100);
+        // Increased base Z-index to ensure they are on top
+        el.style.zIndex = Math.floor(y + 200);
 
         const hues = [340, 200, 45, 120, 280]; 
         const h = hues[i % hues.length];
@@ -346,31 +348,33 @@ function win() {
     playClapping();
     superCelebration();
     
-    // 2. STOP Background Music
+    // 2. STOP Background Music immediately
     const bgAudio = document.getElementById('bg-music');
     if(bgAudio) {
         bgAudio.pause();
-        state.musicPlaying = false;
-        document.getElementById('music-btn').innerText = '🎵';
+        bgAudio.currentTime = 0; // Reset
     }
 
-    // 3. START Happy Birthday Song
+    // 3. START Happy Birthday Song immediately
     const winAudio = document.getElementById('win-music');
     if(winAudio) {
-        winAudio.volume = 0.8;
+        winAudio.volume = 1.0;
+        winAudio.currentTime = 0;
         winAudio.play().catch(e => console.log("Win audio play blocked", e));
     }
+    
+    // 4. Hide Music Controls so it cannot be stopped
+    const musicControl = document.getElementById('music-control');
+    if(musicControl) musicControl.style.display = 'none';
 
-    // 4. SHOW Big Greeting Text Overlay immediately
+    // 5. SHOW Big Greeting Text Overlay immediately
     const bigGreeting = document.getElementById('big-greeting');
     if(bigGreeting) {
         bigGreeting.classList.remove('hidden');
     }
 
-    // 5. SHOW Card Modal after 3 seconds
+    // 6. SHOW Card Modal after 7 seconds (per request)
     setTimeout(() => {
-        // Hide Greeting? Or keep it? Usually better to fade it out or put card over it.
-        // Let's put card over it.
         const modal = document.getElementById('card-modal');
         if(modal) {
             modal.classList.remove('hidden');
@@ -380,5 +384,5 @@ function win() {
                 setTimeout(() => book.classList.remove('bounce-anim'), 1000);
             }
         }
-    }, 3000);
+    }, 7000);
 }
