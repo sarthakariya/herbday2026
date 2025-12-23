@@ -6,7 +6,7 @@
     <title>Happy Birthday My Love</title>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
-    <!-- Confetti Library (kept for falling bits, but fireworks will use custom canvas) -->
+    <!-- Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -14,14 +14,12 @@
 
     <!-- FIREWORKS CANVAS -->
     <canvas id="fireworks-canvas"></canvas>
+    <!-- LIGHTING FLASH OVERLAY -->
+    <div id="flash-overlay"></div>
 
-    <!-- BACKGROUND MUSIC (Instrumental) -->
-    <audio id="bg-music" loop preload="auto" crossorigin="anonymous">
-        <source src="https://cdn.pixabay.com/audio/2022/03/09/audio_82283e36bc.mp3" type="audio/mpeg">
-    </audio>
-
-    <!-- WIN MUSIC (Happy Birthday Song) -->
-    <audio id="win-music" preload="auto" loop>
+    <!-- MAIN MUSIC (Happy Birthday Song) -->
+    <!-- Starts immediately upon entering -->
+    <audio id="main-music" loop preload="auto">
         <source src="happy_birthday.mp3" type="audio/mpeg">
     </audio>
 
@@ -49,7 +47,7 @@
         </div>
     </div>
 
-    <!-- HUD (Music Button Removed) -->
+    <!-- HUD -->
     <div id="hud" class="hidden">
         <div class="hud-item mic-container">
             <div class="mic-icon">🎙️</div>
@@ -293,11 +291,13 @@
                 
                 <!-- Back of Cover (Photo) -->
                 <div class="book-cover-back">
-                     <div class="photo-border loved-theme-photo">
-                        <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
-                        <div class="corner-heart top-left">❤️</div>
-                        <div class="corner-heart bottom-right">❤️</div>
-                    </div>
+                     <div class="photo-wrapper">
+                         <!-- "Tape" decoration -->
+                         <div class="tape-strip"></div>
+                         <div class="photo-border loved-theme-photo">
+                            <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                        </div>
+                     </div>
                 </div>
             </div>
             

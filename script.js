@@ -56,7 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
         for(let i=0; i<12; i++) {
             const choco = document.createElement('div');
             choco.className = 'chocolate';
-            // Adjusted: Left position from 60% to 90%
             const top = 20 + Math.random() * 100;
             const left = 60 + Math.random() * 30; 
             const size = 10 + Math.random() * 10;
@@ -144,8 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Ensure music plays immediately
-        playBackgroundMusic();
+        // Play Happy Birthday Song IMMEDIATELY
+        playMainMusic();
         
         setTimeout(playChime, 800);
         setInterval(spawnFallingBit, 300);
@@ -164,11 +163,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-function playBackgroundMusic() {
-    const bgAudio = document.getElementById('bg-music');
-    if(bgAudio) {
-        bgAudio.volume = 0.5;
-        const p = bgAudio.play();
+function playMainMusic() {
+    const music = document.getElementById('main-music');
+    if(music) {
+        music.volume = 0.5;
+        music.currentTime = 0;
+        const p = music.play();
         if(p !== undefined) {
             p.catch(e => {
                 console.log("Auto-play prevented (User must interact first)", e);
@@ -361,11 +361,13 @@ class Particle {
         this.y = y;
         this.color = color;
         const angle = Math.random() * Math.PI * 2;
-        const velocity = Math.random() * 6 + 2;
+        // Explode with more speed
+        const velocity = Math.random() * 12 + 2;
         this.vx = Math.cos(angle) * velocity;
         this.vy = Math.sin(angle) * velocity;
         this.alpha = 1;
-        this.decay = Math.random() * 0.015 + 0.015;
+        this.decay = Math.random() * 0.02 + 0.015;
+        this.gravity = 0.08;
     }
     draw(ctx) {
         ctx.globalAlpha = this.alpha;
@@ -373,11 +375,17 @@ class Particle {
         ctx.beginPath();
         ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Glow effect
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
     }
     update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.05; // gravity
+        this.vy += this.gravity; 
+        this.vx *= 0.95; // Air resistance
+        this.vy *= 0.95; 
         this.alpha -= this.decay;
         return this.alpha > 0;
     }
@@ -389,31 +397,36 @@ class Rocket {
         this.createParticles = createParticles;
         this.x = Math.random() * window.innerWidth;
         this.y = window.innerHeight;
-        this.vx = (Math.random() - 0.5) * 4;
-        this.vy = -(Math.random() * 5 + 12);
-        this.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+        this.vx = (Math.random() - 0.5) * 6;
+        this.vy = -(Math.random() * 8 + 15);
+        this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
         this.exploded = false;
     }
     draw() {
         this.ctx.globalAlpha = 1;
         this.ctx.fillStyle = this.color;
+        this.ctx.shadowBlur = 15;
+        this.ctx.shadowColor = this.color;
         this.ctx.beginPath();
         this.ctx.arc(this.x, this.y, 4, 0, Math.PI * 2);
         this.ctx.fill();
+        
         // trail
         this.ctx.beginPath();
         this.ctx.moveTo(this.x, this.y);
-        this.ctx.lineTo(this.x - this.vx * 3, this.y - this.vy * 3);
+        this.ctx.lineTo(this.x - this.vx * 4, this.y - this.vy * 4);
         this.ctx.strokeStyle = this.color;
         this.ctx.stroke();
+        this.ctx.shadowBlur = 0;
     }
     update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.vy += 0.2; // gravity
-        if (this.vy >= 0 && !this.exploded) {
+        this.vy += 0.25; // gravity
+        if (this.vy >= -2 && !this.exploded) {
             this.exploded = true;
             this.createParticles(this.x, this.y, this.color);
+            triggerFlash(); // FLASH EFFECT
             return false;
         }
         return true;
@@ -424,6 +437,15 @@ let fireworksCanvas, fCtx;
 let rockets = [];
 let particles = [];
 let fireworksRunning = false;
+
+function triggerFlash() {
+    const flash = document.getElementById('flash-overlay');
+    if(!flash) return;
+    flash.style.opacity = 0.6;
+    setTimeout(() => {
+        flash.style.opacity = 0;
+    }, 100);
+}
 
 function startRealFireworks() {
     fireworksCanvas = document.getElementById('fireworks-canvas');
@@ -443,12 +465,13 @@ function loopFireworks() {
     fCtx.globalCompositeOperation = 'destination-out';
     fCtx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     fCtx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height);
+    
+    // Add glowing blend mode
     fCtx.globalCompositeOperation = 'lighter';
 
     // Spawn rockets randomly
     if (Math.random() < 0.05) {
         rockets.push(new Rocket(fCtx, createExplosion));
-        // occasionally double shot
         if(Math.random() < 0.3) rockets.push(new Rocket(fCtx, createExplosion));
     }
 
@@ -464,7 +487,7 @@ function loopFireworks() {
 }
 
 function createExplosion(x, y, color) {
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 60; i++) {
         particles.push(new Particle(x, y, color));
     }
 }
@@ -486,27 +509,11 @@ function win() {
     // Start Real Fireworks
     startRealFireworks();
     
-    const bgAudio = document.getElementById('bg-music');
-    if(bgAudio) {
-        bgAudio.pause();
-        bgAudio.currentTime = 0; 
-    }
-
-    const winAudio = document.getElementById('win-music');
-    if(winAudio) {
-        winAudio.volume = 1.0;
-        winAudio.currentTime = 0;
+    // Music continues playing (Happy Birthday) - Volume up if desired
+    const music = document.getElementById('main-music');
+    if(music) {
+        music.volume = 1.0;
         if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
-        
-        // Robust Play Attempt
-        const playPromise = winAudio.play();
-        if (playPromise !== undefined) {
-            playPromise.catch(error => {
-                console.error("Win music auto-play failed:", error);
-                const msg = new SpeechSynthesisUtterance("Happy Birthday My Love!");
-                window.speechSynthesis.speak(msg);
-            });
-        }
     }
 
     const bigGreeting = document.getElementById('big-greeting');
