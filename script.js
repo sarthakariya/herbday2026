@@ -12,6 +12,7 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
+    musicPlaying: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -135,7 +136,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Start Button Logic
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Mic
+        // Priority: Start Music IMMEDIATELY on click to satisfy browser policies
+        playBackgroundMusic();
+
+        // Then init mic (async)
+        initAudio(); 
         
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
@@ -143,9 +148,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
-        
-        // Ensure music plays immediately
-        playBackgroundMusic();
         
         setTimeout(playChime, 800);
         setInterval(spawnFallingBit, 300);
@@ -157,6 +159,23 @@ document.addEventListener('DOMContentLoaded', () => {
         card.classList.toggle('open');
     });
 
+    // Music Toggle Button
+    const musicBtn = document.getElementById('music-btn');
+    if(musicBtn) {
+        musicBtn.addEventListener('click', () => {
+            const bgAudio = document.getElementById('bg-music');
+            if(bgAudio) {
+                if(bgAudio.paused) {
+                    bgAudio.play();
+                    state.musicPlaying = true;
+                } else {
+                    bgAudio.pause();
+                    state.musicPlaying = false;
+                }
+            }
+        });
+    }
+
     // Force reload GIFs
     document.querySelectorAll('.gif-sticker img').forEach(img => {
         const src = img.src;
@@ -167,11 +186,22 @@ document.addEventListener('DOMContentLoaded', () => {
 function playBackgroundMusic() {
     const bgAudio = document.getElementById('bg-music');
     if(bgAudio) {
-        bgAudio.volume = 0.5;
+        bgAudio.volume = 1.0; // Ensure max volume
+        bgAudio.muted = false;
+        
         const p = bgAudio.play();
         if(p !== undefined) {
-            p.catch(e => {
-                console.log("Auto-play prevented (User must interact first)", e);
+            p.then(() => {
+                state.musicPlaying = true;
+            }).catch(e => {
+                console.warn("Auto-play prevented:", e);
+                // Fallback: Try to play on next body click
+                document.body.addEventListener('click', () => {
+                   if(!state.musicPlaying) {
+                       bgAudio.play();
+                       state.musicPlaying = true;
+                   }
+                }, { once: true });
             });
         }
     }
