@@ -19,6 +19,7 @@
     <div id="flash-overlay"></div>
 
     <!-- BACKGROUND MUSIC (Happy Birthday Song) -->
+    <!-- Now pointing directly to the local file to play from start -->
     <audio id="bg-music" loop preload="auto">
         <source src="happy_birthday.mp3" type="audio/mpeg">
     </audio>
@@ -57,17 +58,12 @@
         </div>
     </div>
 
-    <!-- HUD -->
+    <!-- HUD (Music Button Removed) -->
     <div id="hud" class="hidden">
-        <!-- Mic Level -->
         <div class="hud-item mic-container">
             <div class="mic-icon">🎙️</div>
             <div class="mic-bar"><div id="mic-level"></div></div>
         </div>
-        <!-- Music Toggle Button (Backup) -->
-        <button id="music-btn" class="hud-item icon-btn">
-            🎵
-        </button>
     </div>
 
     <!-- BIG GREETING OVERLAY -->
