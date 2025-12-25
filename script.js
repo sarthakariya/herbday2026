@@ -2,7 +2,7 @@
 
 const CONFIG = {
     candleCount: 17,
-    micThreshold: 12, // Lowered for easier blowing
+    micThreshold: 12, 
     flickerThreshold: 8,
 };
 
@@ -12,6 +12,7 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
+    fireworksActive: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,6 +44,17 @@ document.addEventListener('DOMContentLoaded', () => {
         flame.style.setProperty('--delay', delay);
         flame.style.animationDelay = delay;
         
+        // Manual blow on click
+        el.addEventListener('click', () => {
+            if(state.candles[i].active) {
+                state.candles[i].active = false;
+                flame.classList.add('out');
+                el.classList.add('out');
+                state.extinguished++;
+                if(state.extinguished >= CONFIG.candleCount) finishParty();
+            }
+        });
+        
         el.appendChild(wick);
         el.appendChild(flame);
         holder.appendChild(el);
@@ -50,13 +62,12 @@ document.addEventListener('DOMContentLoaded', () => {
         state.candles.push({ el: flame, container: el, active: true });
     }
 
-    // 2. Scatter Props (Chocolates moved to Right Side)
+    // 2. Scatter Props
     const chocoContainer = document.getElementById('chocolates-container');
     if(chocoContainer) {
         for(let i=0; i<12; i++) {
             const choco = document.createElement('div');
             choco.className = 'chocolate';
-            // Adjusted: Left position from 60% to 90%
             const top = 20 + Math.random() * 100;
             const left = 60 + Math.random() * 30; 
             const size = 10 + Math.random() * 10;
@@ -133,10 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 5. Start Button Logic
+    // 5. Start Button Logic - KEY FOR AUDIO
     document.getElementById('start-btn').addEventListener('click', () => {
-        initAudio(); // Initialize Mic
+        // Initialize mic immediately
+        initAudio(); 
         
+        // UI Transitions
         const screen = document.getElementById('start-screen');
         screen.style.opacity = 0;
         setTimeout(() => screen.remove(), 1000);
@@ -144,18 +157,24 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // Ensure music plays immediately
-        playBackgroundMusic();
+        // Play Background Music Immediately
+        const bgAudio = document.getElementById('bg-music');
+        if(bgAudio) {
+            bgAudio.volume = 0.5;
+            bgAudio.play().catch(e => console.log("Audio play error:", e));
+        }
         
-        setTimeout(playChime, 800);
+        // Start loops
         setInterval(spawnFallingBit, 300);
         loop();
     });
 
     const card = document.getElementById('card-wrapper');
-    card.addEventListener('click', () => {
-        card.classList.toggle('open');
-    });
+    if(card) {
+        card.addEventListener('click', () => {
+            card.classList.toggle('open');
+        });
+    }
 
     // Force reload GIFs
     document.querySelectorAll('.gif-sticker img').forEach(img => {
@@ -163,19 +182,6 @@ document.addEventListener('DOMContentLoaded', () => {
         img.src = src; 
     });
 });
-
-function playBackgroundMusic() {
-    const bgAudio = document.getElementById('bg-music');
-    if(bgAudio) {
-        bgAudio.volume = 0.5;
-        const p = bgAudio.play();
-        if(p !== undefined) {
-            p.catch(e => {
-                console.log("Auto-play prevented (User must interact first)", e);
-            });
-        }
-    }
-}
 
 function createBubbles() {
     const container = document.getElementById('bubbles-container');
@@ -247,24 +253,8 @@ async function initAudio() {
         state.listening = true;
     } catch(e) {
         console.error(e);
-        alert("Microphone access is needed for the magic! 🎂");
+        console.log("Mic access not granted. Click candles to blow them out.");
     }
-}
-
-function playChime() {
-    if(!state.audioCtx) return;
-    const now = state.audioCtx.currentTime;
-    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-        const osc = state.audioCtx.createOscillator();
-        const g = state.audioCtx.createGain();
-        osc.frequency.value = freq;
-        g.gain.setValueAtTime(0.05, now + i*0.1);
-        g.gain.exponentialRampToValueAtTime(0.001, now + i*0.1 + 1);
-        osc.connect(g);
-        g.connect(state.audioCtx.destination);
-        osc.start(now + i*0.1);
-        osc.stop(now + i*0.1 + 1);
-    });
 }
 
 function playAirSound() {
@@ -319,16 +309,17 @@ function loop() {
         }
 
         if(avg > CONFIG.micThreshold) {
-            blowCandle();
+            blowRandomCandle();
         }
     }
     requestAnimationFrame(loop);
 }
 
-function blowCandle() {
+function blowRandomCandle() {
     const active = state.candles.filter(c => c.active);
     if(active.length === 0) return;
 
+    // Blow 1-2 candles at a time
     const amount = Math.floor(Math.random() * 2) + 1;
     
     for(let i=0; i<amount; i++) {
@@ -350,8 +341,66 @@ function blowCandle() {
     }
     
     if(state.extinguished >= CONFIG.candleCount) {
-        setTimeout(win, 800);
+        if(!state.won) {
+            state.won = true;
+            setTimeout(finishParty, 800);
+        }
     }
+}
+
+function finishParty() {
+    state.listening = false;
+    
+    // 1. Play CLAPPING & CHEERING SFX
+    const cheer = document.getElementById('cheer-sfx');
+    if(cheer) { cheer.currentTime = 0; cheer.play().catch(e => console.log(e)); }
+    
+    const clap = document.getElementById('clapping-sfx');
+    if(clap) { clap.currentTime = 0; clap.play().catch(e => console.log(e)); }
+
+    const pop = document.getElementById('pop-sfx');
+    if(pop) { pop.currentTime = 0; pop.play().catch(e => console.log(e)); }
+    
+    // 2. Play FIREWORKS SFX
+    const fwSound = document.getElementById('fireworks-sfx');
+    if(fwSound) {
+        fwSound.volume = 0.6;
+        fwSound.play().catch(e => console.log(e));
+    }
+
+    // 3. Trigger Confetti
+    if(typeof confetti !== 'undefined') {
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        setTimeout(() => confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } }), 500);
+    }
+
+    // 4. Start Real Fireworks
+    startRealFireworks();
+    
+    // 5. Music Volume Up
+    const music = document.getElementById('bg-music');
+    if(music) {
+        music.volume = 1.0;
+    }
+
+    // 6. Show Message
+    const bigGreeting = document.getElementById('big-greeting');
+    if(bigGreeting) {
+        bigGreeting.classList.remove('hidden');
+    }
+
+    // 7. Show Card after delay
+    setTimeout(() => {
+        const modal = document.getElementById('card-modal');
+        if(modal) {
+            modal.classList.remove('hidden');
+            const book = document.getElementById('card-wrapper');
+            if(book) {
+                book.classList.add('bounce-anim'); 
+                setTimeout(() => book.classList.remove('bounce-anim'), 1000);
+            }
+        }
+    }, 5000);
 }
 
 // --- REAL CANVAS FIREWORKS ENGINE ---
@@ -414,7 +463,7 @@ class Rocket {
         if (this.vy >= 0 && !this.exploded) {
             this.exploded = true;
             this.createParticles(this.x, this.y, this.color);
-            triggerFlash(); // Trigger light effect
+            triggerFlash(); 
             return false;
         }
         return true;
@@ -458,7 +507,6 @@ function loopFireworks() {
     // Spawn rockets randomly
     if (Math.random() < 0.05) {
         rockets.push(new Rocket(fCtx, createExplosion));
-        // occasionally double shot
         if(Math.random() < 0.3) rockets.push(new Rocket(fCtx, createExplosion));
     }
 
@@ -477,58 +525,4 @@ function createExplosion(x, y, color) {
     for (let i = 0; i < 40; i++) {
         particles.push(new Particle(x, y, color));
     }
-}
-
-function win() {
-    if(!state.listening) return;
-    state.listening = false;
-    
-    // Play SFX
-    const cheer = document.getElementById('cheer-sfx');
-    if(cheer) cheer.play().catch(e => console.log(e));
-    
-    const clap = document.getElementById('clapping-sfx');
-    if(clap) clap.play().catch(e => console.log(e));
-
-    const pop = document.getElementById('pop-sfx');
-    if(pop) pop.play().catch(e => console.log(e));
-    
-    const fwSound = document.getElementById('fireworks-sfx');
-    if(fwSound) {
-        fwSound.volume = 0.6;
-        fwSound.play().catch(e => console.log(e));
-    }
-
-    // TRIGGER CONFETTI
-    if(typeof confetti !== 'undefined') {
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-        setTimeout(() => confetti({ particleCount: 100, spread: 100, origin: { y: 0.6 } }), 500);
-    }
-
-    // Start Real Fireworks
-    startRealFireworks();
-    
-    // Music continues playing (Happy Birthday) - Volume up if desired
-    const music = document.getElementById('bg-music');
-    if(music) {
-        music.volume = 1.0;
-        if(state.audioCtx && state.audioCtx.state === 'suspended') state.audioCtx.resume();
-    }
-
-    const bigGreeting = document.getElementById('big-greeting');
-    if(bigGreeting) {
-        bigGreeting.classList.remove('hidden');
-    }
-
-    setTimeout(() => {
-        const modal = document.getElementById('card-modal');
-        if(modal) {
-            modal.classList.remove('hidden');
-            const book = document.getElementById('card-wrapper');
-            if(book) {
-                book.classList.add('bounce-anim'); 
-                setTimeout(() => book.classList.remove('bounce-anim'), 1000);
-            }
-        }
-    }, 7000);
 }
