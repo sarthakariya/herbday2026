@@ -24,6 +24,12 @@ body {
     z-index: 3000; /* Very high to be over overlay */
 }
 
+/* FLASH OVERLAY (for fireworks) */
+#flash-overlay {
+    position: fixed; inset: 0; background: white; z-index: 2999;
+    opacity: 0; pointer-events: none; transition: opacity 0.1s;
+}
+
 /* Optimize Animations */
 .wobble-anim, .jelly-anim, .bounce-anim, .streamer, .balloon, .floating-hearts span {
     will-change: transform;
@@ -168,6 +174,11 @@ body.open .curtain.right { transform: scaleX(0); }
     100% { transform: translateY(-120vh) translateX(50px) scale(1.2); opacity: 0; }
 }
 
+/* FALLING BITS */
+#continuous-confetti { position: absolute; inset: 0; pointer-events: none; z-index: 15; overflow: hidden; }
+.falling-bit { position: absolute; top: -20px; width: 10px; height: 10px; background: red; animation: fall 5s linear forwards; }
+@keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
+
 /* STREAMERS */
 .streamer {
     position: absolute; top: 0; width: 15px; height: 250px;
@@ -203,12 +214,10 @@ body.open .curtain.right { transform: scaleX(0); }
 .balloon::after { 
     content: ''; position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); 
     width: 1px; height: 50px; background: rgba(255,255,255,0.8); 
-    /* Wavy string simulation */
     box-shadow: 1px 10px 0 rgba(255,255,255,0.6), -1px 20px 0 rgba(255,255,255,0.6), 0 30px 0 rgba(255,255,255,0.4);
 }
 body.open .balloon { animation: floatBalloon 6s ease-in-out infinite, fadeIn 1s forwards 1.5s; }
 
-/* Set colors via variable for the gradient to work */
 .b1 { --b-color: #ef5350; top: 15%; left: 5%; animation-delay: 0s, 1.5s; }
 .b2 { --b-color: #ab47bc; top: 20%; left: 15%; animation-delay: 1s, 1.6s; }
 .b3 { --b-color: #29b6f6; top: 10%; right: 10%; animation-delay: 2s, 1.7s; }
@@ -272,7 +281,7 @@ body.open .gift-box { animation: popIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275
 .gift-right .lid { background: #80cbc4; }
 .gift-right .ribbon-horz, .gift-right .ribbon-vert { background: #e0f2f1; }
 
-/* CAKE - ENHANCED TEXTURE */
+/* CAKE */
 .cake-container { 
     position: absolute; bottom: 12vh; left: 40%; transform: translateX(-50%); 
     width: 320px; height: 350px; z-index: 30; opacity: 0; 
@@ -281,7 +290,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .cake-plate { position: absolute; bottom: 0; left: -15%; width: 130%; height: 50px; background: #fff; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
 .tier { position: absolute; left: 50%; transform: translateX(-50%); }
 
-/* SPRINKLES & FROSTING */
 .sprinkles {
     position: absolute; inset: 0;
     background-image: 
@@ -298,7 +306,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .bottom-tier { bottom: 25px; width: 300px; height: 100px; z-index: 1; }
 .bottom-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 80px;
-    /* Rich Chocolate */
     background: linear-gradient(to right, #4e342e, #5d4037 30%, #3e2723 60%, #291e1b);
     border-radius: 0 0 150px 150px; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.4);
     overflow: hidden;
@@ -311,7 +318,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .middle-tier { bottom: 85px; width: 220px; height: 90px; z-index: 2; }
 .middle-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 70px;
-    /* Berry Frosting */
     background: linear-gradient(to right, #ad1457, #d81b60 30%, #880e4f 60%, #6a0a3a);
     border-radius: 0 0 110px 110px; box-shadow: 0 5px 10px rgba(0,0,0,0.2);
     overflow: hidden;
@@ -324,7 +330,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
 .top-tier { bottom: 145px; width: 150px; height: 80px; z-index: 3; }
 .top-tier .tier-body {
     position: absolute; bottom: 0; width: 100%; height: 60px;
-    /* Vanilla Cream */
     background: linear-gradient(to right, #f48fb1, #f8bbd0 30%, #f06292 60%, #ec407a);
     border-radius: 0 0 75px 75px; box-shadow: 0 5px 10px rgba(0,0,0,0.1);
     overflow: hidden;
@@ -333,7 +338,6 @@ body.open .cake-container { animation: cakePop 1.2s cubic-bezier(0.175, 0.885, 0
     position: absolute; top: 0; width: 100%; height: 60px;
     background: #fce4ec; border-radius: 50%;
     border: 1px solid rgba(255,255,255,0.3);
-    display: flex; align-items: center; justify-content: center;
 }
 
 .icing-drips {
@@ -418,7 +422,6 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 .book-cover-front {
     position: absolute; inset: 0; 
     background: #ec407a;
-    /* Rich Leather/Paper Texture */
     background-image: 
         radial-gradient(circle at 50% 0, rgba(255,255,255,0.2), transparent 70%),
         url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E");
@@ -431,7 +434,6 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 .book-page {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #fffaf0; 
-    /* Quality Paper Texture */
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='paper'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23paper)' opacity='0.08'/%3E%3C/svg%3E");
     box-shadow: inset 0 0 20px rgba(0,0,0,0.05); z-index: 1;
 }
@@ -445,7 +447,6 @@ body.open #candles-container { animation: fadeIn 1s forwards 1.5s; }
 }
 
 /* --- Rest of Styles --- */
-/* Reuse generic anims */
 .wall-poster { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); z-index: 5; opacity: 0; }
 body.open .wall-poster { animation: fadeIn 2s forwards 2s, jelly 4s infinite; }
 .poster-frame { width: 200px; height: 140px; background: #5d4037; padding: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-radius: 4px; transform: rotate(2deg); }
