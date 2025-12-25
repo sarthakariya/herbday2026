@@ -11,6 +11,8 @@
 <body>
 
     <canvas id="fireworks-canvas"></canvas>
+    
+    <div id="flash-overlay"></div>
 
     <audio id="bg-music" loop preload="auto">
         <source src="happy_birthday.mp3" type="audio/mpeg">
@@ -60,7 +62,9 @@
     </div>
 
     <div id="scene">
+        
         <div id="bubbles-container"></div>
+        
         <div id="continuous-confetti"></div>
 
         <div class="curtain left" id="c-left"></div>
@@ -68,38 +72,76 @@
 
         <div class="room-bg">
             <div class="spotlight"></div>
+            
             <div id="magic-dust"></div>
+
             <div id="fairy-lights"></div>
 
-            <div class="streamer st1"></div><div class="streamer st2"></div><div class="streamer st3"></div>
-            <div class="streamer st4"></div><div class="streamer st5"></div><div class="streamer st6"></div>
-            <div class="streamer st7"></div><div class="streamer st8"></div><div class="streamer st9"></div>
+            <div class="streamer st1"></div>
+            <div class="streamer st2"></div>
+            <div class="streamer st3"></div>
+            <div class="streamer st4"></div>
+            <div class="streamer st5"></div>
+            <div class="streamer st6"></div>
+            <div class="streamer st7"></div>
+            <div class="streamer st8"></div>
+            <div class="streamer st9"></div>
             <div class="streamer st10"></div>
 
             <div class="wall-poster jelly-anim">
                 <div class="poster-frame">
-                    <div class="poster-inner"><p>Make a Wish &<br>Blow the Candles! 🎂</p></div>
+                    <div class="poster-inner">
+                        <p>Make a Wish &<br>Blow the Candles! 🎂</p>
+                    </div>
                 </div>
-                <div class="poster-string"></div><div class="poster-nail"></div>
+                <div class="poster-string"></div>
+                <div class="poster-nail"></div>
             </div>
 
             <div class="gif-sticker g1 wobble-anim">
-                <div class="polaroid-inner"><img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1"></div>
+                <div class="polaroid-inner">
+                    <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTE0amNhZ2hhdzN4dTU5Z25xbzdydDBqdGlxZDloa3d4ZnE5OThseCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/noOSeP7sqvScBuor3S/giphy.gif" alt="Cute Gif 1" loading="lazy">
+                </div>
             </div>
             <div class="gif-sticker g2 wobble-anim">
-                <div class="polaroid-inner"><img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Zmdjlkam9zZzI2N3ExNWNmazluZmRscnlyYzZubGlmN290bDB3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SwUqpdM8i6NH2asVn2/giphy.gif" alt="Cute Gif 2"></div>
+                <div class="polaroid-inner">
+                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZ3Zmdjlkam9zZzI2N3ExNWNmazluZmRscnlyYzZubGlmN290bDB3ZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/SwUqpdM8i6NH2asVn2/giphy.gif" alt="Cute Gif 2" loading="lazy">
+                </div>
+            </div>
+            <div class="gif-sticker g3 wobble-anim">
+                <div class="polaroid-inner">
+                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWIxdnNzNTFlYTAzdmMzZzM1OHVvZzMwMTU3enBkaGQ1NXNoZG9hYSZlcD12MV9zdGlja2Vyc19zZWFyY2gmY3Q9cw/i9BkTMFxW7eBJ9ZOqP/giphy.gif" alt="Cute Gif 3" loading="lazy">
+                </div>
+            </div>
+            <div class="gif-sticker g4 wobble-anim">
+                <div class="polaroid-inner">
+                    <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExd3J1YnJvbG85aWd2bWxiaDM2ODk2cDEwMDh3ZWI1cHg5eHZjdjE0eSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/4Ka9hpRXpjXJzW2PRi/giphy.gif" alt="Cute Gif 4" loading="lazy">
+                </div>
             </div>
 
-            <div class="balloon b1"></div><div class="balloon b2"></div><div class="balloon b3"></div>
-            <div class="balloon b4"></div><div class="balloon b5"></div><div class="balloon b6"></div>
-            <div class="balloon heart-b h1"></div><div class="balloon heart-b h2"></div>
+            <div class="balloon b1"></div>
+            <div class="balloon b2"></div>
+            <div class="balloon b3"></div>
+            <div class="balloon b4"></div>
+            <div class="balloon b5"></div>
+            <div class="balloon b6"></div>
+            <div class="balloon b7"></div>
+            <div class="balloon b8"></div>
+            <div class="balloon b9"></div>
+            <div class="balloon b10"></div>
+            <div class="balloon b11"></div>
+            <div class="balloon b12"></div>
+            <div class="balloon heart-b h1"></div>
+            <div class="balloon heart-b h2"></div>
 
             <div class="banner-container">
                 <div class="ribbon">
                     <svg viewBox="0 0 600 150">
                         <path id="curve" d="M30,120 Q300,-10 570,120" fill="none"/>
                         <text width="600">
-                            <textPath xlink:href="#curve" href="#curve" startOffset="50%" text-anchor="middle">Happy Birthday My Baby</textPath>
+                            <textPath xlink:href="#curve" href="#curve" startOffset="50%" text-anchor="middle">
+                                Happy Birthday My Baby
+                            </textPath>
                         </text>
                     </svg>
                 </div>
@@ -107,63 +149,129 @@
         </div>
 
         <div class="table-container">
-            <div class="cloth-body"></div>
+            <div class="table-shadow"></div>
+            <div class="cloth-body"><div class="cloth-folds"></div></div>
             <div class="cloth-top">
                 <div id="petals-container"></div>
                 <div id="chocolates-container"></div>
             </div>
 
             <div class="prop bouquet-container bounce-anim">
+                <div class="vase-shadow"></div>
                 <div class="vase"></div>
                 <div class="roses">
-                    <div class="rose r1"></div><div class="rose r2"></div><div class="leaf l1"></div>
+                    <div class="rose r1"><div class="petal-inner"></div></div>
+                    <div class="rose r2"><div class="petal-inner"></div></div>
+                    <div class="rose r3"><div class="petal-inner"></div></div>
+                    <div class="rose r4"><div class="petal-inner"></div></div>
+                    <div class="leaf l1"></div>
+                    <div class="leaf l2"></div>
                 </div>
             </div>
 
+            <div class="prop macaron-plate bounce-anim">
+                <div class="plate-shadow"></div>
+                <div class="plate-base"></div>
+                <div class="macaron m1"></div>
+                <div class="macaron m2"></div>
+                <div class="macaron m3"></div>
+            </div>
+
+            <div class="gift-shadow left-shadow"></div>
             <div class="prop gift-box gift-left jelly-anim">
-                <div class="lid"></div><div class="ribbon-horz"></div>
+                <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
+            </div>
+            
+            <div class="gift-shadow right-shadow"></div>
+            <div class="prop gift-box gift-right jelly-anim">
+                <div class="lid"></div><div class="ribbon-horz"></div><div class="ribbon-vert"></div>
             </div>
 
             <div class="easel-container">
+                <div class="easel-legs"></div>
                 <div class="easel-board">
-                    <div class="board-content">Happy Birthday<br><span class="highlight-text">My Love</span></div>
+                    <div class="board-content">
+                        Happy Birthday<br><span class="highlight-text">My Love</span>
+                        <div class="small-heart">❤️</div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <div class="cake-container">
             <div class="cake-plate"></div>
-            <div class="tier bottom-tier"><div class="tier-body"></div></div>
-            <div class="tier middle-tier"><div class="tier-body"></div></div>
+            
+            <div class="tier bottom-tier">
+                <div class="icing-drips"></div>
+                <div class="tier-body">
+                    <div class="sprinkles"></div>
+                </div>
+                <div class="tier-top"></div>
+            </div>
+            
+            <div class="tier middle-tier">
+                <div class="icing-drips"></div>
+                <div class="tier-body">
+                    <div class="sprinkles"></div>
+                </div>
+                <div class="tier-top"></div>
+            </div>
+
             <div class="tier top-tier">
-                <div class="tier-body"></div>
+                <div class="icing-drips"></div>
+                <div class="tier-body">
+                    <div class="sprinkles"></div>
+                </div>
                 <div class="tier-top">
-                     <div class="strawberry s-1"></div><div class="strawberry s-2"></div>
+                     <div class="strawberry s-1"></div>
+                     <div class="strawberry s-2"></div>
+                     <div class="strawberry s-3"></div>
                 </div>
             </div>
+            
             <div id="candles-container"></div>
         </div>
+
     </div>
 
     <div id="card-modal" class="hidden">
         <div class="book" id="card-wrapper">
+            
             <div class="book-page right-page">
                 <h3>My Dearest Love,</h3>
                 <div class="scroll-text">
-                    <p>On this special day, the world became a brighter place because you were born.<br><br>
-                    You are the melody in my heart and the reason for my biggest smiles. I hope your day is filled with as much joy, love, and magic as you bring into my life every single day.<br><br>
-                    I love you more than words can say.</p>
+                    <p id="card-text">
+                        On this special day, the world became a brighter place because you were born.
+                        <br><br>
+                        You are the melody in my heart and the reason for my biggest smiles. 
+                        I hope your day is filled with as much joy, love, and magic as you bring into my life every single day.
+                        <br><br>
+                        I love you more than words can say.
+                    </p>
                 </div>
-                <div class="sig">Forever Yours ❤️</div>
+                <div class="action-row">
+                    <div class="sig">Forever Yours ❤️</div>
+                </div>
             </div>
+            
             <div class="book-cover-container">
                 <div class="book-cover-front">
-                    <div class="cover-content"><div class="heart-anim">❤️</div><h2>For You</h2></div>
+                    <div class="cover-content">
+                        <div class="heart-anim">❤️</div>
+                        <h2>For You</h2>
+                        <p class="click-hint">(Tap to open)</p>
+                    </div>
                 </div>
+                
                 <div class="book-cover-back">
-                    <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                     <div class="photo-border loved-theme-photo">
+                        <img src="https://i.ibb.co/8L0pyTbC/592130348-1895974791001074-7939363960993892709-n.webp" alt="My Beautiful Love" class="card-photo">
+                        <div class="corner-heart top-left">❤️</div>
+                        <div class="corner-heart bottom-right">❤️</div>
+                    </div>
                 </div>
             </div>
+            
         </div>
     </div>
 
