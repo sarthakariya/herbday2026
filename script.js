@@ -12,7 +12,8 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    fireworksActive: false
+    fireworksActive: false,
+    confettiContainer: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -214,7 +215,10 @@ function spawnBubble(container) {
 }
 
 function spawnFallingBit() {
-    const container = document.getElementById('continuous-confetti');
+    if (!state.confettiContainer) {
+        state.confettiContainer = document.getElementById('continuous-confetti');
+    }
+    const container = state.confettiContainer;
     if(!container) return;
     const bit = document.createElement('div');
     bit.className = 'falling-bit';
