@@ -12,10 +12,13 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    fireworksActive: false
+    fireworksActive: false,
+    micLevelEl: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+    state.micLevelEl = document.getElementById('mic-level');
+
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
     const rx = 55; 
@@ -296,7 +299,9 @@ function loop() {
         for(let i=0; i<data.length; i++) sum += data[i];
         const avg = sum / data.length;
 
-        document.getElementById('mic-level').style.width = Math.min(avg * 4, 100) + '%';
+        if (state.micLevelEl) {
+            state.micLevelEl.style.width = Math.min(avg * 4, 100) + '%';
+        }
 
         if(avg > CONFIG.flickerThreshold && avg < CONFIG.micThreshold) {
              state.candles.forEach(c => {
