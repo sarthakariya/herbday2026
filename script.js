@@ -84,6 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const petalsContainer = document.getElementById('petals-container');
     if(petalsContainer) {
+        const fragment = document.createDocumentFragment();
         for(let i=0; i<15; i++) {
             const petal = document.createElement('div');
             petal.className = 'petal';
@@ -95,8 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
             petal.style.transform = `rotate(${rot}deg)`;
             const petalColors = ['#e91e63', '#ec407a', '#f48fb1', '#d81b60'];
             petal.style.backgroundColor = petalColors[Math.floor(Math.random()*petalColors.length)];
-            petalsContainer.appendChild(petal);
+            fragment.appendChild(petal);
         }
+        petalsContainer.appendChild(fragment);
     }
 
     const dustContainer = document.getElementById('magic-dust');
