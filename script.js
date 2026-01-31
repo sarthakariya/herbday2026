@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 2. Scatter Props
     const chocoContainer = document.getElementById('chocolates-container');
     if(chocoContainer) {
+        const fragment = document.createDocumentFragment();
         for(let i=0; i<12; i++) {
             const choco = document.createElement('div');
             choco.className = 'chocolate';
@@ -78,8 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
             choco.style.height = size + 'px';
             choco.style.transform = `rotate(${rot}deg)`;
             choco.style.opacity = '0.9';
-            chocoContainer.appendChild(choco);
+            fragment.appendChild(choco);
         }
+        chocoContainer.appendChild(fragment);
     }
 
     const petalsContainer = document.getElementById('petals-container');
