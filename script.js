@@ -101,14 +101,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const dustContainer = document.getElementById('magic-dust');
     if(dustContainer) {
+        const fragment = document.createDocumentFragment();
         for(let i=0; i<30; i++) {
             const particle = document.createElement('div');
             particle.className = 'dust-particle';
             particle.style.top = Math.random() * 100 + '%';
             particle.style.left = Math.random() * 100 + '%';
             particle.style.animationDelay = Math.random() * 5 + 's';
-            dustContainer.appendChild(particle);
+            fragment.appendChild(particle);
         }
+        dustContainer.appendChild(fragment);
     }
 
     // 3. Bubbles Generator
