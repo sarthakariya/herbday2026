@@ -463,7 +463,6 @@ class Rocket {
         if (this.vy >= 0 && !this.exploded) {
             this.exploded = true;
             this.createParticles(this.x, this.y, this.color);
-            triggerFlash(); 
             return false;
         }
         return true;
@@ -474,15 +473,6 @@ let fireworksCanvas, fCtx;
 let rockets = [];
 let particles = [];
 let fireworksRunning = false;
-
-function triggerFlash() {
-    const flash = document.getElementById('flash-overlay');
-    if(!flash) return;
-    flash.style.opacity = 0.6;
-    setTimeout(() => {
-        flash.style.opacity = 0;
-    }, 100);
-}
 
 function startRealFireworks() {
     fireworksCanvas = document.getElementById('fireworks-canvas');

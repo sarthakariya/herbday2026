@@ -24,12 +24,6 @@ body {
     z-index: 3000; /* Very high to be over overlay */
 }
 
-/* FLASH OVERLAY (for fireworks) */
-#flash-overlay {
-    position: fixed; inset: 0; background: white; z-index: 2999;
-    opacity: 0; pointer-events: none; transition: opacity 0.1s;
-}
-
 /* Optimize Animations */
 .wobble-anim, .jelly-anim, .bounce-anim, .streamer, .balloon, .floating-hearts span {
     will-change: transform;
