@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Fairy Lights
     const lightsContainer = document.getElementById('fairy-lights');
     if(lightsContainer) {
+        const fragment = document.createDocumentFragment();
         const svgNS = "http://www.w3.org/2000/svg";
         const svg = document.createElementNS(svgNS, "svg");
         svg.setAttribute("width", "100%");
@@ -130,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         path.setAttribute("stroke", "#a1887f");
         path.setAttribute("stroke-width", "2");
         svg.appendChild(path);
-        lightsContainer.appendChild(svg);
+        fragment.appendChild(svg);
         for(let i=1; i<20; i++) {
             const bulb = document.createElement('div');
             bulb.className = 'bulb';
@@ -140,8 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const y = 150 * (1 - Math.pow(2*x - 1, 2));
             bulb.style.top = y + 'px';
             bulb.style.animationDelay = Math.random() + 's';
-            lightsContainer.appendChild(bulb);
+            fragment.appendChild(bulb);
         }
+        lightsContainer.appendChild(fragment);
     }
 
     // 5. Start Button Logic - KEY FOR AUDIO
