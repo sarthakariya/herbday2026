@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const holder = document.getElementById('candles-container');
     const rx = 55; 
     const ry = 20; 
+    const fragment = document.createDocumentFragment();
 
     for(let i=0; i<CONFIG.candleCount; i++) {
         const angle = (i / CONFIG.candleCount) * Math.PI * 2;
@@ -57,10 +58,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         el.appendChild(wick);
         el.appendChild(flame);
-        holder.appendChild(el);
+        fragment.appendChild(el);
 
         state.candles.push({ el: flame, container: el, active: true });
     }
+    holder.appendChild(fragment);
 
     // 2. Scatter Props
     const chocoContainer = document.getElementById('chocolates-container');
