@@ -12,7 +12,8 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    fireworksActive: false
+    fireworksActive: false,
+    airBuffer: null
 };
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -261,16 +262,18 @@ async function initAudio() {
 
 function playAirSound() {
     if(!state.audioCtx) return;
-    const bufferSize = state.audioCtx.sampleRate * 1.5; 
-    const buffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
-    const data = buffer.getChannelData(0);
 
-    for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
+    if (!state.airBuffer) {
+        const bufferSize = state.audioCtx.sampleRate * 1.5;
+        state.airBuffer = state.audioCtx.createBuffer(1, bufferSize, state.audioCtx.sampleRate);
+        const data = state.airBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
     }
 
     const noise = state.audioCtx.createBufferSource();
-    noise.buffer = buffer;
+    noise.buffer = state.airBuffer;
 
     const filter = state.audioCtx.createBiquadFilter();
     filter.type = 'lowpass';
