@@ -535,6 +535,7 @@ body.open .chocolate { animation: fadeIn 1s forwards 1.2s; }
 .corner-heart { position: absolute; font-size: 2rem; color: #ff1744; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2)); animation: beat 1.5s infinite; z-index: 10; }
 .corner-heart.top-left { top: -15px; left: -15px; transform: rotate(-25deg); }
 .corner-heart.bottom-right { bottom: -15px; right: -15px; transform: rotate(25deg); }
+
 /* =========================================
    MOBILE OPTIMIZATIONS (Max Width 768px)
    ========================================= */
@@ -584,8 +585,8 @@ body.open .chocolate { animation: fadeIn 1s forwards 1.2s; }
     }
     .g1 { top: 15%; left: -5%; }
     .g2 { top: 18%; right: -5%; }
-    .g3 { top: 35%; left: -5%; display: none; /* Hide lower ones to reduce clutter */ }
-    .g4 { top: 38%; right: -5%; display: none; }
+    .g3 { display: none; /* Hide lower ones to reduce clutter */ }
+    .g4 { display: none; }
 
     /* --- 3. Table & Props --- */
     
@@ -656,24 +657,34 @@ body.open .chocolate { animation: fadeIn 1s forwards 1.2s; }
     
     /* Adjust Inside Page (Right Page) */
     .book-page.right-page {
-        padding: 20px;
+        padding: 5px; /* Reduced outer padding */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* New Internal Styling Wrapper */
+    .page-border {
         border: 4px double #f8bbd0; /* Elegant border */
-        margin: 5px;
-        height: calc(100% - 10px);
-        width: calc(100% - 10px);
+        padding: 15px;
+        height: 100%;
+        width: 100%;
         background: #fffafa;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .book-page h3 {
         font-size: 1.5rem;
-        margin-top: 10px;
+        margin-top: 5px;
     }
 
     .scroll-text {
-        font-size: 0.95rem; /* Readable size */
-        line-height: 1.5;
+        font-size: 0.9rem; /* Readable size */
+        line-height: 1.4;
         text-align: justify; /* Cleaner look */
-        padding-right: 5px;
+        padding-right: 2px;
     }
     
     .sig {
