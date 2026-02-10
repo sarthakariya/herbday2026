@@ -1,7 +1,7 @@
 /* MAIN SCRIPT */
 
 const CONFIG = {
-    candleCount: 17,
+    candleCount: 16, // Adjusted slightly for better circle fit
     micThreshold: 12, 
     flickerThreshold: 8,
 };
@@ -12,14 +12,19 @@ const state = {
     analyser: null,
     extinguished: 0,
     candles: [],
-    fireworksActive: false
+    fireworksActive: false,
+    won: false
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Generate Candles
+    // 1. Generate Candles with Mobile Logic
     const holder = document.getElementById('candles-container');
-    const rx = 55; 
-    const ry = 20; 
+    const isMobile = window.innerWidth < 768; // Mobile Check
+
+    // Mobile: Scale down candle positioning circle
+    const rx = isMobile ? 30 : 55; 
+    const ry = isMobile ? 12 : 20; 
+    
     const fragment = document.createDocumentFragment();
 
     for(let i=0; i<CONFIG.candleCount; i++) {
@@ -30,7 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const el = document.createElement('div');
         el.className = 'candle';
         el.style.transform = `translate(${x}px, ${y}px)`;
+        // Z-index ensures front candles overlap back ones correctly
         el.style.zIndex = Math.floor(y + 200);
+
+        // Mobile: Make candles smaller
+        if(isMobile) {
+            el.style.height = "25px";
+            el.style.width = "6px";
+        }
 
         const hues = [340, 200, 45, 120, 280]; 
         const h = hues[i % hues.length];
@@ -40,6 +52,13 @@ document.addEventListener('DOMContentLoaded', () => {
         wick.className = 'wick';
         const flame = document.createElement('div');
         flame.className = 'flame';
+        
+        // Mobile: Make flame smaller and adjust position
+        if(isMobile) {
+            flame.style.width = "10px";
+            flame.style.height = "20px";
+            flame.style.top = "-18px";
+        }
         
         const delay = Math.random() * 2 + 's';
         flame.style.setProperty('--delay', delay);
@@ -52,6 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 flame.classList.add('out');
                 el.classList.add('out');
                 state.extinguished++;
+                playAirSound(); // Added feedback sound on click too
                 if(state.extinguished >= CONFIG.candleCount) finishParty();
             }
         });
