@@ -17,6 +17,11 @@ const state = {
     isMobile: window.innerWidth < 768
 };
 
+const BACKGROUND_SONG_FALLBACKS = [
+    "https://cdn.pixabay.com/audio/2022/03/15/audio_c8c8e8f67f.mp3",
+    "https://cdn.pixabay.com/audio/2022/11/22/audio_2e455d9fcb.mp3"
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Generate Candles
     const holder = document.getElementById('candles-container');
@@ -94,13 +99,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.add('open');
         document.getElementById('hud').classList.remove('hidden');
         
-        // SONG PLAYS HERE
         const bgAudio = document.getElementById('bg-music');
-        if(bgAudio) {
-            bgAudio.volume = 1.0; 
-            bgAudio.play().catch(e => console.log("Audio play error:", e));
-        }
-        
+        startBackgroundSong(bgAudio);
+
         loop();
     });
 
@@ -383,4 +384,31 @@ function loopFireworks() {
 function createExplosion(x, y, color) {
     const count = state.isMobile ? 20 : 40;
     for (let i = 0; i < count; i++) particles.push(new Particle(x, y, color));
+}
+
+
+async function startBackgroundSong(bgAudio) {
+    if(!bgAudio) return;
+
+    bgAudio.volume = 1.0;
+
+    try {
+        await bgAudio.play();
+        return;
+    } catch(e) {
+        console.log("Primary song failed, trying fallback.", e);
+    }
+
+    for(const src of BACKGROUND_SONG_FALLBACKS) {
+        try {
+            bgAudio.src = src;
+            bgAudio.load();
+            await bgAudio.play();
+            return;
+        } catch(e) {
+            console.log("Fallback song failed:", src, e);
+        }
+    }
+
+    console.log("Unable to play any background song source.");
 }
